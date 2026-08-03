@@ -1,56 +1,51 @@
-const projects = [
-  {
-    title: "Private Villa",
-    year: "2025",
-    image:
-      "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    title: "Office Building",
-    year: "2024",
-    image:
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=2070&auto=format&fit=crop",
-  },
-  {
-    title: "Luxury Residence",
-    year: "2023",
-    image:
-      "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070&auto=format&fit=crop",
-  },
-];
+import Link from "next/link";
+import { projects } from "../data/projects";
 
 export default function Projects() {
   return (
-    <section className="bg-[#f7f5f2] py-32 px-12">
+    <section className="bg-white py-32 px-8">
       <div className="max-w-7xl mx-auto">
 
-        <p className="uppercase tracking-[6px] text-sm text-gray-500 mb-12">
-          Featured Projects
+        <p className="uppercase tracking-[6px] text-gray-500 mb-4">
+          Selected Projects
         </p>
+
+        <h2 className="text-5xl font-light mb-20">
+          Featured Work
+        </h2>
 
         <div className="grid md:grid-cols-3 gap-10">
           {projects.map((project) => (
-            <div key={project.title} className="group cursor-pointer">
-
+            <Link
+              key={project.slug}
+              href={`/projects/${project.slug}`}
+              className="group"
+            >
               <div className="overflow-hidden">
+
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="h-[520px] w-full object-cover transition duration-700 group-hover:scale-105"
+                  className="h-[500px] w-full object-cover transition duration-700 group-hover:scale-110"
                 />
+
               </div>
 
-              <div className="flex justify-between mt-5">
+              <div className="mt-6">
+
                 <h3 className="text-2xl font-light">
                   {project.title}
                 </h3>
 
-                <span>{project.year}</span>
-              </div>
+                <p className="text-gray-500 mt-2">
+                  {project.location} • {project.year}
+                </p>
 
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
+
       </div>
     </section>
   );
