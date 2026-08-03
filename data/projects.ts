@@ -1,5 +1,6 @@
 export const projects = [
   {
+    id: 1,
     slug: "villa-one",
     title: "Villa One",
     location: "Cairo, Egypt",
@@ -8,14 +9,16 @@ export const projects = [
       "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=2070&auto=format&fit=crop",
   },
   {
+    id: 2,
     slug: "minimal-house",
     title: "Minimal House",
     location: "Alexandria",
     year: "2024",
     image:
-      "https://images.unsplash.com/photo-1519643381401-22c77e60520e?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop",
   },
   {
+    id: 3,
     slug: "glass-tower",
     title: "Glass Tower",
     location: "Dubai",
