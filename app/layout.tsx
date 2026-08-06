@@ -1,8 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Studio",
+import Cursor from "../components/ui/Cursor";
+import SmoothScroll from "../components/ui/SmoothScroll";
+
+export const metadata = {
+  title: "MASON & ARC",
   description: "Architecture Studio",
 };
 
@@ -13,7 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Cursor />
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   );
 }

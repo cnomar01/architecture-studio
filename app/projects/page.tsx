@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { projects } from "../../data/projects";
 
 export default function ProjectsPage() {
@@ -8,24 +9,29 @@ export default function ProjectsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {projects.map((project) => (
-            <div
+            <Link
               key={project.id}
-              className="rounded-lg overflow-hidden shadow-lg"
+              href={`/projects/${project.slug}`}
+              className="block group"
             >
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-80 object-cover"
-              />
+              <div className="overflow-hidden rounded-lg shadow-lg">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-80 object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
 
-              <div className="p-5">
-                <h2 className="text-2xl">{project.title}</h2>
+              <div className="mt-4">
+                <h2 className="text-2xl font-light">
+                  {project.title}
+                </h2>
 
                 <p className="text-gray-500">
                   {project.location} • {project.year}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
