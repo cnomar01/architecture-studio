@@ -39,7 +39,8 @@ export default function Hero() {
         <div className="mx-auto w-full max-w-[1600px] px-12 md:px-16 pb-12 md:pb-16">
 
           <p className="mb-8 text-sm uppercase tracking-[12px] text-white/70">
-            MASON & ARC
+            MASON
+            & ARC
           </p>
 
           <h1 className="max-w-6xl text-7xl font-extralight leading-[0.88] tracking-[-0.03em] text-white md:text-8xl lg:text-[118px]">
