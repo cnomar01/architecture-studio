@@ -1,25 +1,44 @@
-import "./globals.css";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-import Cursor from "../components/ui/Cursor";
-import SmoothScroll from "../components/ui/SmoothScroll";
+import "./globals.css";
 
-export const metadata = {
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
+import SmoothScroll from "@/components/ui/SmoothScroll";
+import Cursor from "@/components/ui/Cursor";
+import Loader from "@/components/ui/Loader";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
   title: "MASON & ARC",
-  description: "Architecture Studio",
+  description: "Timeless Architecture Studio",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
+        <Loader />
+
         <Cursor />
+
         <SmoothScroll />
+
+        <Navbar />
+
         {children}
+
+        <Footer />
       </body>
     </html>
   );

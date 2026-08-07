@@ -8,11 +8,13 @@ export default function Hero() {
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!heroRef.current) return;
+
     gsap.from(".hero-line", {
       y: 80,
       opacity: 0,
       duration: 1,
-      stagger: 0.2,
+      stagger: 0.18,
       ease: "power4.out",
     });
   }, []);
@@ -22,37 +24,36 @@ export default function Hero() {
       ref={heroRef}
       className="relative h-screen overflow-hidden"
     >
-      {/* Background Image */}
+      {/* Background */}
       <Image
-        src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=2070&auto=format&fit=crop"
-        alt="Architecture"
+        src="/images/hero.jpg"
+        alt="MASON & ARC"
         fill
         priority
-        className="object-cover"
+        className="object-cover object-center"
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/25" />
 
       {/* Content */}
       <div className="relative z-10 flex h-full items-end">
-        <div className="mx-auto w-full max-w-[1600px] px-12 md:px-16 pb-12 md:pb-16">
+        <div className="mx-auto w-full max-w-7xl px-6 pb-14 sm:px-8 md:px-12 lg:px-16 lg:pb-20">
 
-          <p className="mb-8 text-sm uppercase tracking-[12px] text-white/70">
-            MASON
-            & ARC
-          </p>
+          {/* Brand */}
+          
 
-          <h1 className="max-w-6xl text-7xl font-extralight leading-[0.88] tracking-[-0.03em] text-white md:text-8xl lg:text-[118px]">
-            <span className="block hero-line">
+          {/* Heading */}
+          <h1 className="max-w-5xl font-extralight leading-[0.88] tracking-[-0.04em] text-white text-5xl sm:text-6xl md:text-7xl lg:text-[110px]">
+            <span className="hero-line block">
               Designing
             </span>
 
-            <span className="block hero-line">
+            <span className="hero-line block">
               Timeless
             </span>
 
-            <span className="block hero-line">
+            <span className="hero-line block">
               Architecture
             </span>
           </h1>
@@ -61,14 +62,18 @@ export default function Hero() {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/80 animate-bounce">
-        <span className="mb-2 text-xs uppercase tracking-[4px]">
-          Scroll
-        </span>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+        <div className="flex flex-col items-center text-white/80 animate-bounce">
 
-        <span className="text-2xl">
-          ↓
-        </span>
+          <span className="mb-2 text-[10px] uppercase tracking-[0.35em]">
+            Scroll
+          </span>
+
+          <span className="text-xl">
+            ↓
+          </span>
+
+        </div>
       </div>
     </section>
   );

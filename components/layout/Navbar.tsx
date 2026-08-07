@@ -14,19 +14,19 @@ const links = [
 export default function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className="mx-auto flex h-24 w-full max-w-7xl items-center justify-between px-6 sm:px-8 lg:px-12">
+      <div className="mx-auto flex max-w-[1700px] items-start justify-between px-8 pt-8 md:px-12 lg:px-16">
 
         <Logo light />
 
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden md:flex items-center gap-14 pt-3">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className="
-                text-[11px]
+                text-[12px]
                 uppercase
-                tracking-[0.28em]
+                tracking-[0.35em]
                 text-white
                 transition-opacity
                 duration-300

@@ -11,23 +11,31 @@ export default function Logo({ light = false }: LogoProps) {
       aria-label="MASON & ARC"
       className={`
         inline-flex
-        flex-col
-        leading-none
-        uppercase
-        tracking-[0.35em]
-        transition-opacity
+        items-center
+        justify-center
+        w-[108px]
+        h-[108px]
+        border
+        border-[1px]
+        transition-all
         duration-300
-        hover:opacity-70
-        ${light ? "text-white" : "text-neutral-900"}
+        hover:opacity-80
+        ${
+          light
+            ? "bg-white border-white text-black"
+            : "bg-white border-black text-black"
+        }
       `}
     >
-      <span className="text-base font-light">
-        MASON
-      </span>
+      <div className="text-center leading-none">
+        <div className="text-[14px] font-light tracking-[0.42em] uppercase">
+          MASON
+        </div>
 
-      <span className="mt-1 text-base font-light">
-        & ARC
-      </span>
+        <div className="mt-2 text-[14px] font-light tracking-[0.42em] uppercase">
+          & ARC
+        </div>
+      </div>
     </Link>
   );
 }
