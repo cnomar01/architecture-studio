@@ -9,32 +9,35 @@ export default function Logo({ light = false }: LogoProps) {
     <Link
       href="/"
       aria-label="MASON & ARC"
-      className={`
+      className="
+        relative
         inline-flex
+        h-[180px]
+        w-[200px]
+        -translate-x-[20px]
         items-center
         justify-center
-        w-[108px]
-        h-[108px]
-        border
-        border-[1px]
-        transition-all
+        border-[2px]
+        border-black
+        bg-white
+        text-black
+        transition-opacity
         duration-300
         hover:opacity-80
-        ${
-          light
-            ? "bg-white border-white text-black"
-            : "bg-white border-black text-black"
-        }
-      `}
+      "
     >
-      <div className="text-center leading-none">
-        <div className="text-[14px] font-light tracking-[0.42em] uppercase">
-          MASON
-        </div>
+      {/* Black frame line */}
+      <span className="pointer-events-none absolute inset-[5px] border-[1px] border-black" />
 
-        <div className="mt-2 text-[14px] font-light tracking-[0.42em] uppercase">
+      {/* Logo text */}
+      <div className="relative z-10 flex flex-col items-center justify-center leading-none">
+        <span className="text-[20px] font-light uppercase tracking-[0.42em]">
+          MASON
+        </span>
+
+        <span className="mt-[10px] text-[20px] font-light uppercase tracking-[0.42em]">
           & ARC
-        </div>
+        </span>
       </div>
     </Link>
   );

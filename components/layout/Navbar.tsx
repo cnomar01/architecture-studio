@@ -13,31 +13,43 @@ const links = [
 
 export default function Navbar() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
-      <div className="mx-auto flex max-w-[1700px] items-start justify-between px-8 pt-8 md:px-12 lg:px-16">
-
+    <header className="fixed top-0 left-0 z-50 w-full">
+      <div
+        className="flex w-full items-start justify-between"
+        style={{
+          paddingLeft: "50px",
+          paddingRight: "120px",
+          paddingTop: "40px",
+        }}
+      >
+        {/* Logo */}
         <Logo light />
 
-        <nav className="hidden md:flex items-center gap-14 pt-3">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="
-                text-[12px]
-                uppercase
-                tracking-[0.35em]
-                text-white
-                transition-opacity
-                duration-300
-                hover:opacity-60
-              "
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Navigation */}
+        <nav className="hidden lg:flex items-center pt-[8px] mr-[170px]">
+          <ul className="flex items-center gap-[52px]">
+            {links.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="
+                    !text-white
+                    whitespace-nowrap
+                    text-[12px]
+                    font-light
+                    uppercase
+                    tracking-[0.36em]
+                    transition-opacity
+                    duration-300
+                    hover:opacity-60
+                  "
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </nav>
-
       </div>
     </header>
   );

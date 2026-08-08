@@ -13,8 +13,8 @@ export default function Hero() {
     gsap.from(".hero-line", {
       y: 80,
       opacity: 0,
-      duration: 1,
-      stagger: 0.18,
+      duration: 1.1,
+      stagger: 0.15,
       ease: "power4.out",
     });
   }, []);
@@ -30,49 +30,76 @@ export default function Hero() {
         alt="MASON & ARC"
         fill
         priority
+        sizes="100vw"
         className="object-cover object-center"
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/25" />
+      <div className="absolute inset-0 bg-black/15" />
 
       {/* Content */}
-      <div className="relative z-10 flex h-full items-end">
-        <div className="mx-auto w-full max-w-7xl px-6 pb-14 sm:px-8 md:px-12 lg:px-16 lg:pb-20">
+      <div className="relative z-10 h-full">
+        <div
+          className="flex h-full w-full flex-col"
+          style={{
+            paddingLeft: "48px",
+            paddingRight: "48px",
+          }}
+        >
+          <div className="flex flex-1 items-end">
+            <div className="w-full translate-y-[-80px]">
 
-          {/* Brand */}
-          
+              {/* Title */}
+              <h1
+                className="
+                  max-w-[560px]
+                  text-white
+                  font-extralight
+                  leading-[0.92]
+                  tracking-[-0.04em]
+                  text-[50px]
+                  sm:text-[30px]
+                  lg:text-[60px]
+                "
+              >
+                <span className="hero-line block">
+                  Designing
+                </span>
 
-          {/* Heading */}
-          <h1 className="max-w-5xl font-extralight leading-[0.88] tracking-[-0.04em] text-white text-5xl sm:text-6xl md:text-7xl lg:text-[110px]">
-            <span className="hero-line block">
-              Designing
-            </span>
+                <span className="hero-line block">
+                  Timeless
+                </span>
 
-            <span className="hero-line block">
-              Timeless
-            </span>
+                <span className="hero-line block">
+                  Architecture
+                </span>
+              </h1>
 
-            <span className="hero-line block">
-              Architecture
-            </span>
-          </h1>
+              {/* White Frame Line */}
+              <div className="mt-[180px] h-px w-full bg-white/70" />
 
-        </div>
-      </div>
+              {/* Scroll BELOW the line */}
+              <div className="mt-[35px] flex items-center gap-4">
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
-        <div className="flex flex-col items-center text-white/80 animate-bounce">
+                <div className="flex h-[30px] w-[15px] items-start justify-center rounded-full border border-white/60">
+                  <div className="mt-[6px] h-[6px] w-[1px] animate-bounce bg-white" />
+                </div>
 
-          <span className="mb-2 text-[10px] uppercase tracking-[0.35em]">
-            Scroll
-          </span>
+                <span
+                  className="
+                    text-[11px]
+                    uppercase
+                    tracking-[0.8em]
+                    text-white
+                  "
+                >
+                  Scroll to Explore
+                </span>
 
-          <span className="text-xl">
-            ↓
-          </span>
+              </div>
 
+            </div>
+          </div>
         </div>
       </div>
     </section>
