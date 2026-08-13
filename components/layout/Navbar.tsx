@@ -13,7 +13,7 @@ const links = [
 
 export default function Navbar() {
   return (
-    <header className="fixed top-0 left-0 z-50 w-full">
+    <header className="absolute top-0 left-0 z-50 w-full">
       <div
         className="flex w-full items-start justify-between"
         style={{
@@ -26,7 +26,7 @@ export default function Navbar() {
         <Logo light />
 
         {/* Navigation */}
-        <nav className="hidden lg:flex items-center pt-[8px] mr-[170px]">
+        <nav className="hidden items-center pt-[8px] mr-[170px] lg:flex">
           <ul className="flex items-center gap-[52px]">
             {links.map((link) => (
               <li key={link.href}>

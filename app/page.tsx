@@ -3,7 +3,6 @@ import Navbar from "../components/layout/Navbar";
 import Hero from "../components/home/Hero";
 import Manifesto from "../components/home/Manifesto";
 import Projects from "../components/home/Projects";
-import Footer from "../components/layout/Footer";
 
 export default function Home() {
   return (
@@ -13,7 +12,6 @@ export default function Home() {
       <Hero />
       <Manifesto />
       <Projects />
-      <Footer />
     </>
   );
 }
