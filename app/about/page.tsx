@@ -36,9 +36,35 @@ export default function AboutPage() {
           INTRO
       ===================================================== */}
 
-      <section className="min-h-screen px-6 pb-24 pt-36 md:px-10 md:pt-44">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+      <section
+        className="
+          min-h-[auto]
+          px-5
+          pb-20
+          pt-28
 
+          sm:px-6
+          sm:pb-24
+          sm:pt-32
+
+          md:min-h-screen
+          md:px-10
+          md:pb-24
+          md:pt-44
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-10
+
+            sm:gap-12
+
+            lg:grid-cols-12
+            lg:gap-16
+          "
+        >
           <div className="lg:col-span-3">
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
               About
@@ -50,12 +76,12 @@ export default function AboutPage() {
               className="
                 max-w-[1200px]
                 font-[var(--font-display)]
-                text-[72px]
+                text-[48px]
                 uppercase
-                leading-[0.78]
+                leading-[0.82]
                 tracking-[-0.025em]
 
-                sm:text-[92px]
+                sm:text-[64px]
                 md:text-[120px]
                 lg:text-[150px]
                 xl:text-[175px]
@@ -75,28 +101,83 @@ export default function AboutPage() {
           HISTORY
       ===================================================== */}
 
-      <section className="border-t border-black/15 px-6 py-24 md:px-10 md:py-32">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+      <section
+        className="
+          border-t
+          border-black/15
+          px-5
+          py-20
 
+          sm:px-6
+          sm:py-24
+
+          md:px-10
+          md:py-32
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-12
+
+            sm:gap-16
+
+            lg:grid-cols-12
+          "
+        >
           <div className="lg:col-span-3">
-            <div className="font-[var(--font-display)] text-[70px] leading-none tracking-[-0.03em] md:text-[100px]">
+            <div
+              className="
+                font-[var(--font-display)]
+                text-[58px]
+                leading-none
+                tracking-[-0.03em]
+
+                sm:text-[70px]
+                md:text-[100px]
+              "
+            >
               2001
             </div>
 
-            <p className="mt-4 text-[9px] uppercase tracking-[0.2em] text-black/50">
+            <p className="mt-3 text-[9px] uppercase tracking-[0.2em] text-black/50">
               Founded in Italy
             </p>
           </div>
 
           <div className="lg:col-span-7 lg:col-start-5">
-            <p className="text-[24px] leading-[1.15] tracking-[-0.02em] md:text-[34px] lg:text-[42px]">
+            <p
+              className="
+                text-[20px]
+                leading-[1.18]
+                tracking-[-0.02em]
+
+                sm:text-[23px]
+                md:text-[34px]
+                lg:text-[42px]
+              "
+            >
               Mason & Arc was founded in Italy in 2001, with a commitment to
               creating architecture and interiors that combine strong design
               thinking with careful attention to detail, materiality, and the
               experience of space.
             </p>
 
-            <p className="mt-10 max-w-[720px] text-[14px] leading-[1.6] text-black/65 md:text-[16px]">
+            <p
+              className="
+                mt-8
+                max-w-[720px]
+                text-[13px]
+                leading-[1.6]
+                text-black/65
+
+                sm:mt-10
+                sm:text-[14px]
+
+                md:text-[16px]
+              "
+            >
               Over the years, the practice has developed a diverse body of
               work spanning more than 350 projects across interior and exterior
               environments, building an extensive experience across different
@@ -110,18 +191,43 @@ export default function AboutPage() {
           350+
       ===================================================== */}
 
-      <section className="bg-black px-6 py-28 text-white md:px-10 md:py-40">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12 lg:items-end">
+      <section
+        className="
+          overflow-hidden
+          bg-black
+          px-5
+          py-20
+          text-white
 
+          sm:px-6
+          sm:py-28
+
+          md:px-10
+          md:py-40
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-12
+
+            sm:gap-16
+
+            lg:grid-cols-12
+            lg:items-end
+          "
+        >
           <div className="lg:col-span-8">
             <div
               className="
+                whitespace-nowrap
                 font-[var(--font-display)]
-                text-[180px]
-                leading-[0.7]
-                tracking-[-0.04em]
+                text-[128px]
+                leading-[0.72]
+                tracking-[-0.05em]
 
-                sm:text-[230px]
+                sm:text-[170px]
                 md:text-[300px]
                 lg:text-[360px]
               "
@@ -135,7 +241,7 @@ export default function AboutPage() {
               Projects
             </p>
 
-            <p className="mt-5 text-[14px] leading-[1.55] text-white/75 md:text-[16px]">
+            <p className="mt-4 text-[13px] leading-[1.55] text-white/75 sm:text-[14px] md:text-[16px]">
               More than three hundred and fifty projects across interior and
               exterior environments have shaped the experience and approach of
               Mason & Arc.
@@ -148,23 +254,43 @@ export default function AboutPage() {
           ITALY → EGYPT
       ===================================================== */}
 
-      <section className="px-6 py-28 md:px-10 md:py-40">
-        <div className="grid grid-cols-1 gap-20 lg:grid-cols-12">
+      <section
+        className="
+          px-5
+          py-20
 
+          sm:px-6
+          sm:py-28
+
+          md:px-10
+          md:py-40
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-14
+
+            sm:gap-20
+
+            lg:grid-cols-12
+          "
+        >
           <div className="lg:col-span-8">
-            <p className="mb-8 text-[9px] uppercase tracking-[0.25em] text-black/45">
+            <p className="mb-7 text-[9px] uppercase tracking-[0.25em] text-black/45">
               A new chapter
             </p>
 
             <h2
               className="
                 font-[var(--font-display)]
-                text-[76px]
+                text-[58px]
                 uppercase
-                leading-[0.78]
+                leading-[0.8]
                 tracking-[-0.025em]
 
-                sm:text-[100px]
+                sm:text-[76px]
                 md:text-[130px]
                 lg:text-[170px]
               "
@@ -179,11 +305,32 @@ export default function AboutPage() {
 
           <div className="flex items-end lg:col-span-4">
             <div>
-              <p className="text-[24px] leading-[1.15] tracking-[-0.02em] md:text-[32px]">
+              <p
+                className="
+                  text-[20px]
+                  leading-[1.18]
+                  tracking-[-0.02em]
+
+                  sm:text-[24px]
+                  md:text-[32px]
+                "
+              >
                 From our first studio in Italy to our new presence in Egypt.
               </p>
 
-              <p className="mt-8 text-[14px] leading-[1.6] text-black/65 md:text-[16px]">
+              <p
+                className="
+                  mt-7
+                  text-[13px]
+                  leading-[1.6]
+                  text-black/65
+
+                  sm:mt-8
+                  sm:text-[14px]
+
+                  md:text-[16px]
+                "
+              >
                 Today, Mason & Arc brings this experience to a new chapter with
                 the opening of its first branch in Egypt, extending the practice
                 beyond its Italian origins while maintaining the same design
@@ -198,9 +345,31 @@ export default function AboutPage() {
           APPROACH
       ===================================================== */}
 
-      <section className="border-t border-black/15 px-6 py-24 md:px-10 md:py-32">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+      <section
+        className="
+          border-t
+          border-black/15
+          px-5
+          py-20
 
+          sm:px-6
+          sm:py-24
+
+          md:px-10
+          md:py-32
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-12
+
+            sm:gap-16
+
+            lg:grid-cols-12
+          "
+        >
           <div className="lg:col-span-3">
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
               Our Approach
@@ -208,12 +377,35 @@ export default function AboutPage() {
           </div>
 
           <div className="lg:col-span-8 lg:col-start-5">
-            <p className="text-[30px] leading-[1.08] tracking-[-0.025em] md:text-[46px] lg:text-[56px]">
+            <p
+              className="
+                text-[25px]
+                leading-[1.08]
+                tracking-[-0.025em]
+
+                sm:text-[30px]
+                md:text-[46px]
+                lg:text-[56px]
+              "
+            >
               Our approach begins with understanding the relationship between
               people, space, context, and purpose.
             </p>
 
-            <p className="mt-12 max-w-[760px] text-[15px] leading-[1.7] text-black/65 md:text-[17px]">
+            <p
+              className="
+                mt-9
+                max-w-[760px]
+                text-[14px]
+                leading-[1.65]
+                text-black/65
+
+                sm:mt-12
+                sm:text-[15px]
+
+                md:text-[17px]
+              "
+            >
               Every project is considered as an opportunity to create
               environments that are not only visually distinctive, but also
               functional, considered, and capable of responding to the way
@@ -230,8 +422,29 @@ export default function AboutPage() {
           SERVICES
       ===================================================== */}
 
-      <section className="bg-[#f2f2f0] px-6 py-24 md:px-10 md:py-32">
-        <div className="mb-20 flex items-end justify-between">
+      <section
+        className="
+          bg-[#f2f2f0]
+          px-5
+          py-20
+
+          sm:px-6
+          sm:py-24
+
+          md:px-10
+          md:py-32
+        "
+      >
+        <div
+          className="
+            mb-14
+            flex
+            items-end
+            justify-between
+
+            sm:mb-20
+          "
+        >
           <div>
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
               What we do
@@ -239,13 +452,14 @@ export default function AboutPage() {
 
             <h2
               className="
-                mt-5
+                mt-4
                 font-[var(--font-display)]
-                text-[80px]
+                text-[60px]
                 uppercase
-                leading-[0.78]
+                leading-[0.8]
                 tracking-[-0.025em]
 
+                sm:text-[80px]
                 md:text-[120px]
                 lg:text-[150px]
               "
@@ -266,10 +480,13 @@ export default function AboutPage() {
               className="
                 grid
                 grid-cols-1
-                gap-8
+                gap-6
                 border-b
                 border-black/20
-                py-10
+                py-8
+
+                sm:gap-8
+                sm:py-10
 
                 md:grid-cols-12
                 md:gap-10
@@ -286,11 +503,12 @@ export default function AboutPage() {
                 <h3
                   className="
                     font-[var(--font-display)]
-                    text-[48px]
+                    text-[38px]
                     uppercase
-                    leading-[0.8]
+                    leading-[0.82]
                     tracking-[-0.02em]
 
+                    sm:text-[48px]
                     md:text-[64px]
                     lg:text-[78px]
                   "
@@ -300,7 +518,7 @@ export default function AboutPage() {
               </div>
 
               <div className="md:col-span-5 md:col-start-8">
-                <p className="max-w-[560px] text-[14px] leading-[1.65] text-black/65 md:text-[16px]">
+                <p className="max-w-[560px] text-[13px] leading-[1.65] text-black/65 sm:text-[14px] md:text-[16px]">
                   {service.text}
                 </p>
               </div>
@@ -313,19 +531,41 @@ export default function AboutPage() {
           CLOSING
       ===================================================== */}
 
-      <section className="bg-black px-6 py-28 text-white md:px-10 md:py-40">
-        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+      <section
+        className="
+          bg-black
+          px-5
+          py-20
+          text-white
 
+          sm:px-6
+          sm:py-28
+
+          md:px-10
+          md:py-40
+        "
+      >
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-12
+
+            sm:gap-16
+
+            lg:grid-cols-12
+          "
+        >
           <div className="lg:col-span-9">
             <h2
               className="
                 font-[var(--font-display)]
-                text-[72px]
+                text-[52px]
                 uppercase
-                leading-[0.78]
+                leading-[0.8]
                 tracking-[-0.025em]
 
-                sm:text-[92px]
+                sm:text-[72px]
                 md:text-[120px]
                 lg:text-[155px]
               "
@@ -341,7 +581,7 @@ export default function AboutPage() {
           </div>
 
           <div className="lg:col-span-3 lg:col-start-10 lg:flex lg:items-end">
-            <p className="text-[14px] leading-[1.65] text-white/60 md:text-[16px]">
+            <p className="text-[13px] leading-[1.65] text-white/60 sm:text-[14px] md:text-[16px]">
               Our ambition is not simply to produce buildings or interiors,
               but to create places with character, purpose, and lasting value —
               environments where architecture, interior, exterior, and
@@ -355,9 +595,35 @@ export default function AboutPage() {
           CONTACT CTA
       ===================================================== */}
 
-      <section className="px-6 py-24 md:px-10 md:py-32">
-        <div className="flex flex-col gap-10 border-t border-black/20 pt-8 md:flex-row md:items-end md:justify-between">
+      <section
+        className="
+          px-5
+          py-20
 
+          sm:px-6
+          sm:py-24
+
+          md:px-10
+          md:py-32
+        "
+      >
+        <div
+          className="
+            flex
+            flex-col
+            gap-8
+            border-t
+            border-black/20
+            pt-7
+
+            sm:gap-10
+            sm:pt-8
+
+            md:flex-row
+            md:items-end
+            md:justify-between
+          "
+        >
           <div>
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/45">
               Start a project
@@ -365,13 +631,14 @@ export default function AboutPage() {
 
             <h2
               className="
-                mt-5
+                mt-4
                 font-[var(--font-display)]
-                text-[72px]
+                text-[58px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.025em]
 
+                sm:text-[72px]
                 md:text-[110px]
                 lg:text-[140px]
               "
