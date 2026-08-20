@@ -22,6 +22,12 @@ const bebas = Bebas_Neue({
 export const metadata: Metadata = {
   title: "Mason & Arc",
   description: "Architecture · Design · Execution",
+
+  icons: {
+    icon: "/images/logo-mason-arc.png",
+    shortcut: "/images/logo-mason-arc.png",
+    apple: "/images/logo-mason-arc.png",
+  },
 };
 
 export default function RootLayout({
