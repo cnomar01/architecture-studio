@@ -2,43 +2,48 @@ import Link from "next/link";
 
 type LogoProps = {
   light?: boolean;
+  className?: string;
 };
 
-export default function Logo({ light = false }: LogoProps) {
+export default function Logo({
+  light = true,
+  className = "",
+}: LogoProps) {
   return (
     <Link
       href="/"
-      aria-label="MASON & ARC"
-      className="
+      aria-label="Mason & Arc"
+      className={`
+        group
         relative
-        inline-flex
-        h-[180px]
-        w-[200px]
-        -translate-x-[20px]
-        items-center
-        justify-center
-        border-[2px]
-        border-black
-        bg-white
-        text-black
-        transition-opacity
-        duration-300
-        hover:opacity-80
-      "
+        block
+        leading-none
+        ${className}
+      `}
     >
-      {/* Black frame line */}
-      <span className="pointer-events-none absolute inset-[5px] border-[1px] border-black" />
+      <span
+        className={`
+          block
+          whitespace-nowrap
+          font-[var(--font-display)]
+          text-[30px]
+          font-normal
+          uppercase
+          leading-[0.78]
+          tracking-[-0.025em]
+          transition-colors
+          duration-500
+          ease-out
 
-      {/* Logo text */}
-      <div className="relative z-10 flex flex-col items-center justify-center leading-none">
-        <span className="text-[20px] font-light uppercase tracking-[0.42em]">
-          MASON
-        </span>
+          sm:text-[34px]
+          md:text-[38px]
+          lg:text-[42px]
 
-        <span className="mt-[10px] text-[20px] font-light uppercase tracking-[0.42em]">
-          & ARC
-        </span>
-      </div>
+          ${light ? "text-white" : "text-black"}
+        `}
+      >
+        Mason&Arc
+      </span>
     </Link>
   );
 }

@@ -11,8 +11,8 @@ export default function ContactHero() {
         {/* Top */}
         <div>
           <Reveal>
-            <p className="text-[10px] font-light uppercase tracking-[0.45em] text-neutral-500">
-              MASON & ARC
+            <p >
+              
             </p>
           </Reveal>
         </div>
