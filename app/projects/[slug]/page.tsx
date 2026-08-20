@@ -1,16 +1,16 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { projects } from "@/data/projects";
 
-import { projects } from "../../../data/projects";
-
-type Props = {
+type ProjectPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
 
-export default async function ProjectPage({ params }: Props) {
+export default async function ProjectPage({
+  params,
+}: ProjectPageProps) {
   const { slug } = await params;
 
   const project = projects.find((item) => item.slug === slug);
@@ -19,553 +19,356 @@ export default async function ProjectPage({ params }: Props) {
     notFound();
   }
 
-  const currentIndex = projects.findIndex(
-    (item) => item.slug === project.slug
-  );
-
-  const nextProject =
-    projects[(currentIndex + 1) % projects.length];
-
   return (
-    <main className="bg-[#f8f7f4] text-neutral-900">
+    <main className="bg-black text-white">
 
       {/* =====================================================
-          HERO
-      ====================================================== */}
+          PROJECT HERO
+      ===================================================== */}
 
-      <section
-        className="
-          relative
-          h-[100svh]
-          min-h-[680px]
-          w-full
-          overflow-hidden
-          bg-black
-          text-white
-        "
-      >
-        <Image
-          src={project.image}
-          alt={project.title}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+      <section className="relative min-h-screen overflow-hidden">
 
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="h-full w-full object-cover"
+          />
 
-        <div
-          className="
-            absolute
-            inset-0
-            bg-gradient-to-t
-            from-black/70
-            via-black/10
-            to-transparent
-          "
-        />
+          <div className="absolute inset-0 bg-black/25" />
+
+          <div
+            className="
+              absolute
+              inset-0
+              bg-gradient-to-t
+              from-black
+              via-black/20
+              to-transparent
+            "
+          />
+        </div>
 
         <div
           className="
-            absolute
-            inset-x-0
-            bottom-0
+            relative
+            z-10
+            flex
+            min-h-screen
+            flex-col
+            justify-end
             px-6
-            pb-8
-            sm:px-8
-            md:px-12
+            pb-10
+
+            md:px-10
+            md:pb-14
+
             lg:px-16
-            lg:pb-12
-            xl:px-20
+            lg:pb-16
           "
         >
-          {/* META */}
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
 
-          <div
-            className="
-              mb-6
-              flex
-              items-center
-              gap-4
-              text-[9px]
-              uppercase
-              tracking-[0.3em]
-              text-white/70
-            "
-          >
-            <span>{project.location}</span>
+            <div>
+              <p
+                className="
+                  mb-5
+                  text-[9px]
+                  uppercase
+                  tracking-[0.3em]
+                  text-white/55
+                "
+              >
+                Project 01
+              </p>
 
-            <span className="h-px w-8 bg-white/40" />
+              <h1
+                className="
+                  max-w-[1200px]
+                  font-[var(--font-display)]
+                  text-[64px]
+                  uppercase
+                  leading-[0.78]
+                  tracking-[-0.035em]
 
-            <span>{project.year}</span>
-          </div>
+                  sm:text-[82px]
+                  md:text-[120px]
+                  lg:text-[150px]
+                  xl:text-[175px]
+                "
+              >
+                {project.title}
+              </h1>
+            </div>
 
-          {/* TITLE */}
+            <div className="flex flex-col gap-2 text-[10px] uppercase tracking-[0.2em] text-white/60 lg:text-right">
+              <span>{project.location}</span>
+              <span>{project.year}</span>
+            </div>
 
-          <h1
-            className="
-              max-w-[1450px]
-              text-[64px]
-              font-light
-              leading-[0.8]
-              tracking-[-0.055em]
-              sm:text-[90px]
-              md:text-[120px]
-              lg:text-[155px]
-              xl:text-[190px]
-            "
-          >
-            {project.title}
-          </h1>
-
-          {/* BOTTOM META */}
-
-          <div
-            className="
-              mt-8
-              flex
-              items-center
-              justify-between
-              border-t
-              border-white/40
-              pt-4
-            "
-          >
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.3em]
-                text-white/70
-              "
-            >
-              Mason & Arc
-            </span>
-
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.3em]
-                text-white/70
-              "
-            >
-              Project {String(project.id).padStart(2, "0")}
-            </span>
           </div>
         </div>
       </section>
 
+
       {/* =====================================================
           INTRO
-      ====================================================== */}
+      ===================================================== */}
 
-      <section
-        className="
-          border-b
-          border-neutral-300
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-14
-            px-6
-            py-28
-            sm:px-8
-            md:px-12
-            md:py-40
-            lg:grid-cols-[0.55fr_1.45fr]
-            lg:gap-20
-            lg:px-16
-            xl:px-20
-          "
-        >
-          <div>
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.35em]
-                text-neutral-400
-              "
-            >
-              01 — About
-            </span>
+      <section className="px-6 py-24 md:px-10 md:py-32 lg:px-16">
+
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+
+          <div className="lg:col-span-3">
+            <p className="text-[9px] uppercase tracking-[0.3em] text-white/40">
+              Overview
+            </p>
           </div>
 
-          <div>
+          <div className="lg:col-span-8 lg:col-start-5">
+
             <p
               className="
-                max-w-[1050px]
-                text-[32px]
-                font-light
-                leading-[1.05]
-                tracking-[-0.035em]
-                sm:text-[42px]
-                md:text-[54px]
-                lg:text-[66px]
+                text-[25px]
+                leading-[1.08]
+                tracking-[-0.025em]
+
+                sm:text-[32px]
+                md:text-[46px]
+                lg:text-[54px]
               "
             >
               {project.description}
             </p>
+
           </div>
+
         </div>
       </section>
+
 
       {/* =====================================================
           PROJECT DATA
-      ====================================================== */}
+      ===================================================== */}
 
-      <section
-        className="
-          border-b
-          border-neutral-300
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-2
-            gap-y-12
-            px-6
-            py-20
-            sm:px-8
-            md:grid-cols-4
-            md:px-12
-            md:py-28
-            lg:px-16
-            xl:px-20
-          "
-        >
-          <ProjectInfo
-            label="Project"
-            value={project.title}
-          />
+      <section className="border-t border-white/15 px-6 py-20 md:px-10 md:py-28 lg:px-16">
 
-          <ProjectInfo
-            label="Location"
-            value={project.location}
-          />
+        <div className="grid grid-cols-1 gap-14 md:grid-cols-2 lg:grid-cols-4">
 
-          <ProjectInfo
-            label="Year"
-            value={project.year}
-          />
+          <div>
+            <p className="text-[8px] uppercase tracking-[0.25em] text-white/35">
+              Project Type
+            </p>
 
-          <ProjectInfo
-            label="Type"
-            value="Architecture"
-          />
+            <p className="mt-5 text-[18px] leading-[1.3]">
+              Mixed-Use Development
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[8px] uppercase tracking-[0.25em] text-white/35">
+              Program
+            </p>
+
+            <p className="mt-5 text-[18px] leading-[1.45]">
+              Shopping Mall
+              <br />
+              Retail
+              <br />
+              Offices
+              <br />
+              Medical Clinics
+              <br />
+              Residential
+              <br />
+              Rooftop Leisure
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[8px] uppercase tracking-[0.25em] text-white/35">
+              Scope
+            </p>
+
+            <p className="mt-5 text-[18px] leading-[1.45]">
+              Architecture
+              <br />
+              Façade
+              <br />
+              MEP
+              <br />
+              HVAC
+              <br />
+              Vertical Transportation
+              <br />
+              Interior Finishing
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[8px] uppercase tracking-[0.25em] text-white/35">
+              Status
+            </p>
+
+            <p className="mt-5 text-[18px] leading-[1.3]">
+              Ongoing
+              <br />
+              Started 2025
+            </p>
+          </div>
+
         </div>
       </section>
+
+
+      {/* =====================================================
+          EXECUTION
+      ===================================================== */}
+
+      <section className="bg-[#f2f2f0] px-6 py-24 text-black md:px-10 md:py-32 lg:px-16">
+
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+
+          <div className="lg:col-span-3">
+            <p className="text-[9px] uppercase tracking-[0.3em] text-black/40">
+              Execution
+            </p>
+          </div>
+
+          <div className="lg:col-span-8 lg:col-start-5">
+
+            <h2
+              className="
+                font-[var(--font-display)]
+                text-[50px]
+                uppercase
+                leading-[0.8]
+                tracking-[-0.03em]
+
+                sm:text-[70px]
+                md:text-[100px]
+                lg:text-[130px]
+              "
+            >
+              From
+              <br />
+              concept
+              <br />
+              to reality.
+            </h2>
+
+            <p className="mt-12 max-w-[760px] text-[15px] leading-[1.7] text-black/65 md:text-[17px]">
+              City Edge is being delivered as a fully coordinated
+              mixed-use development, bringing architectural design,
+              building systems, façade construction, vertical
+              transportation, mechanical and electrical works, and
+              interior finishing together as one integrated process.
+            </p>
+
+          </div>
+
+        </div>
+      </section>
+
 
       {/* =====================================================
           GALLERY
-      ====================================================== */}
+      ===================================================== */}
 
-      <section
-        className="
-          px-5
-          py-20
-          sm:px-8
-          md:px-10
-          md:py-32
-          lg:px-14
-          xl:px-16
-        "
-      >
-        <div className="space-y-8 md:space-y-12">
+      <section className="px-6 py-24 md:px-10 md:py-32 lg:px-16">
 
-          {/* LARGE IMAGE */}
+        <div className="mb-16 flex items-end justify-between">
 
-          <div
-            className="
-              relative
-              h-[65vh]
-              min-h-[460px]
-              w-full
-              overflow-hidden
-              bg-neutral-200
-              md:h-[82vh]
-            "
-          >
-            <Image
-              src={project.gallery[0]}
-              alt={`${project.title} — 01`}
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.3em] text-white/40">
+              Project Documentation
+            </p>
 
-          {/* TWO IMAGES */}
-
-          <div
-            className="
-              grid
-              grid-cols-1
-              gap-8
-              md:grid-cols-2
-            "
-          >
-            <div
+            <h2
               className="
-                relative
-                h-[60vh]
-                min-h-[420px]
-                overflow-hidden
-                bg-neutral-200
+                mt-5
+                font-[var(--font-display)]
+                text-[54px]
+                uppercase
+                leading-[0.8]
+                tracking-[-0.03em]
+
+                sm:text-[72px]
+                md:text-[110px]
+                lg:text-[140px]
               "
             >
-              <Image
-                src={project.gallery[1]}
-                alt={`${project.title} — 02`}
-                fill
-                sizes="50vw"
-                className="object-cover"
-              />
-            </div>
-
-            <div
-              className="
-                relative
-                h-[60vh]
-                min-h-[420px]
-                overflow-hidden
-                bg-neutral-200
-              "
-            >
-              <Image
-                src={project.gallery[2]}
-                alt={`${project.title} — 03`}
-                fill
-                sizes="50vw"
-                className="object-cover"
-              />
-            </div>
+              The Work.
+            </h2>
           </div>
+
+          <span className="hidden text-[9px] uppercase tracking-[0.2em] text-white/35 md:block">
+            01 — 05
+          </span>
+
+        </div>
+
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+          {project.gallery.map((image, index) => (
+            <div
+              key={image}
+              className={`
+                relative
+                overflow-hidden
+                bg-white/5
+
+                ${
+                  index === 0
+                    ? "md:col-span-2 aspect-[16/9]"
+                    : "aspect-[4/3]"
+                }
+              `}
+            >
+              <img
+                src={image}
+                alt={`${project.title} — ${index + 1}`}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          ))}
 
         </div>
       </section>
 
-      {/* =====================================================
-          EXPERIENCE
-      ====================================================== */}
 
-      <section
-        className="
-          border-t
-          border-neutral-300
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-12
-            px-6
-            py-28
-            sm:px-8
-            md:px-12
-            md:py-40
-            lg:grid-cols-[0.55fr_1.45fr]
-            lg:gap-20
-            lg:px-16
-            xl:px-20
-          "
-        >
-          <span
+      {/* =====================================================
+          NEXT / BACK
+      ===================================================== */}
+
+      <section className="border-t border-white/15 px-6 py-10 md:px-10 lg:px-16">
+
+        <div className="flex items-center justify-between">
+
+          <Link
+            href="/projects"
             className="
               text-[9px]
               uppercase
-              tracking-[0.35em]
-              text-neutral-400
+              tracking-[0.25em]
+              text-white/50
+              transition-opacity
+              duration-300
+              hover:text-white
             "
           >
-            02 — Experience
+            ← All Projects
+          </Link>
+
+          <span className="text-[9px] uppercase tracking-[0.25em] text-white/30">
+            Mason & Arc
           </span>
 
-          <div>
-            <h2
-              className="
-                max-w-[1000px]
-                text-[48px]
-                font-light
-                leading-[0.9]
-                tracking-[-0.05em]
-                sm:text-[62px]
-                md:text-[82px]
-                lg:text-[105px]
-              "
-            >
-              Space,
-              <br />
-              material,
-              <br />
-              experience.
-            </h2>
-
-            <p
-              className="
-                mt-10
-                max-w-[560px]
-                text-[14px]
-                font-light
-                leading-[1.8]
-                text-neutral-500
-              "
-            >
-              Architecture shaped through proportion,
-              material, light, and the relationship between
-              people and space.
-            </p>
-          </div>
         </div>
+
       </section>
 
-      {/* =====================================================
-          NEXT PROJECT
-      ====================================================== */}
-
-      <section className="border-t border-neutral-300">
-        <Link
-          href={`/projects/${nextProject.slug}`}
-          className="group block"
-        >
-          <div
-            className="
-              relative
-              h-[75vh]
-              min-h-[560px]
-              overflow-hidden
-              bg-black
-              text-white
-            "
-          >
-            <Image
-              src={nextProject.image}
-              alt={nextProject.title}
-              fill
-              sizes="100vw"
-              className="
-                object-cover
-                transition-transform
-                duration-[1400ms]
-                ease-out
-                group-hover:scale-[1.04]
-              "
-            />
-
-            <div className="absolute inset-0 bg-black/35" />
-
-            <div
-              className="
-                absolute
-                inset-x-0
-                bottom-0
-                px-6
-                pb-10
-                sm:px-8
-                md:px-12
-                lg:px-16
-                xl:px-20
-              "
-            >
-              <span
-                className="
-                  text-[9px]
-                  uppercase
-                  tracking-[0.35em]
-                  text-white/60
-                "
-              >
-                Next Project
-              </span>
-
-              <div
-                className="
-                  mt-5
-                  flex
-                  items-end
-                  justify-between
-                  gap-8
-                "
-              >
-                <h2
-                  className="
-                    text-[58px]
-                    font-light
-                    leading-[0.82]
-                    tracking-[-0.055em]
-                    sm:text-[78px]
-                    md:text-[110px]
-                    lg:text-[145px]
-                  "
-                >
-                  {nextProject.title}
-                </h2>
-
-                <span
-                  className="
-                    hidden
-                    pb-3
-                    text-2xl
-                    transition-transform
-                    duration-500
-                    group-hover:translate-x-2
-                    md:block
-                  "
-                >
-                  ↗
-                </span>
-              </div>
-            </div>
-          </div>
-        </Link>
-      </section>
     </main>
-  );
-}
-
-/* ===========================================================
-   PROJECT INFO
-=========================================================== */
-
-function ProjectInfo({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div>
-      <span
-        className="
-          block
-          text-[8px]
-          uppercase
-          tracking-[0.3em]
-          text-neutral-400
-        "
-      >
-        {label}
-      </span>
-
-      <span
-        className="
-          mt-3
-          block
-          text-[15px]
-          font-light
-          md:text-[17px]
-        "
-      >
-        {value}
-      </span>
-    </div>
   );
 }
