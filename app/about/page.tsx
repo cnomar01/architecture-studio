@@ -36,35 +36,9 @@ export default function AboutPage() {
           INTRO
       ===================================================== */}
 
-      <section
-        className="
-          min-h-[auto]
-          px-5
-          pb-20
-          pt-28
+      <section className="min-h-screen px-6 pb-24 pt-36 md:px-10 md:pt-44">
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
 
-          sm:px-6
-          sm:pb-24
-          sm:pt-32
-
-          md:min-h-screen
-          md:px-10
-          md:pb-24
-          md:pt-44
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-10
-
-            sm:gap-12
-
-            lg:grid-cols-12
-            lg:gap-16
-          "
-        >
           <div className="lg:col-span-3">
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
               About
@@ -81,7 +55,7 @@ export default function AboutPage() {
                 leading-[0.82]
                 tracking-[-0.025em]
 
-                sm:text-[64px]
+                sm:text-[60px]
                 md:text-[120px]
                 lg:text-[150px]
                 xl:text-[175px]
@@ -94,66 +68,44 @@ export default function AboutPage() {
               last.
             </h1>
           </div>
+
         </div>
       </section>
+
 
       {/* =====================================================
           HISTORY
       ===================================================== */}
 
-      <section
-        className="
-          border-t
-          border-black/15
-          px-5
-          py-20
+      <section className="border-t border-black/15 px-6 py-24 md:px-10 md:py-32">
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
 
-          sm:px-6
-          sm:py-24
-
-          md:px-10
-          md:py-32
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-12
-
-            sm:gap-16
-
-            lg:grid-cols-12
-          "
-        >
           <div className="lg:col-span-3">
             <div
               className="
                 font-[var(--font-display)]
-                text-[58px]
+                text-[60px]
                 leading-none
                 tracking-[-0.03em]
-
-                sm:text-[70px]
                 md:text-[100px]
               "
             >
               2001
             </div>
 
-            <p className="mt-3 text-[9px] uppercase tracking-[0.2em] text-black/50">
+            <p className="mt-4 text-[9px] uppercase tracking-[0.2em] text-black/50">
               Founded in Italy
             </p>
           </div>
 
           <div className="lg:col-span-7 lg:col-start-5">
+
             <p
               className="
                 text-[20px]
-                leading-[1.18]
+                leading-[1.2]
                 tracking-[-0.02em]
-
-                sm:text-[23px]
+                sm:text-[24px]
                 md:text-[34px]
                 lg:text-[42px]
               "
@@ -166,15 +118,11 @@ export default function AboutPage() {
 
             <p
               className="
-                mt-8
+                mt-10
                 max-w-[720px]
-                text-[13px]
+                text-[14px]
                 leading-[1.6]
                 text-black/65
-
-                sm:mt-10
-                sm:text-[14px]
-
                 md:text-[16px]
               "
             >
@@ -183,51 +131,28 @@ export default function AboutPage() {
               environments, building an extensive experience across different
               scales, contexts, and design challenges.
             </p>
+
           </div>
         </div>
       </section>
+
 
       {/* =====================================================
           350+
       ===================================================== */}
 
-      <section
-        className="
-          overflow-hidden
-          bg-black
-          px-5
-          py-20
-          text-white
+      <section className="bg-black px-6 py-28 text-white md:px-10 md:py-40">
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12 lg:items-end">
 
-          sm:px-6
-          sm:py-28
-
-          md:px-10
-          md:py-40
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-12
-
-            sm:gap-16
-
-            lg:grid-cols-12
-            lg:items-end
-          "
-        >
           <div className="lg:col-span-8">
             <div
               className="
-                whitespace-nowrap
                 font-[var(--font-display)]
-                text-[128px]
-                leading-[0.72]
-                tracking-[-0.05em]
+                text-[120px]
+                leading-[0.7]
+                tracking-[-0.04em]
 
-                sm:text-[170px]
+                sm:text-[180px]
                 md:text-[300px]
                 lg:text-[360px]
               "
@@ -241,44 +166,27 @@ export default function AboutPage() {
               Projects
             </p>
 
-            <p className="mt-4 text-[13px] leading-[1.55] text-white/75 sm:text-[14px] md:text-[16px]">
+            <p className="mt-5 text-[14px] leading-[1.55] text-white/75 md:text-[16px]">
               More than three hundred and fifty projects across interior and
               exterior environments have shaped the experience and approach of
               Mason & Arc.
             </p>
           </div>
+
         </div>
       </section>
+
 
       {/* =====================================================
           ITALY → EGYPT
       ===================================================== */}
 
-      <section
-        className="
-          px-5
-          py-20
+      <section className="px-6 py-28 md:px-10 md:py-40">
+        <div className="grid grid-cols-1 gap-20 lg:grid-cols-12">
 
-          sm:px-6
-          sm:py-28
-
-          md:px-10
-          md:py-40
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-14
-
-            sm:gap-20
-
-            lg:grid-cols-12
-          "
-        >
           <div className="lg:col-span-8">
-            <p className="mb-7 text-[9px] uppercase tracking-[0.25em] text-black/45">
+
+            <p className="mb-8 text-[9px] uppercase tracking-[0.25em] text-black/45">
               A new chapter
             </p>
 
@@ -287,7 +195,7 @@ export default function AboutPage() {
                 font-[var(--font-display)]
                 text-[58px]
                 uppercase
-                leading-[0.8]
+                leading-[0.78]
                 tracking-[-0.025em]
 
                 sm:text-[76px]
@@ -301,16 +209,17 @@ export default function AboutPage() {
               <br />
               Egypt
             </h2>
+
           </div>
 
           <div className="flex items-end lg:col-span-4">
             <div>
+
               <p
                 className="
                   text-[20px]
-                  leading-[1.18]
+                  leading-[1.15]
                   tracking-[-0.02em]
-
                   sm:text-[24px]
                   md:text-[32px]
                 "
@@ -318,58 +227,27 @@ export default function AboutPage() {
                 From our first studio in Italy to our new presence in Egypt.
               </p>
 
-              <p
-                className="
-                  mt-7
-                  text-[13px]
-                  leading-[1.6]
-                  text-black/65
-
-                  sm:mt-8
-                  sm:text-[14px]
-
-                  md:text-[16px]
-                "
-              >
+              <p className="mt-8 text-[14px] leading-[1.6] text-black/65 md:text-[16px]">
                 Today, Mason & Arc brings this experience to a new chapter with
                 the opening of its first branch in Egypt, extending the practice
                 beyond its Italian origins while maintaining the same design
                 approach, standards, and attention to detail.
               </p>
+
             </div>
           </div>
+
         </div>
       </section>
+
 
       {/* =====================================================
           APPROACH
       ===================================================== */}
 
-      <section
-        className="
-          border-t
-          border-black/15
-          px-5
-          py-20
+      <section className="border-t border-black/15 px-6 py-24 md:px-10 md:py-32">
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
 
-          sm:px-6
-          sm:py-24
-
-          md:px-10
-          md:py-32
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-12
-
-            sm:gap-16
-
-            lg:grid-cols-12
-          "
-        >
           <div className="lg:col-span-3">
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
               Our Approach
@@ -377,12 +255,12 @@ export default function AboutPage() {
           </div>
 
           <div className="lg:col-span-8 lg:col-start-5">
+
             <p
               className="
-                text-[25px]
+                text-[26px]
                 leading-[1.08]
                 tracking-[-0.025em]
-
                 sm:text-[30px]
                 md:text-[46px]
                 lg:text-[56px]
@@ -394,15 +272,11 @@ export default function AboutPage() {
 
             <p
               className="
-                mt-9
+                mt-12
                 max-w-[760px]
-                text-[14px]
-                leading-[1.65]
+                text-[15px]
+                leading-[1.7]
                 text-black/65
-
-                sm:mt-12
-                sm:text-[15px]
-
                 md:text-[17px]
               "
             >
@@ -414,52 +288,35 @@ export default function AboutPage() {
               details, and spatial experience, design decisions are approached
               as part of one connected process.
             </p>
+
           </div>
         </div>
       </section>
+
 
       {/* =====================================================
           SERVICES
       ===================================================== */}
 
-      <section
-        className="
-          bg-[#f2f2f0]
-          px-5
-          py-20
+      <section className="bg-[#f2f2f0] px-6 py-24 md:px-10 md:py-32">
 
-          sm:px-6
-          sm:py-24
+        <div className="mb-20 flex items-end justify-between">
 
-          md:px-10
-          md:py-32
-        "
-      >
-        <div
-          className="
-            mb-14
-            flex
-            items-end
-            justify-between
-
-            sm:mb-20
-          "
-        >
           <div>
-            <p className="text-[9px] uppercase tracking-[0.25em] text-black/50">
+            <p className="text-[9px] uppercase tracking-[0.25em] text-black/45">
               What we do
             </p>
 
             <h2
               className="
-                mt-4
+                mt-5
                 font-[var(--font-display)]
-                text-[60px]
+                text-[56px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.025em]
 
-                sm:text-[80px]
+                sm:text-[72px]
                 md:text-[120px]
                 lg:text-[150px]
               "
@@ -471,28 +328,29 @@ export default function AboutPage() {
           <span className="hidden text-[9px] uppercase tracking-[0.2em] text-black/40 md:block">
             01 — 05
           </span>
+
         </div>
 
+
         <div className="border-t border-black/20">
+
           {services.map((service) => (
             <div
               key={service.number}
               className="
                 grid
                 grid-cols-1
-                gap-6
+                gap-8
                 border-b
                 border-black/20
-                py-8
-
-                sm:gap-8
-                sm:py-10
+                py-10
 
                 md:grid-cols-12
                 md:gap-10
                 md:py-14
               "
             >
+
               <div className="md:col-span-1">
                 <span className="text-[9px] tracking-[0.2em] text-black/40">
                   {service.number}
@@ -503,9 +361,9 @@ export default function AboutPage() {
                 <h3
                   className="
                     font-[var(--font-display)]
-                    text-[38px]
+                    text-[42px]
                     uppercase
-                    leading-[0.82]
+                    leading-[0.8]
                     tracking-[-0.02em]
 
                     sm:text-[48px]
@@ -518,54 +376,45 @@ export default function AboutPage() {
               </div>
 
               <div className="md:col-span-5 md:col-start-8">
-                <p className="max-w-[560px] text-[13px] leading-[1.65] text-black/65 sm:text-[14px] md:text-[16px]">
+                <p
+                  className="
+                    max-w-[560px]
+                    text-[14px]
+                    leading-[1.65]
+                    text-black/65
+                    md:text-[16px]
+                  "
+                >
                   {service.text}
                 </p>
               </div>
+
             </div>
           ))}
+
         </div>
       </section>
+
 
       {/* =====================================================
           CLOSING
       ===================================================== */}
 
-      <section
-        className="
-          bg-black
-          px-5
-          py-20
-          text-white
+      <section className="bg-black px-6 py-28 text-white md:px-10 md:py-40">
 
-          sm:px-6
-          sm:py-28
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
 
-          md:px-10
-          md:py-40
-        "
-      >
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-12
-
-            sm:gap-16
-
-            lg:grid-cols-12
-          "
-        >
           <div className="lg:col-span-9">
+
             <h2
               className="
                 font-[var(--font-display)]
-                text-[52px]
+                text-[48px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.025em]
 
-                sm:text-[72px]
+                sm:text-[64px]
                 md:text-[120px]
                 lg:text-[155px]
               "
@@ -578,62 +427,43 @@ export default function AboutPage() {
               <br />
               Lasting value.
             </h2>
+
           </div>
 
           <div className="lg:col-span-3 lg:col-start-10 lg:flex lg:items-end">
-            <p className="text-[13px] leading-[1.65] text-white/60 sm:text-[14px] md:text-[16px]">
+
+            <p className="text-[14px] leading-[1.65] text-white/60 md:text-[16px]">
               Our ambition is not simply to produce buildings or interiors,
               but to create places with character, purpose, and lasting value —
               environments where architecture, interior, exterior, and
               landscape come together as one considered experience.
             </p>
+
           </div>
+
         </div>
       </section>
+
 
       {/* =====================================================
           CONTACT CTA
       ===================================================== */}
 
-      <section
-        className="
-          px-5
-          py-20
+      <section className="px-6 py-24 md:px-10 md:py-32">
 
-          sm:px-6
-          sm:py-24
+        <div className="flex flex-col gap-10 border-t border-black/20 pt-8 md:flex-row md:items-end md:justify-between">
 
-          md:px-10
-          md:py-32
-        "
-      >
-        <div
-          className="
-            flex
-            flex-col
-            gap-8
-            border-t
-            border-black/20
-            pt-7
-
-            sm:gap-10
-            sm:pt-8
-
-            md:flex-row
-            md:items-end
-            md:justify-between
-          "
-        >
           <div>
+
             <p className="text-[9px] uppercase tracking-[0.25em] text-black/45">
               Start a project
             </p>
 
             <h2
               className="
-                mt-4
+                mt-5
                 font-[var(--font-display)]
-                text-[58px]
+                text-[56px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.025em]
@@ -647,6 +477,7 @@ export default function AboutPage() {
               <br />
               build.
             </h2>
+
           </div>
 
           <Link
@@ -669,6 +500,7 @@ export default function AboutPage() {
             Get in touch
             <span className="text-base">↗</span>
           </Link>
+
         </div>
       </section>
 
