@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -20,12 +19,6 @@ export default function Hero() {
     if (!hero || !image || !title || !content) return;
 
     const ctx = gsap.context(() => {
-      /*
-       * =====================================================
-       * INITIAL STATE
-       * =====================================================
-       */
-
       gsap.set(title, {
         scale: 1.28,
         y: 18,
@@ -38,16 +31,6 @@ export default function Hero() {
         opacity: 0,
       });
 
-      /*
-       * =====================================================
-       * OPENING ANIMATION
-       *
-       * Oversized → final
-       * Bottom-left anchor
-       * Fast / smooth settle
-       * =====================================================
-       */
-
       const intro = gsap.timeline({
         delay: 0.1,
       });
@@ -59,10 +42,6 @@ export default function Hero() {
         ease: "power4.out",
       });
 
-      /*
-       * Statement follows the title
-       */
-
       intro.to(
         content,
         {
@@ -73,12 +52,6 @@ export default function Hero() {
         },
         "-=0.35"
       );
-
-      /*
-       * =====================================================
-       * SUBTLE IMAGE MOVEMENT
-       * =====================================================
-       */
 
       gsap.to(image, {
         scale: 1.045,
@@ -104,9 +77,7 @@ export default function Hero() {
         text-white
       "
     >
-      {/* =====================================================
-          HERO IMAGE
-      ===================================================== */}
+      {/* HERO IMAGE */}
 
       <div
         ref={imageRef}
@@ -129,9 +100,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* =====================================================
-          IMAGE OVERLAY
-      ===================================================== */}
+      {/* IMAGE OVERLAY */}
 
       <div className="absolute inset-0 bg-black/10" />
 
@@ -146,9 +115,7 @@ export default function Hero() {
         "
       />
 
-      {/* =====================================================
-          TITLE
-      ===================================================== */}
+      {/* TITLE */}
 
       <div
         className="
@@ -199,9 +166,7 @@ export default function Hero() {
           <span className="block">Experience</span>
         </h1>
 
-        {/* =================================================
-            STATEMENT
-        ===================================================== */}
+        {/* STATEMENT */}
 
         <div
           ref={contentRef}
@@ -243,9 +208,7 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* =====================================================
-          RIGHT SIDE INDICATOR
-      ===================================================== */}
+      {/* RIGHT SIDE INDICATOR */}
 
       <div
         className="
@@ -288,9 +251,7 @@ export default function Hero() {
         <span className="h-[7px] w-[7px] border border-white/80" />
       </div>
 
-      {/* =====================================================
-          BOTTOM CONTROLS
-      ===================================================== */}
+      {/* BOTTOM CONTROLS */}
 
       <div
         className="
@@ -326,30 +287,6 @@ export default function Hero() {
 
           <span>01</span>
         </div>
-
-        {/* EXPLORE */}
-
-        <Link
-          href="/projects"
-          className="
-            flex
-            items-center
-            gap-3
-            text-[8px]
-            font-medium
-            uppercase
-            tracking-[0.18em]
-            transition-opacity
-            duration-300
-            hover:opacity-60
-          "
-        >
-          <span>Explore Projects</span>
-
-          <span className="text-sm">
-            ↗
-          </span>
-        </Link>
       </div>
     </section>
   );
