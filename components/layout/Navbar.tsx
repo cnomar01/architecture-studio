@@ -35,10 +35,6 @@ export default function Navbar() {
         >
           {/* =================================================
               LOGO
-
-              White asset + difference blend:
-              dark background → light
-              white background → dark
           ================================================= */}
 
           <Link
@@ -86,40 +82,43 @@ export default function Navbar() {
               flex
               h-[34px]
               w-[38px]
-              flex-col
+              items-center
               justify-center
-              gap-[8px]
               mix-blend-difference
             "
           >
             <span
               className={`
+                absolute
                 block
                 h-[2px]
                 w-full
                 bg-white
                 transition-transform
                 duration-500
+                ease-out
                 ${
                   open
-                    ? "translate-y-[5px] rotate-45"
-                    : ""
+                    ? "rotate-45"
+                    : "-translate-y-[5px]"
                 }
               `}
             />
 
             <span
               className={`
+                absolute
                 block
                 h-[2px]
                 w-full
                 bg-white
                 transition-transform
                 duration-500
+                ease-out
                 ${
                   open
-                    ? "-translate-y-[5px] -rotate-45"
-                    : ""
+                    ? "-rotate-45"
+                    : "translate-y-[5px]"
                 }
               `}
             />
@@ -164,7 +163,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="
                 font-[var(--font-display)]
-                text-[70px]
+                text-[52px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.02em]
@@ -183,7 +182,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="
                 font-[var(--font-display)]
-                text-[70px]
+                text-[52px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.02em]
@@ -202,7 +201,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="
                 font-[var(--font-display)]
-                text-[70px]
+                text-[52px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.02em]
@@ -221,7 +220,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="
                 font-[var(--font-display)]
-                text-[70px]
+                text-[52px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.02em]
@@ -240,7 +239,7 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="
                 font-[var(--font-display)]
-                text-[70px]
+                text-[52px]
                 uppercase
                 leading-[0.8]
                 tracking-[-0.02em]

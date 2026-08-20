@@ -176,7 +176,7 @@ export default function Hero() {
           className="
             origin-bottom-left
             font-[var(--font-display)]
-            text-[72px]
+            text-[48px]
             font-normal
             uppercase
             leading-[0.76]
