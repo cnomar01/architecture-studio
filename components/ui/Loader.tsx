@@ -231,9 +231,9 @@ export default function Loader() {
                 leading-[0.9]
                 text-white
 
-                sm:text-[54px]
-                md:text-[72px]
-                lg:text-[92px]
+                sm:text-[44px]
+                md:text-[62px]
+                lg:text-[82px]
               "
             >
               FROM DRAWING
