@@ -80,10 +80,10 @@ export default function Footer() {
               </a>
 
               <a
-                href="tel:+2010044007555"
+                href="tel:+201044007555"
                 className="transition-opacity hover:opacity-50"
               >
-                +20 100 440 0755
+                +20 10 440 07555
               </a>
 
               <a
