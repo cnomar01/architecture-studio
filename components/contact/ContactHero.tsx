@@ -70,7 +70,7 @@ export default function ContactHero() {
 
               {/* Egypt */}
               <a
-                href="tel:+2010044007555"
+                href="tel:+201044007555"
                 className="flex items-center justify-between gap-6 border-b border-neutral-300 py-7 transition-opacity duration-300 hover:opacity-50"
               >
                 <span className="text-[10px] uppercase tracking-[0.35em] text-neutral-400">
