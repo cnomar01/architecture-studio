@@ -78,7 +78,7 @@ export default function ContactHero() {
                 </span>
 
                 <span className="text-[13px] font-light">
-                  +20 100 440 0755
+                  +20 1044007555
                 </span>
               </a>
 
