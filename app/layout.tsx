@@ -28,9 +28,9 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/images/logo-mason-arc.png",
-    shortcut: "/images/logo-mason-arc.png",
-    apple: "/images/logo-mason-arc.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 
