@@ -23,6 +23,12 @@ export const metadata: Metadata = {
   title: "Mason & Arc",
   description: "Architecture · Design · Execution",
 
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
+
   verification: {
     google: "QzUt6qN9m0LhOjmUVnxItudzs6V1hJMrs1psWxLLJaU",
   },
