@@ -1,0 +1,6 @@
+"use client";
+import {useState} from "react";
+import Link from "next/link";
+import {Shell,Grid} from "../shared";
+import {getProcurement,addProcurement} from "../operationsStore";
+export default function Page(){const [items,setItems]=useState(getProcurement()); function add(){const x=addProcurement({projectId:"CEM-001",item:"New material request",category:"General",supplier:"",qty:1,unit:"Item",estimatedCost:0,status:"Requested",neededBy:""});setItems([...items,x])} return <Shell title="Procurement" desc="{desc}"><button onClick={add} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black">+ Material request</button><div className="mt-5 space-y-3">{items.map(x=><div key={x.id} className="grid gap-3 rounded-2xl border border-white/10 p-5 md:grid-cols-[1fr_160px_140px_140px]"><div><div className="text-xs text-white/30">{x.id} · {x.projectId}</div><div className="mt-1 font-semibold">{x.item}</div><div className="text-sm text-white/40">{x.category} · {x.qty} {x.unit}</div></div><div className="text-sm">{x.supplier||"Supplier TBD"}</div><div className="text-sm">{x.status}</div><div className="text-sm text-white/45">Needed {x.neededBy||"TBD"}</div></div>)}</div></Shell>}

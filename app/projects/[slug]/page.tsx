@@ -1,12 +1,26 @@
 import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { projects } from "@/data/projects";
+import { projects } from "@/lib/data/projects";
 
 type ProjectPageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
+
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find((item) => item.slug === slug);
+  if (!project) return {};
+  return {
+    title: project.title,
+    description: project.description,
+    alternates: { canonical: `/projects/${project.slug}` },
+    openGraph: { title: project.title, description: project.description, images: [project.image] },
+  };
+}
 
 export default async function ProjectPage({
   params,
@@ -29,10 +43,13 @@ export default async function ProjectPage({
       <section className="relative min-h-screen overflow-hidden">
 
         <div className="absolute inset-0">
-          <img
+          <Image
             src={project.image}
             alt={project.title}
-            className="h-full w-full object-cover"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
 
           <div className="absolute inset-0 bg-black/25" />

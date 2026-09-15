@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 const services = [
@@ -27,6 +28,12 @@ const services = [
     text: "Research is an important part of the design process. We investigate materials, technologies, spatial strategies, environmental conditions, and emerging ways of living and working in order to develop solutions that are relevant to each project's specific context.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "About | Mason & Arc",
+  description: "About Mason & Arc — architecture, design, and execution.",
+  alternates: { canonical: "/about" },
+};
 
 export default function AboutPage() {
   return (

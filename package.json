@@ -5,8 +5,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "node scripts/production-preflight.mjs && next start",
+    "lint": "eslint",
+    "ai:check": "node scripts/check-local-ai.mjs",
+    "db:setup": "node scripts/db-setup.mjs",
+    "db:backup": "node scripts/db-backup.mjs",
+    "db:check": "node scripts/db-check.mjs",
+    "db:smoke": "node scripts/db-smoke.mjs",
+    "qa": "node scripts/production-qa.mjs && next build"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -17,7 +23,12 @@
     "lucide-react": "^1.28.0",
     "next": "16.2.12",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "@aws-sdk/client-s3": "^3.1012.0",
+    "@aws-sdk/s3-request-presigner": "^3.1012.0",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.1.0",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -27,6 +38,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@types/pg": "^8.15.5"
   }
 }

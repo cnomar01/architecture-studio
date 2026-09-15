@@ -2,41 +2,36 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <>
-      {/* =====================================================
-          FIXED HEADER
-      ===================================================== */}
-
       <header
         className="
-          fixed
+          absolute
           inset-x-0
           top-0
           z-[999]
           pointer-events-none
         "
       >
-        <div
-          className="
-            flex
-            items-start
-            justify-between
-            px-6
-            pt-6
-            md:px-8
-            md:pt-7
-          "
-        >
-          {/* =================================================
-              LOGO
-          ================================================= */}
-
+        <div className="flex items-start justify-between px-6 pt-6 md:px-8 md:pt-7">
           <Link
             href="/"
             aria-label="Mason & Arc"
@@ -56,19 +51,9 @@ export default function Navbar() {
               width={500}
               height={160}
               priority
-              className="
-                block
-                h-auto
-                w-full
-                object-contain
-                object-left
-              "
+              className="block h-auto w-full object-contain object-left"
             />
           </Link>
-
-          {/* =================================================
-              MENU
-          ================================================= */}
 
           <button
             type="button"
@@ -80,8 +65,8 @@ export default function Navbar() {
               relative
               z-[1000]
               flex
-              h-[34px]
-              w-[38px]
+              h-11
+              w-11
               items-center
               justify-center
               mix-blend-difference
@@ -97,14 +82,9 @@ export default function Navbar() {
                 transition-transform
                 duration-500
                 ease-out
-                ${
-                  open
-                    ? "rotate-45"
-                    : "-translate-y-[5px]"
-                }
+                ${open ? "rotate-45" : "-translate-y-[5px]"}
               `}
             />
-
             <span
               className={`
                 absolute
@@ -115,20 +95,12 @@ export default function Navbar() {
                 transition-transform
                 duration-500
                 ease-out
-                ${
-                  open
-                    ? "-rotate-45"
-                    : "translate-y-[5px]"
-                }
+                ${open ? "-rotate-45" : "translate-y-[5px]"}
               `}
             />
           </button>
         </div>
       </header>
-
-      {/* =====================================================
-          FULLSCREEN MENU
-      ===================================================== */}
 
       <div
         className={`
@@ -139,119 +111,37 @@ export default function Navbar() {
           text-white
           transition-all
           duration-700
-          ${
-            open
-              ? "pointer-events-auto opacity-100"
-              : "pointer-events-none opacity-0"
-          }
+          ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
         `}
       >
-        <div
-          className="
-            flex
-            h-full
-            flex-col
-            justify-center
-            px-8
-            md:px-16
-            lg:px-20
-          "
-        >
+        <div className="flex h-full flex-col justify-center px-6 sm:px-8 md:px-16 lg:px-20">
           <nav className="flex flex-col">
-            <Link
-              href="/"
-              onClick={() => setOpen(false)}
-              className="
-                font-[var(--font-display)]
-                text-[52px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.02em]
-                transition-transform
-                duration-500
-                hover:translate-x-3
-                md:text-[100px]
-                lg:text-[130px]
-              "
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/projects"
-              onClick={() => setOpen(false)}
-              className="
-                font-[var(--font-display)]
-                text-[52px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.02em]
-                transition-transform
-                duration-500
-                hover:translate-x-3
-                md:text-[100px]
-                lg:text-[130px]
-              "
-            >
-              Projects
-            </Link>
-
-            <Link
-              href="/services"
-              onClick={() => setOpen(false)}
-              className="
-                font-[var(--font-display)]
-                text-[52px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.02em]
-                transition-transform
-                duration-500
-                hover:translate-x-3
-                md:text-[100px]
-                lg:text-[130px]
-              "
-            >
-              Services
-            </Link>
-
-            <Link
-              href="/about"
-              onClick={() => setOpen(false)}
-              className="
-                font-[var(--font-display)]
-                text-[52px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.02em]
-                transition-transform
-                duration-500
-                hover:translate-x-3
-                md:text-[100px]
-                lg:text-[130px]
-              "
-            >
-              About
-            </Link>
-
-            <Link
-              href="/contact"
-              onClick={() => setOpen(false)}
-              className="
-                font-[var(--font-display)]
-                text-[52px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.02em]
-                transition-transform
-                duration-500
-                hover:translate-x-3
-                md:text-[100px]
-                lg:text-[130px]
-              "
-            >
-              Contact
-            </Link>
+            {[
+              ["Home", "/"],
+              ["Projects", "/projects"],
+              ["Services", "/services"],
+              ["About", "/about"],
+              ["Contact", "/contact"],
+            ].map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setOpen(false)}
+                className="
+                  font-[var(--font-display)]
+                  text-[clamp(42px,14vw,100px)]
+                  uppercase
+                  leading-[0.8]
+                  tracking-[-0.02em]
+                  transition-transform
+                  duration-500
+                  hover:translate-x-3
+                  lg:text-[130px]
+                "
+              >
+                {label}
+              </Link>
+            ))}
           </nav>
         </div>
       </div>

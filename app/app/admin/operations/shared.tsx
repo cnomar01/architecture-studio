@@ -1,0 +1,4 @@
+"use client";
+import Link from "next/link";
+export function Shell({title,desc,children}:{title:string;desc:string;children:React.ReactNode}){return <main className="min-h-screen bg-[#090909] px-5 py-8 text-white sm:px-8"><div className="mx-auto max-w-7xl"><Link href="/app/admin/operations" className="text-xs text-white/35">← Operations OS</Link><header className="mt-5 border-b border-white/10 pb-7"><div className="text-xs uppercase tracking-[.25em] text-white/30">Mason & Arc Operations</div><h1 className="mt-2 text-4xl font-semibold">{title}</h1><p className="mt-2 text-sm text-white/40">{desc}</p></header><section className="mt-7">{children}</section></div></main>}
+export function Grid({children}:{children:React.ReactNode}){return <div className="mt-5 grid gap-4 md:grid-cols-2">{children}</div>}

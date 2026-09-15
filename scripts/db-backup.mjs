@@ -1,0 +1,11 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+const exec = promisify(execFile);
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required.');
+const dir = process.env.BACKUP_DIR || path.join(process.cwd(),'backups');
+await fs.mkdir(dir,{recursive:true});
+const file = path.join(dir,`mason-arc-${new Date().toISOString().replace(/[:.]/g,'-')}.dump`);
+await exec('pg_dump',['--format=custom','--file',file,process.env.DATABASE_URL],{windowsHide:true});
+console.log(`Backup created: ${file}`);

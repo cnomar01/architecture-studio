@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { projects } from "@/data/projects";
+import { projects } from "@/lib/data/projects";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
 

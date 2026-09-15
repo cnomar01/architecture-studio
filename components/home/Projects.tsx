@@ -9,7 +9,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
 
-import { projects } from "../../data/projects";
+import { projects } from "@/lib/data/projects";
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -1,0 +1,6 @@
+"use client";
+import {useState} from "react";
+import Link from "next/link";
+import {Shell,Grid} from "../shared";
+import {getTimesheets,addTimesheet} from "../operationsStore";
+export default function Page(){const [items,setItems]=useState(getTimesheets()); function add(){const x=addTimesheet({projectId:"CEM-001",employee:"Omar Mohamed",date:new Date().toISOString().slice(0,10),hours:8,activity:"Project coordination",billable:true});setItems([...items,x])} const total=items.reduce((s,x)=>s+x.hours,0); return <Shell title="Timesheets" desc="{desc}"><div className="flex items-center justify-between"><div className="text-sm text-white/40">Total logged: <b className="text-white">{total}h</b></div><button onClick={add} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black">+ Log hours</button></div><div className="mt-5 overflow-x-auto rounded-2xl border border-white/10"><table className="w-full text-left text-sm"><thead className="bg-white/[.03] text-white/35"><tr><th className="p-4">Date</th><th>Employee</th><th>Project</th><th>Activity</th><th>Hours</th></tr></thead><tbody>{items.map(x=><tr key={x.id} className="border-t border-white/5"><td className="p-4">{x.date}</td><td>{x.employee}</td><td>{x.projectId}</td><td>{x.activity}</td><td>{x.hours}h</td></tr>)}</tbody></table></div></Shell>}

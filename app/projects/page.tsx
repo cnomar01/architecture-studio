@@ -1,7 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 
-import { projects } from "../../data/projects";
+import { projects } from "@/lib/data/projects";
 
 const filters = [
   "All",
@@ -10,6 +11,12 @@ const filters = [
   "Design",
   "Execution",
 ];
+
+export const metadata: Metadata = {
+  title: "Projects | Mason & Arc",
+  description: "Selected architecture, interiors, and spaces developed by Mason & Arc.",
+  alternates: { canonical: "/projects" },
+};
 
 export default function ProjectsPage() {
   return (

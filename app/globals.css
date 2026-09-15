@@ -47,3 +47,40 @@ img {
   background: #fff;
   color: #000;
 }
+
+/* Phase 7 — mobile and accessibility polish */
+html, body {
+  overflow-x: clip;
+}
+
+button, a, input, textarea, select {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  main {
+    width: 100%;
+  }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+  }
+
+  table {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

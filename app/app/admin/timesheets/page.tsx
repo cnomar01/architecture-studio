@@ -1,0 +1,8 @@
+"use client";
+import { useState } from "react";
+import { addTimesheet,getTimesheets } from "../complete/operationsStore";
+export default function TimesheetPage(){
+ const [member,setMember]=useState("Omar Mohamed"),[hours,setHours]=useState("8"),[activity,setActivity]=useState("Project work"),[refresh,setRefresh]=useState(0);
+ const rows=getTimesheets();
+ return <main className="min-h-screen bg-white px-6 py-10 text-black lg:px-12"><div className="mx-auto max-w-5xl"><p className="text-[10px] uppercase tracking-[.3em] text-black/40">Mason & Arc / Productivity</p><h1 className="mt-3 text-4xl font-medium">Timesheets</h1><div className="mt-8 grid gap-3 rounded-xl border border-black/10 p-5 md:grid-cols-4"><select value={member} onChange={e=>setMember(e.target.value)} className="rounded-lg border p-3 text-xs"><option>Omar Mohamed</option><option>Ahmed Shabaan</option></select><input value={hours} onChange={e=>setHours(e.target.value)} type="number" min="0" step=".5" className="rounded-lg border p-3 text-xs"/><input value={activity} onChange={e=>setActivity(e.target.value)} className="rounded-lg border p-3 text-xs"/><button onClick={()=>{addTimesheet({projectId:"city-edge-mall",projectName:"City Edge Mall",member,date:new Date().toISOString().slice(0,10),hours:Number(hours),activity});setRefresh(refresh+1)}} className="rounded-lg bg-black px-4 py-3 text-xs text-white">Log Hours</button></div><div className="mt-6 rounded-xl border border-black/10">{rows.length?rows.map(r=><div key={r.id} className="flex justify-between border-b p-4 text-xs last:border-0"><span>{r.date} · {r.member} · {r.activity}</span><strong>{r.hours}h</strong></div>):<p className="p-6 text-sm text-black/45">No timesheets logged yet.</p>}</div></div></main>
+}
