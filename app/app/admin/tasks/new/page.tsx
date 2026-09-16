@@ -1,364 +1,456 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import {
-  addTask,
-  TaskPriority,
-  TaskStatus,
-} from "../taskStore";
-
+import { addTask, TaskPriority, TaskStatus } from "../taskStore";
+import { getSmartAssignmentRecommendations } from "../smartAssign";
 import { getProjects, Project } from "@/lib/core/projectStore";
 import { getUsers } from "@/lib/core/authStore";
-import { getSmartAssignmentRecommendations } from "../smartAssign";
+
+type Recommendation = {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  department: string;
+  status: string;
+};
 
 export default function NewTaskPage() {
+  const router = useRouter();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [recommendations, setRecommendations] = useState<
+    Recommendation[]
+  >([]);
 
   const [form, setForm] = useState({
     title: "",
-    project: "City Edge Mall",
-    projectId: "CEM-001",
-    assignee: "Omar Mohamed",
-    assigneeId: "OM-001",
-    department: "Architecture",
-    priority: "Medium" as TaskPriority,
-    deadline: "Today",
-    status: "Open" as TaskStatus,
     description: "",
-    dependencies: [] as string[],
+    project: "",
+    department: "",
+    priority: "Medium" as TaskPriority,
+    status: "Open" as TaskStatus,
+    dueDate: "",
+    assigneeId: "",
   });
 
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingRecommendations, setLoadingRecommendations] =
+    useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setProjects(getProjects());
-    setUsers(getUsers());
+    async function loadData() {
+      try {
+        setProjects(getProjects());
+      } catch (error) {
+        console.error("Failed to load projects:", error);
+        setProjects([]);
+      }
+
+      try {
+        setUsers(getUsers());
+      } catch (error) {
+        console.error("Failed to load users:", error);
+        setUsers([]);
+      }
+    }
+
+    loadData();
   }, []);
 
   useEffect(() => {
-    try {
-      const results = getSmartAssignmentRecommendations({
-        tasks: [],
-        department: form.department,
-        project: form.project,
-      });
+    async function loadRecommendations() {
+      setLoadingRecommendations(true);
 
-      setRecommendations(results || []);
-    } catch {
-      setRecommendations([]);
+      try {
+        const results =
+          await getSmartAssignmentRecommendations({
+            tasks: [],
+            department: form.department,
+            project: form.project,
+          });
+
+        setRecommendations(results || []);
+      } catch (error) {
+        console.error(
+          "Failed to load assignment recommendations:",
+          error
+        );
+        setRecommendations([]);
+      } finally {
+        setLoadingRecommendations(false);
+      }
     }
+
+    loadRecommendations();
   }, [form.department, form.project]);
 
-  function submit() {
-    if (!form.title.trim()) return;
-
-    addTask({
-      ...form,
-      title: form.title.trim(),
-    });
-
-    window.location.href = "/app/admin/tasks";
-  }
-
-  function selectAssignee(
-    id: string,
-    name: string,
-    department: string
+  function updateField(
+    field: keyof typeof form,
+    value: string
   ) {
     setForm((current) => ({
       ...current,
-      assigneeId: id,
-      assignee: name,
-      department,
+      [field]: value,
     }));
   }
 
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    setError("");
+
+    if (!form.title.trim()) {
+      setError("Task title is required.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const selectedUser = users.find(
+        (user) => user.id === form.assigneeId
+      );
+
+      const selectedRecommendation = recommendations.find(
+        (member) => member.id === form.assigneeId
+      );
+
+      const assigneeName =
+        selectedUser?.name ||
+        selectedRecommendation?.name ||
+        "";
+
+      addTask({
+        title: form.title.trim(),
+        description: form.description.trim(),
+        project: form.project,
+        department: form.department,
+        priority: form.priority,
+        status: form.status,
+        assigneeId: form.assigneeId,
+        assignee: assigneeName,
+        deadline: form.dueDate,
+      });
+
+      router.push("/app/admin/tasks");
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to create task:", error);
+      setError("Failed to create task. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <main className="min-h-screen bg-[#080808] text-white p-6 md:p-8">
-      <div className="mx-auto max-w-6xl">
-        <Link
-          href="/app/admin/tasks"
-          className="text-sm text-white/40 hover:text-white"
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mb-6">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="mb-4 text-sm text-gray-500 hover:text-gray-900"
         >
-          ← Tasks
-        </Link>
+          ← Back
+        </button>
 
-        <div className="mt-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-            Operations
-          </p>
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Create Task
+        </h1>
 
-          <h1 className="mt-2 text-3xl font-semibold">
-            Create Task
-          </h1>
-        </div>
+        <p className="mt-1 text-sm text-gray-500">
+          Create a task and assign it to a team member.
+        </p>
+      </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
-          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <div className="grid gap-5 md:grid-cols-2">
-              <Field
-                label="Task Title"
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            Task Details
+          </h2>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Task Title
+              </label>
+
+              <input
                 value={form.title}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    title: value,
-                  }))
+                onChange={(event) =>
+                  updateField("title", event.target.value)
                 }
-                placeholder="e.g. Coordinate structural openings"
-              />
-
-              <Select
-                label="Project"
-                value={form.projectId}
-                onChange={(value) => {
-                  const project = projects.find(
-                    (item) => item.id === value
-                  );
-
-                  setForm((current) => ({
-                    ...current,
-                    projectId: value,
-                    project: project?.name || current.project,
-                  }));
-                }}
-                options={projects.map((project) => ({
-                  value: project.id,
-                  label: project.name,
-                }))}
-              />
-
-              <Select
-                label="Assignee"
-                value={form.assigneeId}
-                onChange={(value) => {
-                  const user = users.find(
-                    (item) => item.employeeId === value
-                  );
-
-                  if (user) {
-                    selectAssignee(
-                      user.employeeId,
-                      user.name,
-                      user.role === "Civil Engineer"
-                        ? "Civil"
-                        : "Architecture"
-                    );
-                  }
-                }}
-                options={users
-                  .filter((user) => user.employeeId)
-                  .map((user) => ({
-                    value: user.employeeId,
-                    label: user.name,
-                  }))}
-              />
-
-              <Select
-                label="Priority"
-                value={form.priority}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    priority: value as TaskPriority,
-                  }))
-                }
-                options={[
-                  "Low",
-                  "Medium",
-                  "High",
-                  "Urgent",
-                ].map((value) => ({
-                  value,
-                  label: value,
-                }))}
-              />
-
-              <Field
-                label="Department"
-                value={form.department}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    department: value,
-                  }))
-                }
-                placeholder="Architecture"
-              />
-
-              <Field
-                label="Deadline"
-                value={form.deadline}
-                onChange={(value) =>
-                  setForm((current) => ({
-                    ...current,
-                    deadline: value,
-                  }))
-                }
-                placeholder="18 Sep 2026"
+                maxLength={160}
+                placeholder="e.g. Review structural drawings"
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
               />
             </div>
 
-            <div className="mt-5">
-              <label className="text-xs uppercase tracking-wider text-white/30">
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Description
               </label>
 
               <textarea
                 value={form.description}
                 onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    description: event.target.value,
-                  }))
+                  updateField(
+                    "description",
+                    event.target.value
+                  )
                 }
-                rows={6}
-                placeholder="Describe the expected outcome..."
-                className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-white/25"
+                rows={5}
+                maxLength={2000}
+                placeholder="Describe the task..."
+                className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
               />
             </div>
 
-            <button
-              onClick={submit}
-              disabled={!form.title.trim()}
-              className="mt-6 rounded-xl bg-white px-6 py-3 text-sm font-medium text-black disabled:opacity-30"
-            >
-              Create Task
-            </button>
-          </section>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Project
+              </label>
 
-          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <p className="text-xs uppercase tracking-wider text-white/30">
-              Smart Assignment
-            </p>
+              <select
+                value={form.project}
+                onChange={(event) =>
+                  updateField("project", event.target.value)
+                }
+                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-gray-900"
+              >
+                <option value="">Select project</option>
 
-            <h2 className="mt-2 text-xl font-semibold">
-              Recommended Team Members
+                {projects.map((project) => (
+                  <option
+                    key={project.id}
+                    value={project.name}
+                  >
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Department
+              </label>
+
+              <input
+                value={form.department}
+                onChange={(event) =>
+                  updateField(
+                    "department",
+                    event.target.value
+                  )
+                }
+                maxLength={100}
+                placeholder="e.g. Architecture"
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Priority
+              </label>
+
+              <select
+                value={form.priority}
+                onChange={(event) =>
+                  updateField(
+                    "priority",
+                    event.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-gray-900"
+              >
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Status
+              </label>
+
+              <select
+                value={form.status}
+                onChange={(event) =>
+                  updateField(
+                    "status",
+                    event.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-gray-900"
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">
+                  In Progress
+                </option>
+                <option value="Completed">
+                  Completed
+                </option>
+                <option value="Overdue">
+                  Overdue
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Deadline
+              </label>
+
+              <input
+                type="date"
+                value={form.dueDate}
+                onChange={(event) =>
+                  updateField(
+                    "dueDate",
+                    event.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-gray-900"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Assignment
             </h2>
 
-            <p className="mt-2 text-sm text-white/40">
-              Ranked using the existing assignment engine.
+            <p className="mt-1 text-sm text-gray-500">
+              Choose a team member or use the smart recommendations.
             </p>
+          </div>
 
-            <div className="mt-6 space-y-3">
-              {recommendations.map((candidate: any) => {
-                const member = candidate.member;
+          <div className="mb-5">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Assign To
+            </label>
 
-                if (!member) return null;
+            <select
+              value={form.assigneeId}
+              onChange={(event) =>
+                updateField(
+                  "assigneeId",
+                  event.target.value
+                )
+              }
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-gray-900"
+            >
+              <option value="">Unassigned</option>
 
-                return (
-                  <button
-                    key={member.id}
-                    onClick={() =>
-                      selectAssignee(
-                        member.id,
-                        member.name,
-                        member.department
-                      )
-                    }
-                    className={`w-full rounded-xl border p-4 text-left transition ${
-                      form.assigneeId === member.id
-                        ? "border-white bg-white/5"
-                        : "border-white/10 hover:bg-white/5"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium">
-                          {member.name}
-                        </p>
-                        <p className="mt-1 text-xs text-white/40">
-                          {member.role}
-                        </p>
-                      </div>
+              {users.map((user) => (
+                <option
+                  key={user.id}
+                  value={user.id}
+                >
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-                      <span className="text-sm font-semibold">
-                        {candidate.score ?? 0}
-                      </span>
-                    </div>
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-900">
+                Smart Recommendations
+              </h3>
 
-                    <div className="mt-3 text-[10px] text-white/35">
-                      {(candidate.reasons || []).join(" · ")}
-                    </div>
-
-                    <div className="mt-2 text-[10px] text-white/30">
-                      Workload: {candidate.workload ?? 0}%
-                    </div>
-                  </button>
-                );
-              })}
-
-              {recommendations.length === 0 && (
-                <div className="rounded-xl border border-white/10 p-4 text-sm text-white/35">
-                  No recommendations available.
-                </div>
+              {loadingRecommendations && (
+                <span className="text-xs text-gray-500">
+                  Loading...
+                </span>
               )}
             </div>
-          </section>
+
+            {!loadingRecommendations &&
+              recommendations.length === 0 && (
+                <div className="rounded-xl border border-dashed border-gray-300 p-4 text-sm text-gray-500">
+                  No active team members available.
+                </div>
+              )}
+
+            <div className="grid gap-3 md:grid-cols-2">
+              {recommendations.map((member) => (
+                <button
+                  key={member.id}
+                  type="button"
+                  onClick={() =>
+                    updateField(
+                      "assigneeId",
+                      member.id
+                    )
+                  }
+                  className={`rounded-xl border p-4 text-left transition ${
+                    form.assigneeId === member.id
+                      ? "border-gray-900 bg-gray-50"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700">
+                      {member.initials}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-gray-900">
+                        {member.name}
+                      </p>
+
+                      <p className="text-xs text-gray-500">
+                        {member.role}
+                        {member.department
+                          ? ` · ${member.department}`
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            disabled={loading}
+            className="rounded-xl border border-gray-300 px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="rounded-xl bg-gray-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {loading ? "Creating..." : "Create Task"}
+          </button>
         </div>
-      </div>
+      </form>
     </main>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <label>
-      <span className="text-xs uppercase tracking-wider text-white/30">
-        {label}
-      </span>
-
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none placeholder:text-white/25"
-      />
-    </label>
-  );
-}
-
-function Select({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-}) {
-  return (
-    <label>
-      <span className="text-xs uppercase tracking-wider text-white/30">
-        {label}
-      </span>
-
-      <select
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="mt-2 w-full rounded-xl border border-white/10 bg-[#111] px-4 py-3 text-sm outline-none"
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
   );
 }

@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS projects (
   phase TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '',
   client_id TEXT,
+  department TEXT,
   client_name TEXT,
   project_manager_id TEXT,
   project_manager_name TEXT,

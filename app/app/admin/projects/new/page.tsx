@@ -58,11 +58,28 @@ export default function NewProjectPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setClients(getClients());
-    setTeam(getActiveTeam());
+    async function loadData() {
+      setClients(getClients());
+
+      try {
+        const activeTeam = await getActiveTeam();
+        setTeam(activeTeam);
+      } catch (error) {
+        console.error(
+          "Failed to load team:",
+          error
+        );
+
+        setTeam([]);
+      }
+    }
+
+    loadData();
   }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
     setError("");
 
@@ -107,14 +124,17 @@ export default function NewProjectPage() {
         clientId: selectedClient?.id ?? "",
         clientName: selectedClient?.name ?? "",
 
-        projectManagerId: selectedManager?.id ?? "",
-        projectManagerName: selectedManager?.name ?? "",
+        projectManagerId:
+          selectedManager?.id ?? "",
+        projectManagerName:
+          selectedManager?.name ?? "",
 
         startDate,
         targetDate,
       });
 
-      window.location.href = "/app/admin/projects";
+      window.location.href =
+        "/app/admin/projects";
     } catch {
       setError(
         "Unable to create project. Please try again."
@@ -183,7 +203,7 @@ export default function NewProjectPage() {
                 label="Project Name"
                 value={name}
                 onChange={setName}
-                placeholder="e.g. City Edge Mall"
+                placeholder="e.g. New Residential Villa"
                 required
               />
 
@@ -191,7 +211,7 @@ export default function NewProjectPage() {
                 label="Project Code"
                 value={code}
                 onChange={setCode}
-                placeholder="e.g. CEM-002"
+                placeholder="e.g. MA-002"
                 required
               />
 

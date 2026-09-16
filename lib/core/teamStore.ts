@@ -14,133 +14,57 @@ export type TeamMember = {
   projectRole?: string;
 };
 
-const STORAGE_KEY = "mason-arc-team";
+function mapUser(user: any): TeamMember {
+  const name = String(user.name || "");
+  const initials =
+    name
+      .split(" ")
+      .filter(Boolean)
+      .map((part: string) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "TM";
 
-const initialTeam: TeamMember[] = [
-  {
-    id: "OM-001",
-    code: "OM-001",
-    name: "Omar Mohamed",
-    initials: "OM",
-    role: "Architect",
-    department: "Architecture",
-    status: "Active",
-    project: "City Edge Mall",
-    projectRole: "Project Architect",
-  },
-  {
-    id: "AS-001",
-    code: "AS-001",
-    name: "Ahmed Shabaan",
-    initials: "AS",
-    role: "Civil Engineer",
-    department: "Civil",
-    status: "Active",
-    project: "City Edge Mall",
-    projectRole: "Civil Engineer",
-  },
-];
-
-export function getTeam(): TeamMember[] {
-  if (typeof window === "undefined") {
-    return initialTeam;
-  }
-
-  const stored = localStorage.getItem(STORAGE_KEY);
-
-  if (!stored) {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(initialTeam)
-    );
-
-    return initialTeam;
-  }
-
-  try {
-    return JSON.parse(stored) as TeamMember[];
-  } catch {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(initialTeam)
-    );
-
-    return initialTeam;
-  }
+  return {
+    id: user.id,
+    code: user.employeeId || user.id,
+    name,
+    initials,
+    role: user.role,
+    department: user.department || "",
+    status: user.active ? "Active" : "Inactive",
+  };
 }
 
-export function saveTeam(team: TeamMember[]) {
-  if (typeof window === "undefined") return;
+export async function getTeam(): Promise<TeamMember[]> {
+  const response = await fetch("/api/admin/team", {
+    cache: "no-store",
+  });
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(team)
-  );
+  if (!response.ok) {
+    throw new Error("Failed to load team.");
+  }
+
+  const data = await response.json();
+
+  return (data.users || []).map(mapUser);
 }
 
-export function getTeamMemberById(
+export async function getActiveTeam(): Promise<TeamMember[]> {
+  const team = await getTeam();
+  return team.filter((member) => member.status === "Active");
+}
+
+export async function getTeamMemberById(
   memberId: string
-): TeamMember | null {
+): Promise<TeamMember | null> {
+  const team = await getTeam();
+
   return (
-    getTeam().find(
+    team.find(
       (member) =>
         member.id === memberId ||
         member.code === memberId
     ) ?? null
   );
-}
-
-export function getActiveTeam(): TeamMember[] {
-  return getTeam().filter(
-    (member) => member.status === "Active"
-  );
-}
-
-export function addTeamMember(
-  member: Omit<TeamMember, "id">
-) {
-  const team = getTeam();
-
-  const newMember: TeamMember = {
-    ...member,
-    id: member.code,
-  };
-
-  saveTeam([...team, newMember]);
-
-  return newMember;
-}
-
-export function updateTeamMember(
-  memberId: string,
-  updates: Partial<TeamMember>
-) {
-  const team = getTeam();
-
-  const updated = team.map((member) =>
-    member.id === memberId
-      ? {
-          ...member,
-          ...updates,
-        }
-      : member
-  );
-
-  saveTeam(updated);
-
-  return updated;
-}
-
-export function deleteTeamMember(
-  memberId: string
-) {
-  const team = getTeam();
-
-  const updated = team.filter(
-    (member) => member.id !== memberId
-  );
-
-  saveTeam(updated);
-
-  return updated;
 }

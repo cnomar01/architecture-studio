@@ -28,25 +28,45 @@ export type TeamIntelligence = {
   status: TeamIntelligenceStatus;
 };
 
-function getAvailableTeam(): TeamMember[] {
-  const ids = new Set<string>(getActiveTeam().map((member) => member.id));
+async function getAvailableTeam(): Promise<TeamMember[]> {
+  const activeTeam = await getActiveTeam();
+
+  const ids = new Set<string>(
+    activeTeam.map((member) => member.id)
+  );
 
   getTasks().forEach((task) => {
-    if (task.assigneeId) ids.add(task.assigneeId);
+    if (task.assigneeId) {
+      ids.add(task.assigneeId);
+    }
   });
 
-  return Array.from(ids)
-    .map((id) => getTeamMemberById(id))
-    .filter((member): member is TeamMember => Boolean(member))
-    .filter((member) => member.status === "Active");
+  const members = await Promise.all(
+    Array.from(ids).map((id) =>
+      getTeamMemberById(id)
+    )
+  );
+
+  return members
+    .filter(
+      (member): member is TeamMember =>
+        Boolean(member)
+    )
+    .filter(
+      (member) => member.status === "Active"
+    );
 }
 
-export function calculateTeamIntelligence(
-  tasks: Task[] = getTasks(),
-  members: TeamMember[] = getAvailableTeam()
-): TeamIntelligence[] {
-  return members.map((member) => {
-    const own = tasks.filter(
+export async function calculateTeamIntelligence(
+  tasks?: Task[],
+  members?: TeamMember[]
+): Promise<TeamIntelligence[]> {
+  const currentTasks = tasks ?? getTasks();
+  const currentMembers =
+    members ?? (await getAvailableTeam());
+
+  return currentMembers.map((member) => {
+    const own = currentTasks.filter(
       (task) => task.assigneeId === member.id
     );
 
@@ -86,14 +106,21 @@ export function calculateTeamIntelligence(
         overdue.length * 15
     );
 
-    const capacity = Math.max(0, 100 - workload);
+    const capacity = Math.max(
+      0,
+      100 - workload
+    );
 
     const completionRate =
       own.length > 0
-        ? Math.round((completed.length / own.length) * 100)
+        ? Math.round(
+            (completed.length / own.length) *
+              100
+          )
         : 0;
 
-    let status: TeamIntelligenceStatus = "Available";
+    let status: TeamIntelligenceStatus =
+      "Available";
 
     if (workload >= 80) {
       status = "Overloaded";
@@ -120,67 +147,96 @@ export function calculateTeamIntelligence(
   });
 }
 
-export function getTeamIntelligence() {
-  return calculateTeamIntelligence();
+export async function getTeamIntelligence(): Promise<
+  TeamIntelligence[]
+> {
+  return await calculateTeamIntelligence();
 }
 
-export function getTeamAlerts(
-  intelligence: TeamIntelligence[] = getTeamIntelligence()
+export async function getTeamAlerts(
+  intelligence?: TeamIntelligence[]
 ) {
-  return intelligence.flatMap((member) => {
-    const alerts: {
-      memberId: string;
-      memberName: string;
-      severity: "Critical" | "Warning" | "Info";
-      title: string;
-      description: string;
-    }[] = [];
+  const currentIntelligence =
+    intelligence ??
+    (await getTeamIntelligence());
 
-    if (member.status === "Overloaded") {
-      alerts.push({
-        memberId: member.member.id,
-        memberName: member.member.name,
-        severity: "Critical",
-        title: "Workload overload",
-        description: `${member.member.name} is carrying ${member.workload}% workload.`,
-      });
+  return currentIntelligence.flatMap(
+    (member) => {
+      const alerts: {
+        memberId: string;
+        memberName: string;
+        severity:
+          | "Critical"
+          | "Warning"
+          | "Info";
+        title: string;
+        description: string;
+      }[] = [];
+
+      if (
+        member.status === "Overloaded"
+      ) {
+        alerts.push({
+          memberId: member.member.id,
+          memberName: member.member.name,
+          severity: "Critical",
+          title: "Workload overload",
+          description: `${member.member.name} is carrying ${member.workload}% workload.`,
+        });
+      }
+
+      if (member.overdueTasks > 0) {
+        alerts.push({
+          memberId: member.member.id,
+          memberName: member.member.name,
+          severity: "Warning",
+          title: "Overdue work",
+          description: `${member.overdueTasks} overdue task${
+            member.overdueTasks === 1
+              ? ""
+              : "s"
+          } assigned.`,
+        });
+      }
+
+      if (
+        member.capacity >= 60 &&
+        member.activeTasks === 0
+      ) {
+        alerts.push({
+          memberId: member.member.id,
+          memberName: member.member.name,
+          severity: "Info",
+          title: "Available capacity",
+          description: `${member.member.name} has significant available capacity.`,
+        });
+      }
+
+      return alerts;
     }
-
-    if (member.overdueTasks > 0) {
-      alerts.push({
-        memberId: member.member.id,
-        memberName: member.member.name,
-        severity: "Warning",
-        title: "Overdue work",
-        description: `${member.overdueTasks} overdue task${member.overdueTasks === 1 ? "" : "s"} assigned.`,
-      });
-    }
-
-    if (member.capacity >= 60 && member.activeTasks === 0) {
-      alerts.push({
-        memberId: member.member.id,
-        memberName: member.member.name,
-        severity: "Info",
-        title: "Available capacity",
-        description: `${member.member.name} has significant available capacity.`,
-      });
-    }
-
-    return alerts;
-  });
+  );
 }
 
-export function getSmartAssignee(
-  tasks: Task[] = getTasks(),
-  members: TeamMember[] = getAvailableTeam()
-) {
-  const intelligence = calculateTeamIntelligence(tasks, members);
+export async function getSmartAssignee(
+  tasks?: Task[],
+  members?: TeamMember[]
+): Promise<TeamIntelligence | null> {
+  const intelligence =
+    await calculateTeamIntelligence(
+      tasks,
+      members
+    );
 
-  return [...intelligence].sort((a, b) => {
-    if (a.workload !== b.workload) {
-      return a.workload - b.workload;
-    }
+  return (
+    [...intelligence].sort((a, b) => {
+      if (a.workload !== b.workload) {
+        return a.workload - b.workload;
+      }
 
-    return b.completionRate - a.completionRate;
-  })[0] ?? null;
+      return (
+        b.completionRate -
+        a.completionRate
+      );
+    })[0] ?? null
+  );
 }

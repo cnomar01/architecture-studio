@@ -4,42 +4,87 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { ArrowLeft, Save, Trash2, UserRound } from "lucide-react";
 
-import {
-  getTeamMemberById,
-  updateTeamMember,
-  deleteTeamMember,
-  TeamMember,
-} from "@/lib/core/teamStore";
+type TeamMember = {
+  id: string;
+  name: string;
+  email: string;
+  role: "Owner" | "Manager" | "Engineer" | "Client";
+  employeeId: string;
+  department: string;
+  active: boolean;
+  createdAt?: string;
+};
 
 export default function EditTeamMemberPage() {
   const [member, setMember] = useState<TeamMember | null>(null);
+
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState<
+    "Owner" | "Manager" | "Engineer" | "Client"
+  >("Engineer");
   const [department, setDepartment] = useState("");
-  const [status, setStatus] =
-    useState<"Active" | "Inactive">("Active");
-  const [project, setProject] = useState("");
-  const [projectRole, setProjectRole] = useState("");
+  const [status, setStatus] = useState<"Active" | "Inactive">(
+    "Active"
+  );
+  const [password, setPassword] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const id = window.location.pathname.split("/")[4];
-    const found = getTeamMemberById(id);
+    async function loadMember() {
+      try {
+        setLoading(true);
 
-    if (!found) return;
+        const id =
+          window.location.pathname.split("/")[4];
 
-    setMember(found);
-    setName(found.name);
-    setCode(found.code);
-    setRole(found.role);
-    setDepartment(found.department);
-    setStatus(found.status);
-    setProject(found.project ?? "");
-    setProjectRole(found.projectRole ?? "");
+        const response = await fetch("/api/admin/team", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to load team.");
+        }
+
+        const data = await response.json();
+
+        const found = (data.users || []).find(
+          (user: TeamMember) =>
+            user.id === id ||
+            user.employeeId === id
+        );
+
+        if (!found) {
+          setMember(null);
+          return;
+        }
+
+        setMember(found);
+        setName(found.name);
+        setEmail(found.email);
+        setCode(found.employeeId || "");
+        setRole(found.role);
+        setDepartment(found.department || "");
+        setStatus(found.active ? "Active" : "Inactive");
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load employee.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadMember();
   }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
     setError("");
 
@@ -50,8 +95,8 @@ export default function EditTeamMemberPage() {
       return;
     }
 
-    if (!role.trim()) {
-      setError("Role is required.");
+    if (!email.trim()) {
+      setError("Email is required.");
       return;
     }
 
@@ -60,30 +105,57 @@ export default function EditTeamMemberPage() {
       return;
     }
 
-    const initials = name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("");
+    if (!role) {
+      setError("Role is required.");
+      return;
+    }
 
-    updateTeamMember(member.id, {
-      name: name.trim(),
-      code: code.trim().toUpperCase(),
-      initials,
-      role: role.trim(),
-      department: department.trim(),
-      status,
-      project: project.trim() || undefined,
-      projectRole: projectRole.trim() || undefined,
-    });
+    try {
+      setSaving(true);
 
-    window.location.href =
-      `/app/admin/team/${member.id}`;
+      const response = await fetch("/api/admin/team", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: member.id,
+          name: name.trim(),
+          email: email.trim(),
+          employeeId: code.trim().toUpperCase(),
+          role,
+          department: department.trim(),
+          active: status === "Active",
+          ...(password
+            ? { password }
+            : {}),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Failed to update employee."
+        );
+      }
+
+      window.location.href =
+        `/app/admin/team/${member.id}`;
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to update employee."
+      );
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!member) return;
 
     const confirmed = window.confirm(
@@ -92,9 +164,58 @@ export default function EditTeamMemberPage() {
 
     if (!confirmed) return;
 
-    deleteTeamMember(member.id);
+    try {
+      setDeleting(true);
+      setError("");
 
-    window.location.href = "/app/admin/team";
+      const response = await fetch(
+        "/api/admin/team",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: member.id,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Failed to delete employee."
+        );
+      }
+
+      window.location.href =
+        "/app/admin/team";
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete employee."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-[#050505] text-white">
+        <div className="mx-auto max-w-4xl px-6 py-16">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
+            <p className="text-sm text-white/40">
+              Loading employee...
+            </p>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   if (!member) {
@@ -124,7 +245,6 @@ export default function EditTeamMemberPage() {
       <div className="mx-auto max-w-4xl px-5 py-8 md:px-8">
 
         <div className="mb-8 border-b border-white/10 pb-7">
-
           <Link
             href={`/app/admin/team/${member.id}`}
             className="mb-6 inline-flex items-center gap-2 text-xs text-white/40 hover:text-white"
@@ -134,9 +254,11 @@ export default function EditTeamMemberPage() {
           </Link>
 
           <div className="flex items-center gap-4">
-
             <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-              <UserRound size={19} className="text-white/50" />
+              <UserRound
+                size={19}
+                className="text-white/50"
+              />
             </div>
 
             <div>
@@ -149,27 +271,29 @@ export default function EditTeamMemberPage() {
               </h1>
 
               <p className="mt-2 text-xs text-white/30">
-                Update employee information and assignment.
+                Update employee information and access.
               </p>
             </div>
-
           </div>
         </div>
+
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {error}
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}
           className="space-y-6"
         >
-
           <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-
             <SectionTitle
               title="Employee Information"
               description="Basic employee identity and role."
             />
 
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-
               <Field
                 label="Full Name"
                 value={name}
@@ -179,20 +303,52 @@ export default function EditTeamMemberPage() {
               />
 
               <Field
-                label="Employee Code"
-                value={code}
-                onChange={setCode}
-                placeholder="EMP-001"
+                label="Email"
+                value={email}
+                onChange={setEmail}
+                placeholder="employee@masonandarc.com"
+                type="email"
                 required
               />
 
               <Field
-                label="Role"
-                value={role}
-                onChange={setRole}
-                placeholder="Architect"
-                required
+                label="Employee Code"
+                value={code}
+                onChange={setCode}
+                placeholder="EMP-001"
               />
+
+              <div>
+                <label className="mb-2 block text-xs text-white/50">
+                  Role
+                </label>
+
+                <select
+                  value={role}
+                  onChange={(event) =>
+                    setRole(
+                      event.target.value as TeamMember["role"]
+                    )
+                  }
+                  className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-white outline-none focus:border-white/30"
+                >
+                  <option value="Engineer">
+                    Engineer
+                  </option>
+
+                  <option value="Manager">
+                    Manager
+                  </option>
+
+                  <option value="Owner">
+                    Owner
+                  </option>
+
+                  <option value="Client">
+                    Client
+                  </option>
+                </select>
+              </div>
 
               <Field
                 label="Department"
@@ -201,123 +357,92 @@ export default function EditTeamMemberPage() {
                 placeholder="Architecture"
                 required
               />
-
             </div>
-
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-
             <SectionTitle
               title="Employment Status"
               description="Control availability for project assignments."
             />
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {(["Active", "Inactive"] as const).map(
+                (item) => {
+                  const selected = status === item;
 
-              {(["Active", "Inactive"] as const).map((item) => {
-
-                const selected = status === item;
-
-                return (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setStatus(item)}
-                    className={`rounded-xl border p-4 text-left text-sm transition ${
-                      selected
-                        ? "border-white/20 bg-white text-black"
-                        : "border-white/10 bg-black/20 text-white/45 hover:text-white"
-                    }`}
-                  >
-                    <div className="font-medium">
-                      {item}
-                    </div>
-
-                    <div
-                      className={`mt-1 text-xs ${
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() =>
+                        setStatus(item)
+                      }
+                      className={`rounded-xl border px-4 py-4 text-left transition ${
                         selected
-                          ? "text-black/50"
-                          : "text-white/25"
+                          ? "border-white/30 bg-white/[0.08]"
+                          : "border-white/10 bg-white/[0.02] hover:bg-white/[0.05]"
                       }`}
                     >
-                      {item === "Active"
-                        ? "Available for assignments"
-                        : "Unavailable for new assignments"}
-                    </div>
-                  </button>
-                );
-              })}
+                      <p className="text-sm font-medium">
+                        {item}
+                      </p>
 
+                      <p className="mt-1 text-xs text-white/30">
+                        {item === "Active"
+                          ? "Available for assignments"
+                          : "Not available for assignments"}
+                      </p>
+                    </button>
+                  );
+                }
+              )}
             </div>
-
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-
             <SectionTitle
-              title="Project Assignment"
-              description="Current project responsibility."
+              title="Password"
+              description="Leave empty to keep the current password."
             />
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-
+            <div className="mt-6">
               <Field
-                label="Project"
-                value={project}
-                onChange={setProject}
-                placeholder="City Edge Mall"
+                label="New Password"
+                value={password}
+                onChange={setPassword}
+                placeholder="Minimum 8 characters"
+                type="password"
               />
-
-              <Field
-                label="Project Role"
-                value={projectRole}
-                onChange={setProjectRole}
-                placeholder="Project Architect"
-              />
-
             </div>
-
           </section>
 
-          {error && (
-            <div className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-xs text-red-300">
-              {error}
-            </div>
-          )}
-
           <div className="flex flex-col-reverse gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-
             <button
               type="button"
               onClick={handleDelete}
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-3 text-xs text-red-300 hover:bg-red-500/10"
+              disabled={deleting || saving}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-5 text-sm text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Trash2 size={14} />
-              Delete Employee
+              <Trash2 size={15} />
+
+              {deleting
+                ? "Deleting..."
+                : "Delete Employee"}
             </button>
 
-            <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={saving || deleting}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Save size={15} />
 
-              <Link
-                href={`/app/admin/team/${member.id}`}
-                className="rounded-xl border border-white/10 bg-white/[0.03] px-5 py-3 text-xs text-white/45 hover:text-white"
-              >
-                Cancel
-              </Link>
-
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-xs font-medium text-black hover:bg-white/90"
-              >
-                <Save size={14} />
-                Save Changes
-              </button>
-
-            </div>
-
+              {saving
+                ? "Saving..."
+                : "Save Changes"}
+            </button>
           </div>
-
         </form>
       </div>
     </main>
@@ -337,7 +462,7 @@ function SectionTitle({
         {title}
       </h2>
 
-      <p className="mt-1 text-xs text-white/25">
+      <p className="mt-1 text-xs text-white/30">
         {description}
       </p>
     </div>
@@ -349,28 +474,39 @@ function Field({
   value,
   onChange,
   placeholder,
+  type = "text",
   required = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  placeholder: string;
+  placeholder?: string;
+  type?: string;
   required?: boolean;
 }) {
   return (
     <div>
-      <label className="mb-2 block text-[9px] uppercase tracking-[0.18em] text-white/30">
+      <label className="mb-2 block text-xs text-white/50">
         {label}
+        {required && (
+          <span className="ml-1 text-white/30">
+            *
+          </span>
+        )}
       </label>
 
       <input
-        required={required}
+        type={type}
         value={value}
         onChange={(event) =>
           onChange(event.target.value)
         }
         placeholder={placeholder}
-        className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/20"
+        required={required}
+        maxLength={
+          type === "password" ? 256 : 254
+        }
+        className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-white placeholder:text-white/20 outline-none transition focus:border-white/30"
       />
     </div>
   );

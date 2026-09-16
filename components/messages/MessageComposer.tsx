@@ -1,8 +1,16 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { addMessage, MessageAttachment, MessageMention, MessageScope } from "@/lib/core/messageStore";
-import { getTeamMemberById } from "@/lib/core/teamStore";
+import { useEffect, useRef, useState } from "react";
+import {
+  addMessage,
+  MessageAttachment,
+  MessageMention,
+  MessageScope,
+} from "@/lib/core/messageStore";
+import {
+  getTeamMemberById,
+  TeamMember,
+} from "@/lib/core/teamStore";
 
 type Props = {
   scope: MessageScope;
@@ -18,23 +26,62 @@ export default function MessageComposer(props: Props) {
   const [body, setBody] = useState("");
   const [files, setFiles] = useState<MessageAttachment[]>([]);
   const [showMentions, setShowMentions] = useState(false);
+  const [members, setMembers] = useState<TeamMember[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const members = useMemo(
-    () =>
-      ["OM-001", "AS-001"]
-        .map((id) => getTeamMemberById(id))
-        .filter(Boolean),
-    []
-  );
+  useEffect(() => {
+    let mounted = true;
+
+    const loadMembers = async () => {
+      try {
+        const results = await Promise.all(
+          ["OM-001", "AS-001"].map((id) =>
+            getTeamMemberById(id)
+          )
+        );
+
+        if (mounted) {
+          setMembers(
+            results.filter(
+              (member): member is TeamMember =>
+                Boolean(member)
+            )
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load message mention members",
+          error
+        );
+
+        if (mounted) {
+          setMembers([]);
+        }
+      }
+    };
+
+    void loadMembers();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   function parseMentions(text: string): MessageMention[] {
     const found: MessageMention[] = [];
+
     for (const member of members) {
-      if (member && (text.includes(`@${member.name}`) || text.includes(`@${member.initials}`))) {
-        found.push({ id: member.id, name: member.name });
+      if (
+        text.includes(`@${member.name}`) ||
+        text.includes(`@${member.initials}`)
+      ) {
+        found.push({
+          id: member.id,
+          name: member.name,
+        });
       }
     }
+
     return found;
   }
 
@@ -42,10 +89,14 @@ export default function MessageComposer(props: Props) {
     if (!list) return;
 
     const next: MessageAttachment[] = [];
+
     for (const file of Array.from(list)) {
       const dataUrl = await new Promise<string>((resolve) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ""));
+
+        reader.onload = () =>
+          resolve(String(reader.result || ""));
+
         reader.readAsDataURL(file);
       });
 
@@ -63,6 +114,7 @@ export default function MessageComposer(props: Props) {
 
   function send() {
     const clean = body.trim();
+
     if (!clean && files.length === 0) return;
 
     addMessage({
@@ -85,7 +137,13 @@ export default function MessageComposer(props: Props) {
   }
 
   function mention(memberName: string) {
-    setBody((current) => `${current}${current && !current.endsWith(" ") ? " " : ""}@${memberName} `);
+    setBody(
+      (current) =>
+        `${current}${
+          current && !current.endsWith(" ") ? " " : ""
+        }@${memberName} `
+    );
+
     setShowMentions(false);
     inputRef.current?.focus();
   }
@@ -95,11 +153,21 @@ export default function MessageComposer(props: Props) {
       {files.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {files.map((file) => (
-            <div key={file.id} className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs">
+            <div
+              key={file.id}
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs"
+            >
               {file.name}
+
               <button
                 type="button"
-                onClick={() => setFiles((current) => current.filter((item) => item.id !== file.id))}
+                onClick={() =>
+                  setFiles((current) =>
+                    current.filter(
+                      (item) => item.id !== file.id
+                    )
+                  )
+                }
                 className="ml-2 text-white/40 hover:text-white"
               >
                 ×
@@ -111,18 +179,16 @@ export default function MessageComposer(props: Props) {
 
       {showMentions && (
         <div className="mb-3 rounded-xl border border-white/10 bg-[#111] p-2">
-          {members.map((member) =>
-            member ? (
-              <button
-                key={member.id}
-                type="button"
-                onClick={() => mention(member.name)}
-                className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-white/5"
-              >
-                @{member.name}
-              </button>
-            ) : null
-          )}
+          {members.map((member) => (
+            <button
+              key={member.id}
+              type="button"
+              onClick={() => mention(member.name)}
+              className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-white/5"
+            >
+              @{member.name}
+            </button>
+          ))}
         </div>
       )}
 
@@ -130,9 +196,14 @@ export default function MessageComposer(props: Props) {
         <input
           ref={inputRef}
           value={body}
-          onChange={(event) => setBody(event.target.value)}
+          onChange={(event) =>
+            setBody(event.target.value)
+          }
           onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
+            if (
+              event.key === "Enter" &&
+              !event.shiftKey
+            ) {
               event.preventDefault();
               send();
             }
@@ -156,18 +227,20 @@ export default function MessageComposer(props: Props) {
 
         <button
           type="button"
-          onClick={() => setShowMentions((value) => !value)}
-          className="h-11 rounded-xl border border-white/10 px-3 text-sm hover:bg-white/5"
+          onClick={send}
+          className="h-11 rounded-xl border border-white/10 px-4 text-sm transition hover:bg-white/10"
         >
-          @
+          Send
         </button>
 
         <button
           type="button"
-          onClick={send}
-          className="h-11 rounded-xl bg-white px-5 text-sm font-medium text-black hover:bg-white/90"
+          onClick={() =>
+            setShowMentions((current) => !current)
+          }
+          className="h-11 rounded-xl border border-white/10 px-4 text-sm transition hover:bg-white/10"
         >
-          Send
+          @
         </button>
       </div>
     </div>

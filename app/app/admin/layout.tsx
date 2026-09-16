@@ -23,50 +23,20 @@ import { runNotificationEngine } from "@/lib/core/notificationEngine";
 import { getUnreadNotificationCount } from "@/lib/core/notificationStore";
 
 const navigation = [
-  {
-    label: "Overview",
-    href: "/app/admin",
-  },
-  {
-    label: "Projects",
-    href: "/app/admin/projects",
-  },
-  {
-    label: "Clients",
-    href: "/app/admin/clients",
-  },
-  {
-    label: "Team",
-    href: "/app/admin/team",
-  },
-  {
-    label: "Intelligence",
-    href: "/app/admin/intelligence",
-  },
-  {
-    label: "AI Studio OS",
-    href: "/app/admin/ai",
-  },
+  { label: "Overview", href: "/app/admin" },
+  { label: "Projects", href: "/app/admin/projects" },
+  { label: "Clients", href: "/app/admin/clients" },
+  { label: "Team", href: "/app/admin/team" },
+  { label: "Intelligence", href: "/app/admin/intelligence" },
+  { label: "AI Studio OS", href: "/app/admin/ai" },
   {
     label: "Predictive Intelligence",
     href: "/app/admin/intelligence/forecast",
   },
-  {
-    label: "Project Brain",
-    href: "/app/admin/brain",
-  },
-  {
-    label: "AI Agents",
-    href: "/app/admin/agents",
-  },
-  {
-    label: "AI Actions",
-    href: "/app/admin/agents/actions",
-  },
-  {
-    label: "Timesheets",
-    href: "/app/admin/timesheets",
-  },
+  { label: "Project Brain", href: "/app/admin/brain" },
+  { label: "AI Agents", href: "/app/admin/agents" },
+  { label: "AI Actions", href: "/app/admin/agents/actions" },
+  { label: "Timesheets", href: "/app/admin/timesheets" },
   {
     label: "System Completeness",
     href: "/app/admin/completeness",
@@ -87,46 +57,22 @@ const navigation = [
     label: "Operations OS",
     href: "/app/admin/operations",
   },
-  {
-    label: "Reports",
-    href: "/app/admin/reports",
-  },
-  {
-    label: "Approvals",
-    href: "/app/admin/approvals",
-  },
-  {
-    label: "Tasks",
-    href: "/app/admin/tasks",
-  },
-  {
-    label: "Files",
-    href: "/app/admin/files",
-  },
+  { label: "Reports", href: "/app/admin/reports" },
+  { label: "Approvals", href: "/app/admin/approvals" },
+  { label: "Tasks", href: "/app/admin/tasks" },
+  { label: "Files", href: "/app/admin/files" },
   {
     label: "Transmittals",
     href: "/app/admin/files/transmittals",
   },
-  {
-    label: "Site Intelligence",
-    href: "/app/admin/site",
-  },
-  {
-    label: "Messages",
-    href: "/app/admin/messages",
-  },
-  {
-    label: "Finance",
-    href: "/app/admin/finance",
-  },
+  { label: "Site Intelligence", href: "/app/admin/site" },
+  { label: "Messages", href: "/app/admin/messages" },
+  { label: "Finance", href: "/app/admin/finance" },
   {
     label: "Notifications",
     href: "/app/admin/notifications",
   },
-  {
-    label: "Security",
-    href: "/app/admin/security",
-  },
+  { label: "Security", href: "/app/admin/security" },
 ];
 
 export default function AdminLayout({
@@ -148,62 +94,91 @@ function AdminShell({
 }) {
   const router = useRouter();
 
-  const [user, setUser] =
-    useState<AuthUser | null>(null);
-  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [unreadNotifications, setUnreadNotifications] =
+    useState(0);
 
   useEffect(() => {
+    let mounted = true;
+
     const loadUser = async () => {
-      setUser(isDatabaseAuth ? await getDatabaseCurrentUser() : getCurrentUser());
+      try {
+        const currentUser = isDatabaseAuth
+          ? await getDatabaseCurrentUser()
+          : getCurrentUser();
+
+        if (mounted) {
+          setUser(currentUser);
+        }
+      } catch {
+        if (mounted) {
+          setUser(null);
+        }
+      }
     };
+
+    const refreshAlerts = async () => {
+      try {
+        await runNotificationEngine();
+
+        if (mounted) {
+          setUnreadNotifications(
+            getUnreadNotificationCount()
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Notification engine failed",
+          error
+        );
+      }
+    };
+
     void loadUser();
-    const refreshAlerts = () => {
-      runNotificationEngine();
-      setUnreadNotifications(getUnreadNotificationCount());
+    void refreshAlerts();
+
+    const timer = setInterval(() => {
+      void refreshAlerts();
+    }, 30000);
+
+    return () => {
+      mounted = false;
+      clearInterval(timer);
     };
-    refreshAlerts();
-    const timer = setInterval(refreshAlerts, 30000);
-    return () => clearInterval(timer);
   }, []);
 
   async function handleLogout() {
-    if (isDatabaseAuth) await databaseLogout().catch(() => {});
+    if (isDatabaseAuth) {
+      await databaseLogout().catch(() => {});
+    }
+
     logout();
     router.replace("/app/login");
   }
 
   return (
     <div className="min-h-screen bg-[#111111] text-white">
-
       {/* Desktop Sidebar */}
       <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-white/10 bg-[#111111] lg:flex lg:flex-col">
-
         {/* Logo */}
         <div className="flex h-24 items-center border-b border-white/10 px-8">
-
           <Link href="/app/admin">
-
             <img
               src="/images/logo-mason-arc.png"
               alt="Mason & Arc"
               className="h-8 w-auto object-contain"
             />
-
           </Link>
-
         </div>
 
         {/* Workspace */}
         <div className="px-5 py-7">
-
           <p className="px-3 text-[9px] uppercase tracking-[0.25em] text-white/25">
             Workspace
           </p>
 
           <nav className="mt-4 space-y-1">
-
             {navigation.map((item) => {
-
               const isNotifications =
                 item.label === "Notifications";
 
@@ -213,9 +188,7 @@ function AdminShell({
                   href={item.href}
                   className="group flex items-center justify-between rounded-lg px-3 py-3 text-xs text-white/45 transition hover:bg-white/[0.05] hover:text-white"
                 >
-
                   <span className="flex items-center gap-3">
-
                     {isNotifications && (
                       <Bell
                         size={13}
@@ -223,65 +196,52 @@ function AdminShell({
                       />
                     )}
 
-                    <span>
-                      {item.label}
-                    </span>
-
+                    <span>{item.label}</span>
                   </span>
 
                   <span className="flex items-center gap-2">
-                    {isNotifications && unreadNotifications > 0 && (
-                      <span className="min-w-5 rounded-full border border-white/15 px-1.5 py-0.5 text-center text-[8px] text-white/60">
-                        {unreadNotifications > 99 ? "99+" : unreadNotifications}
-                      </span>
-                    )}
+                    {isNotifications &&
+                      unreadNotifications > 0 && (
+                        <span className="min-w-5 rounded-full border border-white/15 px-1.5 py-0.5 text-center text-[8px] text-white/60">
+                          {unreadNotifications > 99
+                            ? "99+"
+                            : unreadNotifications}
+                        </span>
+                      )}
+
                     <span className="text-white/15 transition group-hover:text-white/50">
                       →
                     </span>
                   </span>
-
                 </Link>
               );
-
             })}
-
           </nav>
-
         </div>
 
         {/* Bottom */}
         <div className="mt-auto border-t border-white/10 p-5">
-
           {/* Client Portal */}
           <Link
             href="/app"
             className="flex items-center justify-between rounded-lg px-3 py-3 text-[10px] uppercase tracking-[0.15em] text-white/30 transition hover:bg-white/[0.05] hover:text-white"
           >
-
             Client Portal
 
-            <span>
-              ↗
-            </span>
-
+            <span>↗</span>
           </Link>
 
           {/* Current User */}
           <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-
             <div className="flex items-center gap-3">
-
               <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05]">
-
                 <UserRound
                   size={15}
                   className="text-white/50"
                 />
-
               </div>
 
               <div className="min-w-0">
-
                 <p className="truncate text-xs text-white/70">
                   {user?.name || "Studio User"}
                 </p>
@@ -289,9 +249,7 @@ function AdminShell({
                 <p className="mt-1 text-[9px] uppercase tracking-[0.15em] text-white/25">
                   {user?.role || "User"}
                 </p>
-
               </div>
-
             </div>
 
             {/* Logout */}
@@ -300,20 +258,13 @@ function AdminShell({
               onClick={handleLogout}
               className="mt-4 flex w-full items-center justify-between rounded-lg border border-white/5 px-3 py-2.5 text-[10px] text-white/30 transition hover:bg-white/[0.05] hover:text-white"
             >
-
-              <span>
-                Logout
-              </span>
-
+              <span>Logout</span>
               <LogOut size={13} />
-
             </button>
-
           </div>
 
           {/* Workspace */}
           <div className="mt-3 rounded-xl border border-white/10 p-4">
-
             <p className="text-[9px] uppercase tracking-[0.2em] text-white/25">
               Workspace
             </p>
@@ -321,40 +272,52 @@ function AdminShell({
             <p className="mt-2 text-xs text-white/60">
               Mason & Arc Studio
             </p>
-
           </div>
-
         </div>
-
       </aside>
 
       {/* Mobile Header */}
       <header className="flex h-20 items-center justify-between border-b border-white/10 px-6 lg:hidden">
-
         <Link href="/app/admin">
-
           <img
             src="/images/logo-mason-arc.png"
             alt="Mason & Arc"
             className="h-7 w-auto object-contain"
           />
-
         </Link>
 
-        <button
-          type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/60"
-        >
-          ☰
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/app/admin/notifications"
+            className="relative flex h-11 w-11 items-center justify-center rounded-lg border border-white/10"
+            aria-label="Notifications"
+          >
+            <Bell size={16} />
 
+            {unreadNotifications > 0 && (
+              <span className="absolute right-1 top-1 min-w-4 rounded-full border border-white/20 bg-[#111111] px-1 text-center text-[8px]">
+                {unreadNotifications > 99
+                  ? "99+"
+                  : unreadNotifications}
+              </span>
+            )}
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-white/10"
+            aria-label="Logout"
+          >
+            <LogOut size={16} />
+          </button>
+        </div>
       </header>
 
-      {/* Main */}
-      <div className="lg:pl-64">
+      {/* Main Content */}
+      <main className="min-h-screen lg:pl-64">
         {children}
-      </div>
-
+      </main>
     </div>
   );
 }

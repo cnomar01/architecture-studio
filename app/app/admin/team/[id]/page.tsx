@@ -19,10 +19,10 @@ import {
   Task,
 } from "../../tasks/taskStore";
 
-import {
-  calculateTeamIntelligence,
-  TeamIntelligence,
-} from "../teamIntelligence";
+type LocalIntelligence = {
+  workload: number;
+  status: "Balanced" | "Busy" | "Overloaded" | "Available";
+};
 
 export default function TeamMemberProfile() {
   const params = useParams<{ id: string }>();
@@ -32,47 +32,104 @@ export default function TeamMemberProfile() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [intelligence, setIntelligence] =
-    useState<TeamIntelligence | null>(null);
+    useState<LocalIntelligence | null>(null);
 
   useEffect(() => {
-    function load() {
-      const person = getTeamMemberById(memberId);
+    let cancelled = false;
 
-      if (!person) {
-        setMember(null);
-        return;
-      }
+    async function load() {
+      try {
+        const person = await getTeamMemberById(memberId);
 
-      const currentTasks = getTasks();
+        if (cancelled) return;
 
-      setMember(person);
-      setTasks(
-        currentTasks.filter(
+        if (!person) {
+          setMember(null);
+          setTasks([]);
+          setProjects([]);
+          setIntelligence(null);
+          return;
+        }
+
+        const currentTasks = getTasks();
+
+        const memberTasks = currentTasks.filter(
           (task) => task.assigneeId === person.id
-        )
-      );
+        );
 
-      setProjects(getProjectsByManager(person.id));
+        const memberProjects =
+          getProjectsByManager(person.id);
 
-      const teamData = calculateTeamIntelligence(currentTasks);
+        const activeTasks = memberTasks.filter(
+          (task) =>
+            task.status === "Open" ||
+            task.status === "In Progress" ||
+            task.status === "Overdue"
+        );
 
-      const personData = teamData.find(
-        (item) => item.member.id === person.id
-      );
+        const highPriorityTasks = activeTasks.filter(
+          (task) =>
+            task.priority === "High" ||
+            task.priority === "Urgent"
+        );
 
-      setIntelligence(personData || null);
+        const overdueTasks = memberTasks.filter(
+          (task) => task.status === "Overdue"
+        );
+
+        const workload = Math.min(
+          100,
+          activeTasks.length * 20 +
+            highPriorityTasks.length * 10 +
+            overdueTasks.length * 15
+        );
+
+        let status: LocalIntelligence["status"] =
+          "Available";
+
+        if (workload >= 80) {
+          status = "Overloaded";
+        } else if (workload >= 55) {
+          status = "Busy";
+        } else if (workload >= 25) {
+          status = "Balanced";
+        }
+
+        setMember(person);
+        setTasks(memberTasks);
+        setProjects(memberProjects);
+        setIntelligence({
+          workload,
+          status,
+        });
+      } catch (error) {
+        console.error(
+          "Failed to load team member:",
+          error
+        );
+
+        if (!cancelled) {
+          setMember(null);
+          setTasks([]);
+          setProjects([]);
+          setIntelligence(null);
+        }
+      }
     }
 
     load();
 
     const interval = setInterval(load, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [memberId]);
 
   if (!member) {
     return (
-      <main className="min-h-screen bg-[#080808] text-white p-8">
+      <main className="min-h-screen bg-[#080808] p-8 text-white">
         <Link
           href="/app/admin/team"
           className="text-sm text-white/50 hover:text-white"
@@ -115,7 +172,6 @@ export default function TeamMemberProfile() {
   return (
     <main className="min-h-screen bg-[#080808] text-white">
       <div className="mx-auto max-w-7xl px-6 py-8">
-
         {/* Header */}
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div>
@@ -137,7 +193,10 @@ export default function TeamMemberProfile() {
                 </h1>
 
                 <p className="mt-1 text-sm text-white/50">
-                  {member.role} · {member.department}
+                  {member.role}
+                  {member.department
+                    ? ` · ${member.department}`
+                    : ""}
                 </p>
               </div>
             </div>
@@ -183,7 +242,6 @@ export default function TeamMemberProfile() {
 
         {/* KPI Grid */}
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-
           <KpiCard
             label="Workload"
             value={`${workload}%`}
@@ -217,7 +275,6 @@ export default function TeamMemberProfile() {
 
         {/* Main */}
         <div className="mt-8 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-
           {/* Tasks */}
           <section className="rounded-2xl border border-white/10 bg-white/[0.03]">
             <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
@@ -225,6 +282,7 @@ export default function TeamMemberProfile() {
                 <h2 className="font-semibold">
                   Assigned Tasks
                 </h2>
+
                 <p className="mt-1 text-xs text-white/40">
                   Current workload and task history
                 </p>
@@ -278,6 +336,7 @@ export default function TeamMemberProfile() {
                         <p className="text-xs text-white/30">
                           Deadline
                         </p>
+
                         <p className="mt-1 text-sm text-white/70">
                           {task.deadline}
                         </p>
@@ -291,7 +350,6 @@ export default function TeamMemberProfile() {
 
           {/* Intelligence */}
           <section className="space-y-6">
-
             {/* Employee Overview */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
               <h2 className="font-semibold">
@@ -299,7 +357,6 @@ export default function TeamMemberProfile() {
               </h2>
 
               <div className="mt-6 space-y-5">
-
                 <Metric
                   label="Total Tasks"
                   value={tasks.length}
@@ -325,7 +382,6 @@ export default function TeamMemberProfile() {
                   value={overdueTasks.length}
                   danger={overdueTasks.length > 0}
                 />
-
               </div>
             </div>
 
@@ -341,11 +397,13 @@ export default function TeamMemberProfile() {
                 </p>
 
                 <p className="mt-2 text-lg font-medium">
-                  {member.project || "No project assigned"}
+                  {member.project ||
+                    "No project assigned"}
                 </p>
 
                 <p className="mt-1 text-sm text-white/40">
-                  {member.projectRole || "No project role specified"}
+                  {member.projectRole ||
+                    "No project role specified"}
                 </p>
               </div>
             </div>
@@ -388,7 +446,6 @@ export default function TeamMemberProfile() {
                 )}
               </div>
             </div>
-
           </section>
         </div>
       </div>

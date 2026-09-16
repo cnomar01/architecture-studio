@@ -10,7 +10,6 @@ import {
   Users,
   AlertTriangle,
   Gauge,
-  Target,
   UserRoundCheck,
 } from "lucide-react";
 
@@ -25,30 +24,101 @@ import {
 export default function TeamPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [team, setTeam] = useState<TeamIntelligence[]>([]);
+  const [alerts, setAlerts] = useState<
+    Awaited<ReturnType<typeof getTeamAlerts>>
+  >([]);
+  const [recommended, setRecommended] =
+    useState<TeamIntelligence | null>(null);
 
-  function refresh() {
+  async function refresh() {
     const currentTasks = getTasks();
-    setTasks(currentTasks);
-    setTeam(calculateTeamIntelligence(currentTasks));
+
+    try {
+      const currentTeam = await calculateTeamIntelligence(
+        currentTasks
+      );
+
+      const currentAlerts = await getTeamAlerts(currentTeam);
+
+      const currentRecommended = await getSmartAssignee(
+        currentTasks,
+        currentTeam.map((item) => item.member)
+      );
+
+      setTasks(currentTasks);
+      setTeam(currentTeam);
+      setAlerts(currentAlerts);
+      setRecommended(currentRecommended);
+    } catch (error) {
+      console.error("Failed to refresh team intelligence:", error);
+
+      setTasks(currentTasks);
+      setTeam([]);
+      setAlerts([]);
+      setRecommended(null);
+    }
   }
 
   useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, 2000);
-    return () => clearInterval(interval);
+    let cancelled = false;
+
+    async function load() {
+      if (cancelled) return;
+      await refresh();
+    }
+
+    load();
+
+    const interval = window.setInterval(() => {
+      if (!cancelled) {
+        load();
+      }
+    }, 2000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
   }, []);
 
   const stats = useMemo(() => {
     const totalMembers = team.length;
-    const activeTasks = team.reduce((sum, member) => sum + member.activeTasks, 0);
-    const completedTasks = team.reduce((sum, member) => sum + member.completedTasks, 0);
-    const overdueTasks = team.reduce((sum, member) => sum + member.overdueTasks, 0);
-    const overloaded = team.filter((member) => member.status === "Overloaded").length;
-    const busy = team.filter((member) => member.status === "Busy").length;
-    const available = team.filter((member) => member.status === "Available").length;
+
+    const activeTasks = team.reduce(
+      (sum, member) => sum + member.activeTasks,
+      0
+    );
+
+    const completedTasks = team.reduce(
+      (sum, member) => sum + member.completedTasks,
+      0
+    );
+
+    const overdueTasks = team.reduce(
+      (sum, member) => sum + member.overdueTasks,
+      0
+    );
+
+    const overloaded = team.filter(
+      (member) => member.status === "Overloaded"
+    ).length;
+
+    const busy = team.filter(
+      (member) => member.status === "Busy"
+    ).length;
+
+    const available = team.filter(
+      (member) => member.status === "Available"
+    ).length;
+
     const averageWorkload =
       totalMembers > 0
-        ? Math.round(team.reduce((sum, member) => sum + member.workload, 0) / totalMembers)
+        ? Math.round(
+            team.reduce(
+              (sum, member) => sum + member.workload,
+              0
+            ) / totalMembers
+          )
         : 0;
 
     return {
@@ -63,9 +133,6 @@ export default function TeamPage() {
     };
   }, [team]);
 
-  const alerts = useMemo(() => getTeamAlerts(team), [team]);
-  const recommended = useMemo(() => getSmartAssignee(tasks), [tasks]);
-
   return (
     <main className="min-h-screen bg-[#090909] px-4 py-7 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -74,19 +141,26 @@ export default function TeamPage() {
             <div>
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]">
-                  <Users size={20} className="text-white/60" />
+                  <Users
+                    size={20}
+                    className="text-white/60"
+                  />
                 </div>
+
                 <div>
                   <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">
                     Mason & Arc OS
                   </p>
+
                   <h1 className="mt-1 text-3xl font-light tracking-[-0.04em] sm:text-4xl">
                     Team Intelligence
                   </h1>
                 </div>
               </div>
+
               <p className="mt-4 max-w-2xl text-sm leading-6 text-white/35">
-                Live workload, capacity, performance and smart allocation for the studio team.
+                Live workload, capacity, performance and smart
+                allocation for the studio team.
               </p>
             </div>
 
@@ -101,15 +175,44 @@ export default function TeamPage() {
         </header>
 
         <section className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <KPI label="Team Members" value={stats.totalMembers} icon={<Users size={16} />} />
-          <KPI label="Active Tasks" value={stats.activeTasks} icon={<Activity size={16} />} />
-          <KPI label="Completed" value={stats.completedTasks} icon={<CheckCircle2 size={16} />} />
-          <KPI label="Average Workload" value={`${stats.averageWorkload}%`} icon={<BriefcaseBusiness size={16} />} />
+          <KPI
+            label="Team Members"
+            value={stats.totalMembers}
+            icon={<Users size={16} />}
+          />
+
+          <KPI
+            label="Active Tasks"
+            value={stats.activeTasks}
+            icon={<Activity size={16} />}
+          />
+
+          <KPI
+            label="Completed"
+            value={stats.completedTasks}
+            icon={<CheckCircle2 size={16} />}
+          />
+
+          <KPI
+            label="Average Workload"
+            value={`${stats.averageWorkload}%`}
+            icon={<BriefcaseBusiness size={16} />}
+          />
         </section>
 
         <section className="mt-3 grid gap-3 sm:grid-cols-3">
-          <StatusCard label="Available" value={stats.available} description="Members with available capacity" />
-          <StatusCard label="Busy" value={stats.busy} description="Members carrying active workload" />
+          <StatusCard
+            label="Available"
+            value={stats.available}
+            description="Members with available capacity"
+          />
+
+          <StatusCard
+            label="Busy"
+            value={stats.busy}
+            description="Members carrying active workload"
+          />
+
           <StatusCard
             label="Overloaded"
             value={stats.overloaded}
@@ -122,10 +225,18 @@ export default function TeamPage() {
           <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">Signals</p>
-                <h2 className="mt-1 text-lg font-medium">Workload Alerts</h2>
+                <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">
+                  Signals
+                </p>
+
+                <h2 className="mt-1 text-lg font-medium">
+                  Workload Alerts
+                </h2>
               </div>
-              <span className="text-[9px] text-white/20">{alerts.length} active</span>
+
+              <span className="text-[9px] text-white/20">
+                {alerts.length} active
+              </span>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -145,8 +256,12 @@ export default function TeamPage() {
                           : "text-white/35"
                       }
                     />
+
                     <div>
-                      <p className="text-xs text-white/70">{alert.title}</p>
+                      <p className="text-xs text-white/70">
+                        {alert.title}
+                      </p>
+
                       <p className="mt-1 text-[10px] leading-5 text-white/30">
                         {alert.description}
                       </p>
@@ -163,17 +278,24 @@ export default function TeamPage() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
-                  <UserRoundCheck size={16} className="text-white/50" />
+                  <UserRoundCheck
+                    size={16}
+                    className="text-white/50"
+                  />
                 </div>
+
                 <div>
                   <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">
                     Smart Assignment
                   </p>
+
                   <h2 className="mt-1 text-base font-medium">
                     Best available capacity
                   </h2>
+
                   <p className="mt-1 text-xs text-white/30">
-                    {recommended.member.name} · {recommended.capacity}% capacity available ·{" "}
+                    {recommended.member.name} ·{" "}
+                    {recommended.capacity}% capacity available ·{" "}
                     {recommended.completionRate}% completion rate
                   </p>
                 </div>
@@ -193,25 +315,48 @@ export default function TeamPage() {
         <section className="mt-8">
           <div className="mb-4 flex items-end justify-between">
             <div>
-              <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">Live Team</p>
-              <h2 className="mt-1 text-lg font-medium">Capacity & Performance</h2>
+              <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">
+                Live Team
+              </p>
+
+              <h2 className="mt-1 text-lg font-medium">
+                Capacity & Performance
+              </h2>
             </div>
-            <span className="text-[9px] text-white/20">Updates automatically</span>
+
+            <span className="text-[9px] text-white/20">
+              Updates automatically
+            </span>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
             {team.map((member) => (
-              <TeamCard key={member.member.id} member={member} />
+              <TeamCard
+                key={member.member.id}
+                member={member}
+              />
             ))}
+
+            {team.length === 0 && (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 text-center text-sm text-white/30">
+                No active team data.
+              </div>
+            )}
           </div>
         </section>
 
         <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">Operations</p>
-              <h2 className="mt-1 text-lg font-medium">Task Distribution</h2>
+              <p className="text-[9px] uppercase tracking-[0.22em] text-white/20">
+                Operations
+              </p>
+
+              <h2 className="mt-1 text-lg font-medium">
+                Task Distribution
+              </h2>
             </div>
+
             <Link
               href="/app/admin/tasks"
               className="inline-flex items-center gap-2 text-[9px] uppercase tracking-[0.16em] text-white/35 hover:text-white"
@@ -224,15 +369,31 @@ export default function TeamPage() {
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             <MiniMetric
               label="Open / In Progress"
-              value={tasks.filter((task) => task.status === "Open" || task.status === "In Progress").length}
+              value={
+                tasks.filter(
+                  (task) =>
+                    task.status === "Open" ||
+                    task.status === "In Progress"
+                ).length
+              }
             />
+
             <MiniMetric
               label="Completed"
-              value={tasks.filter((task) => task.status === "Completed").length}
+              value={
+                tasks.filter(
+                  (task) => task.status === "Completed"
+                ).length
+              }
             />
+
             <MiniMetric
               label="Overdue"
-              value={tasks.filter((task) => task.status === "Overdue").length}
+              value={
+                tasks.filter(
+                  (task) => task.status === "Overdue"
+                ).length
+              }
             />
           </div>
         </section>
@@ -241,7 +402,11 @@ export default function TeamPage() {
   );
 }
 
-function TeamCard({ member }: { member: TeamIntelligence }) {
+function TeamCard({
+  member,
+}: {
+  member: TeamIntelligence;
+}) {
   const person = member.member;
 
   return (
@@ -252,12 +417,19 @@ function TeamCard({ member }: { member: TeamIntelligence }) {
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-sm font-medium text-black">
           {person.initials ||
-            person.name.split(" ").map((word) => word[0]).join("").slice(0, 2)}
+            person.name
+              .split(" ")
+              .map((word) => word[0])
+              .join("")
+              .slice(0, 2)}
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-medium">{person.name}</h3>
+            <h3 className="text-base font-medium">
+              {person.name}
+            </h3>
+
             <StatusBadge status={member.status} />
           </div>
 
@@ -267,15 +439,26 @@ function TeamCard({ member }: { member: TeamIntelligence }) {
 
           {person.project && (
             <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-white/8 bg-black/20 px-3 py-2">
-              <BriefcaseBusiness size={12} className="text-white/25" />
-              <span className="text-[9px] text-white/40">{person.project}</span>
+              <BriefcaseBusiness
+                size={12}
+                className="text-white/25"
+              />
+
+              <span className="text-[9px] text-white/40">
+                {person.project}
+              </span>
             </div>
           )}
         </div>
 
         <div className="text-right">
-          <p className="text-2xl font-light">{member.workload}%</p>
-          <p className="text-[8px] uppercase tracking-wider text-white/20">Workload</p>
+          <p className="text-2xl font-light">
+            {member.workload}%
+          </p>
+
+          <p className="text-[8px] uppercase tracking-wider text-white/20">
+            Workload
+          </p>
         </div>
       </div>
 
@@ -284,13 +467,21 @@ function TeamCard({ member }: { member: TeamIntelligence }) {
           <span className="text-[8px] uppercase tracking-[0.16em] text-white/20">
             Capacity
           </span>
-          <span className="text-[9px] text-white/35">{member.capacity}% free</span>
+
+          <span className="text-[9px] text-white/35">
+            {member.capacity}% free
+          </span>
         </div>
 
         <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
           <div
             className="h-full rounded-full bg-white transition-all"
-            style={{ width: `${Math.min(100, member.workload)}%` }}
+            style={{
+              width: `${Math.min(
+                100,
+                member.workload
+              )}%`,
+            }}
           />
         </div>
       </div>
@@ -303,8 +494,15 @@ function TeamCard({ member }: { member: TeamIntelligence }) {
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2">
-        <Metric label="Completion" value={`${member.completionRate}%`} />
-        <Metric label="Projects" value={member.projectCount} />
+        <Metric
+          label="Completion"
+          value={`${member.completionRate}%`}
+        />
+
+        <Metric
+          label="Projects"
+          value={member.projectCount}
+        />
       </div>
 
       {member.projects.length > 0 && (
@@ -335,10 +533,18 @@ function KPI({
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
       <div className="flex items-center justify-between">
-        <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">{label}</span>
-        <span className="text-white/25">{icon}</span>
+        <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+          {label}
+        </span>
+
+        <span className="text-white/25">
+          {icon}
+        </span>
       </div>
-      <p className="mt-4 text-2xl font-light">{value}</p>
+
+      <p className="mt-4 text-2xl font-light">
+        {value}
+      </p>
     </div>
   );
 }
@@ -363,34 +569,72 @@ function StatusCard({
       }`}
     >
       <div className="flex items-center justify-between">
-        <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">{label}</span>
-        <Gauge size={14} className="text-white/20" />
+        <span className="text-[9px] uppercase tracking-[0.16em] text-white/20">
+          {label}
+        </span>
+
+        <Gauge
+          size={14}
+          className="text-white/20"
+        />
       </div>
-      <p className="mt-3 text-xl font-light">{value}</p>
-      <p className="mt-1 text-[9px] text-white/20">{description}</p>
+
+      <p className="mt-3 text-xl font-light">
+        {value}
+      </p>
+
+      <p className="mt-1 text-[9px] text-white/20">
+        {description}
+      </p>
     </div>
   );
 }
 
-function MiniMetric({ label, value }: { label: string; value: string | number }) {
+function MiniMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
   return (
     <div className="rounded-xl border border-white/8 bg-black/20 p-4">
-      <p className="text-[8px] uppercase tracking-[0.15em] text-white/20">{label}</p>
-      <p className="mt-2 text-lg font-light text-white/70">{value}</p>
+      <p className="text-[8px] uppercase tracking-[0.15em] text-white/20">
+        {label}
+      </p>
+
+      <p className="mt-2 text-lg font-light text-white/70">
+        {value}
+      </p>
     </div>
   );
 }
 
-function Metric({ label, value }: { label: string; value: string | number }) {
+function Metric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
   return (
     <div className="rounded-xl border border-white/8 bg-black/20 p-3">
-      <p className="text-[8px] uppercase tracking-[0.12em] text-white/20">{label}</p>
-      <p className="mt-1 text-sm text-white/60">{value}</p>
+      <p className="text-[8px] uppercase tracking-[0.12em] text-white/20">
+        {label}
+      </p>
+
+      <p className="mt-1 text-sm text-white/60">
+        {value}
+      </p>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: TeamIntelligence["status"] }) {
+function StatusBadge({
+  status,
+}: {
+  status: TeamIntelligence["status"];
+}) {
   const label =
     status === "Overloaded"
       ? "Overloaded"

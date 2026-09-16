@@ -6,9 +6,7 @@ import Image from "next/image";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
 
 import {
-  login,
   databaseLogin,
-  isDatabaseAuth,
   AuthUser,
 } from "@/lib/core/authStore";
 
@@ -51,25 +49,28 @@ export default function LoginPage() {
       return;
     }
 
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const user = isDatabaseAuth
-        ? await databaseLogin(cleanEmail, password)
-        : login(cleanEmail);
+      const user = await databaseLogin(cleanEmail, password);
 
       if (!user) {
-        setError(
-          isDatabaseAuth
-            ? "Invalid email or password."
-            : "No active account was found with this email."
-        );
+        setError("Invalid email or password.");
         return;
       }
 
       redirectUser(user);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Login failed.");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Invalid email or password."
+      );
     } finally {
       setLoading(false);
     }
@@ -77,14 +78,11 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white">
-
       <div className="flex min-h-screen items-center justify-center px-5 py-10">
-
         <div className="w-full max-w-md">
 
           {/* LOGO */}
           <div className="mb-10 flex justify-center">
-
             <Image
               src="/images/logo-mason-arc.png"
               alt="Mason & Arc"
@@ -93,14 +91,12 @@ export default function LoginPage() {
               className="h-auto w-[150px] object-contain"
               priority
             />
-
           </div>
 
           {/* CARD */}
           <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-7 shadow-2xl">
 
             <div className="mb-8">
-
               <p className="text-[9px] uppercase tracking-[0.3em] text-white/25">
                 Mason & Arc
               </p>
@@ -112,7 +108,6 @@ export default function LoginPage() {
               <p className="mt-2 text-xs leading-5 text-white/30">
                 Access the Mason & Arc Digital Studio OS.
               </p>
-
             </div>
 
             <form
@@ -122,7 +117,6 @@ export default function LoginPage() {
 
               {/* EMAIL */}
               <div>
-
                 <label className="mb-2 flex items-center gap-2 text-[9px] uppercase tracking-[0.18em] text-white/30">
                   <Mail size={13} />
                   Email
@@ -136,14 +130,14 @@ export default function LoginPage() {
                   }
                   placeholder="you@masonandarc.com"
                   autoComplete="email"
+                  maxLength={254}
+                  required
                   className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
                 />
-
               </div>
 
               {/* PASSWORD */}
               <div>
-
                 <label className="mb-2 flex items-center gap-2 text-[9px] uppercase tracking-[0.18em] text-white/30">
                   <LockKeyhole size={13} />
                   Password
@@ -152,21 +146,27 @@ export default function LoginPage() {
                 <input
                   type="password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={(event) =>
+                    setPassword(event.target.value)
+                  }
                   placeholder="••••••••"
                   autoComplete="current-password"
+                  maxLength={256}
+                  required
                   className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
                 />
 
                 <p className="mt-2 text-[10px] text-white/20">
-                  {isDatabaseAuth ? "Secure database authentication." : "Prototype authentication mode."}
+                  Secure database authentication.
                 </p>
-
               </div>
 
               {/* ERROR */}
               {error && (
-                <div className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-xs leading-5 text-red-300">
+                <div
+                  role="alert"
+                  className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-xs leading-5 text-red-300"
+                >
                   {error}
                 </div>
               )}
@@ -177,10 +177,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="group flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
               >
-
-                {loading
-                  ? "Signing in..."
-                  : "Sign In"}
+                {loading ? "Signing in..." : "Sign In"}
 
                 {!loading && (
                   <ArrowRight
@@ -188,57 +185,17 @@ export default function LoginPage() {
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 )}
-
               </button>
 
             </form>
-
           </div>
-
-          {!isDatabaseAuth && (<>
-          {/* PROTOTYPE ACCOUNTS */}
-          <div className="mt-5 rounded-xl border border-white/5 bg-white/[0.015] p-4">
-
-            <p className="text-[9px] uppercase tracking-[0.2em] text-white/20">
-              Prototype Accounts
-            </p>
-
-            <div className="mt-3 space-y-2 text-[10px] text-white/30">
-
-              <div className="flex justify-between gap-3">
-                <span>Owner</span>
-                <span className="text-white/50">
-                  owner@masonandarc.com
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-3">
-                <span>Omar</span>
-                <span className="text-white/50">
-                  omar@masonandarc.com
-                </span>
-              </div>
-
-              <div className="flex justify-between gap-3">
-                <span>Ahmed</span>
-                <span className="text-white/50">
-                  ahmed@masonandarc.com
-                </span>
-              </div>
-
-            </div>
-
-          </div>
-          </>)}
 
           <p className="mt-8 text-center text-[9px] uppercase tracking-[0.2em] text-white/15">
             Mason & Arc Digital Studio OS
           </p>
 
         </div>
-
       </div>
-
     </main>
   );
 }
