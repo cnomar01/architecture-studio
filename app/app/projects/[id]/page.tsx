@@ -11,12 +11,8 @@ import {
   MessageSquare,
   Activity,
 } from "lucide-react";
-import {
-  getProjectById,
-  type Project,
-} from "@/lib/core/projectStore";
-import { getProjectFiles } from "@/app/app/admin/files/fileStore";
-import { getApprovals } from "@/app/app/admin/approvals/approvalStore";
+import { type Project } from "@/lib/core/projectStore";
+import { listResource } from "@/lib/client/dataApi";
 
 export default function ClientProjectPage() {
   const [project, setProject] = useState<Project>();
@@ -27,19 +23,26 @@ export default function ClientProjectPage() {
     const id = window.location.pathname.split("/").filter(Boolean).at(-1);
     if (!id) return;
 
-    const current = getProjectById(id);
-    setProject(current ?? undefined);
-
-    if (current) {
-      setFilesCount(getProjectFiles(current.id).length);
-      setApprovalsCount(
-        getApprovals().filter(
-          (approval) =>
-            approval.projectId === current.id ||
-            approval.project === current.name
-        ).length
-      );
-    }
+    let active = true;
+    void Promise.all([
+      listResource<any>("projects"),
+      listResource<any>("files", id),
+      listResource<any>("approvals", id),
+    ]).then(([projects, files, approvals]) => {
+      if (!active) return;
+      const item = projects.data.find((project) => project.id === id || project.code === id);
+      if (!item) return setProject(undefined);
+      setProject({
+        id: item.id, code: item.code, name: item.name, type: item.type, location: item.location,
+        status: item.status, phase: item.phase, description: item.description,
+        clientId: item.client_id, clientName: item.client_name, projectManagerId: item.project_manager_id,
+        projectManagerName: item.project_manager_name, startDate: item.start_date || "", targetDate: item.target_date || "",
+        createdAt: "", updatedAt: "",
+      });
+      setFilesCount(files.data.length);
+      setApprovalsCount(approvals.data.length);
+    }).catch(() => { if (active) setProject(undefined); });
+    return () => { active = false; };
   }, []);
 
   if (!project) {

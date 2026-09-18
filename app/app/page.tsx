@@ -1,29 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, Bell, CheckCircle2, Clock3, FileText, FolderOpen, MessageSquare } from "lucide-react";
-import { getProjects, type Project } from "@/lib/core/projectStore";
-import { getProjectFiles } from "@/app/app/admin/files/fileStore";
-import { getApprovals } from "@/app/app/admin/approvals/approvalStore";
-import { getClientMessages } from "@/lib/core/messageStore";
-import { getTasks } from "@/app/app/admin/tasks/taskStore";
-import { getNotifications } from "@/lib/core/notificationStore";
+import type { Project } from "@/lib/core/projectStore";
+import { listResource } from "@/lib/client/dataApi";
+import AuthGuard from "@/lib/core/AuthGuard";
 
 export default function AppHome() {
+  return <AuthGuard allowedRoles={["Client"]}><ClientPortal /></AuthGuard>;
+}
+
+function ClientPortal() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [metrics, setMetrics] = useState({ files: 0, approvals: 0, messages: 0, tasks: 0 });
 
   useEffect(() => {
-    setProjects(getProjects());
+    let active = true;
+    void Promise.all([
+      listResource<any>("projects"),
+      listResource<any>("files"),
+      listResource<any>("approvals"),
+      listResource<any>("messages"),
+    ]).then(([projectsResponse, files, approvals, messages]) => {
+        if (!active) return;
+        setProjects(projectsResponse.data.map((project) => ({
+          id: project.id, code: project.code, name: project.name, type: project.type,
+          location: project.location, status: project.status, phase: project.phase,
+          description: project.description, clientId: project.client_id, clientName: project.client_name,
+          projectManagerId: project.project_manager_id, projectManagerName: project.project_manager_name,
+          startDate: project.start_date || "", targetDate: project.target_date || "",
+          createdAt: "", updatedAt: "",
+        })));
+        setMetrics({ files: files.data.length, approvals: approvals.data.filter((item) => item.status === "Pending").length, messages: messages.data.length, tasks: 0 });
+      })
+      .catch(() => { if (active) setProjects([]); });
+    return () => { active = false; };
   }, []);
-
-  const metrics = useMemo(() => {
-    const files = projects.reduce((n, p) => n + getProjectFiles(p.id).length, 0);
-    const approvals = getApprovals().filter((a) => a.status === "Pending").length;
-    const messages = projects.reduce((n, p) => n + getClientMessages(p.id).length, 0);
-    const tasks = getTasks().filter((t) => t.status === "In Progress" || t.status === "Open").length;
-    return { files, approvals, messages, tasks };
-  }, [projects]);
 
   const displayProjects = projects.length ? projects : [];
 
@@ -98,8 +111,8 @@ function Metric({ icon, label, value }: { icon: React.ReactNode; label: string; 
 }
 
 function ProjectCard({ project }: { project: Project }) {
-  const files = getProjectFiles(project.id).length;
-  const approvals = getApprovals().filter((a) => (a.projectId === project.id || a.project === project.name) && a.status === "Pending").length;
+  const files = "View";
+  const approvals = "View";
   return <article className="group rounded-3xl border border-white/10 bg-white/[0.035] p-7 transition hover:border-white/25 hover:bg-white/[0.055]">
     <div className="flex items-start justify-between gap-5"><div><p className="text-[9px] uppercase tracking-[0.2em] text-white/25">{project.code} · {project.type}</p><h3 className="mt-3 text-3xl font-light tracking-[-0.035em]">{project.name}</h3><p className="mt-3 text-xs text-white/35">{project.location}</p></div><span className="rounded-full border border-white/10 px-3 py-1.5 text-[9px] uppercase tracking-[0.15em] text-white/40">{project.status}</span></div>
     <div className="mt-12 grid grid-cols-3 gap-3 text-xs"><Stat label="Phase" value={project.phase} /><Stat label="Files" value={files} /><Stat label="Approvals" value={approvals} /></div>

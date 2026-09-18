@@ -10,6 +10,7 @@
     "ai:check": "node scripts/check-local-ai.mjs",
     "db:setup": "node scripts/db-setup.mjs",
     "db:backup": "node scripts/db-backup.mjs",
+    "db:restore": "node scripts/db-restore.mjs",
     "db:check": "node scripts/db-check.mjs",
     "db:smoke": "node scripts/db-smoke.mjs",
     "qa": "node scripts/production-qa.mjs && next build"

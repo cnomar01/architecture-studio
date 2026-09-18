@@ -159,9 +159,9 @@ function AdminShell({
   return (
     <div className="min-h-screen bg-[#111111] text-white">
       {/* Desktop Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-white/10 bg-[#111111] lg:flex lg:flex-col">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col overflow-hidden border-r border-white/10 bg-[#111111] p-5 lg:flex">
         {/* Logo */}
-        <div className="flex h-24 items-center border-b border-white/10 px-8">
+        <div className="flex shrink-0 items-center border-b border-white/10 px-3 pb-5 pt-3">
           <Link href="/app/admin">
             <img
               src="/images/logo-mason-arc.png"
@@ -172,12 +172,12 @@ function AdminShell({
         </div>
 
         {/* Workspace */}
-        <div className="px-5 py-7">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-6 [scrollbar-color:rgba(255,255,255,0.22)_transparent] [scrollbar-width:thin]">
           <p className="px-3 text-[9px] uppercase tracking-[0.25em] text-white/25">
             Workspace
           </p>
 
-          <nav className="mt-4 space-y-1">
+          <nav className="mt-4 space-y-1 pb-3">
             {navigation.map((item) => {
               const isNotifications =
                 item.label === "Notifications";
@@ -220,7 +220,7 @@ function AdminShell({
         </div>
 
         {/* Bottom */}
-        <div className="mt-auto border-t border-white/10 p-5">
+        <div className="shrink-0 border-t border-white/10 pt-4">
           {/* Client Portal */}
           <Link
             href="/app"

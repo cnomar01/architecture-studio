@@ -237,10 +237,10 @@ export function addTask(
   });
 
   addNotification({
-    type: "Task",
+    type: "task",
     title: "New Task Assigned",
     message: `${task.title} assigned to ${task.assignee}.`,
-    link: "/app/admin/tasks",
+    
   });
 
   return task;
@@ -507,19 +507,33 @@ export function deleteTask(id: string) {
 
   if (!task) return false;
 
+  // Deleting a parent task also deletes its subtasks so no orphaned work items
+  // remain hidden in the command center.
+  const deletedIds = new Set<string>([id]);
+  let foundChildren = true;
+  while (foundChildren) {
+    foundChildren = false;
+    for (const item of tasks) {
+      if (item.parentTaskId && deletedIds.has(item.parentTaskId) && !deletedIds.has(item.id)) {
+        deletedIds.add(item.id);
+        foundChildren = true;
+      }
+    }
+  }
+
   const remaining = tasks
-    .filter((item) => item.id !== id)
+    .filter((item) => !deletedIds.has(item.id))
     .map((item) => ({
       ...item,
       dependencies: (
         item.dependencies || []
       ).filter(
-        (dependencyId) => dependencyId !== id
+        (dependencyId) => !deletedIds.has(dependencyId)
       ),
       subtasks: (
         item.subtasks || []
       ).filter(
-        (subtaskId) => subtaskId !== id
+        (subtaskId) => !deletedIds.has(subtaskId)
       ),
     }));
 

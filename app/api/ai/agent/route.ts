@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireServerUser } from "@/lib/server/auth";
 
 export const runtime = "nodejs";
 
@@ -16,6 +17,7 @@ const agents: Record<AgentKey, { name: string; role: string; system: string }> =
 
 export async function POST(request: Request) {
   try {
+    await requireServerUser(["Owner", "Manager", "Engineer"]);
     const body = await request.json();
     const key = String(body?.agent || "project") as AgentKey;
     const agent = agents[key] || agents.project;

@@ -1,244 +1,135 @@
 "use client";
 
 export type NotificationType =
-  | "Task"
-  | "Approval"
-  | "File"
-  | "Site"
-  | "Finance"
-  | "Project"
-  | "System";
+  | "task"
+  | "approval"
+  | "site"
+  | "finance"
+  | "project"
+  | "system";
 
-export type NotificationPriority = "Info" | "Warning" | "Critical";
+export type NotificationPriority =
+  | "Low"
+  | "Medium"
+  | "High"
+  | "Critical";
 
 export type Notification = {
   id: string;
-  type: NotificationType;
-  priority: NotificationPriority;
   title: string;
   message: string;
-  link?: string;
+  type: NotificationType;
+  priority?: NotificationPriority;
   read: boolean;
   createdAt: string;
+  href?: string;
+  userId?: string;
 };
 
-const STORAGE_KEY = "mason-arc-notifications";
+const KEY = "mason-arc-notifications";
 
-/* =========================================
-   GET NOTIFICATIONS
-========================================= */
-
-export function getNotifications(): Notification[] {
-  if (typeof window === "undefined") {
-    return [];
+function createNotificationId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `NTF-${crypto.randomUUID()}`;
   }
 
-  const stored = localStorage.getItem(STORAGE_KEY);
+  return `NTF-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
 
-  if (!stored) {
-    return [];
-  }
+function read(): Notification[] {
+  if (typeof window === "undefined") return [];
 
   try {
-    return JSON.parse(stored) as Notification[];
+    const stored = JSON.parse(localStorage.getItem(KEY) || "[]") as Notification[];
+    const ids = new Set<string>();
+    let repaired = false;
+    const notifications = stored.map((notification) => {
+      if (!ids.has(notification.id)) {
+        ids.add(notification.id);
+        return notification;
+      }
+
+      repaired = true;
+      const id = createNotificationId();
+      ids.add(id);
+      return { ...notification, id };
+    });
+
+    // Repair legacy localStorage entries created with Date.now() in the same tick.
+    if (repaired) write(notifications);
+    return notifications;
   } catch {
-    localStorage.removeItem(STORAGE_KEY);
     return [];
   }
 }
 
-/* =========================================
-   SAVE NOTIFICATIONS
-========================================= */
-
-export function saveNotifications(
-  notifications: Notification[]
-) {
-  if (typeof window === "undefined") {
-    return;
+function write(v: Notification[]) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(KEY, JSON.stringify(v));
   }
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(notifications)
-  );
 }
 
-/* =========================================
-   ADD NOTIFICATION
-========================================= */
+export function getNotifications(userId?: string): Notification[] {
+  return read()
+    .filter((n) => !userId || !n.userId || n.userId === userId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
 
 export function addNotification(
-  notification: Omit<
-    Notification,
-    "id" | "createdAt" | "read" | "priority"
-  > & {
-    priority?: NotificationPriority;
-  }
-) {
-  const notifications = getNotifications();
+  input: Omit<Notification, "id" | "createdAt" | "read">
+): Notification {
+  const v = read();
 
-  const newNotification: Notification = {
-    ...notification,
-    priority: notification.priority || "Info",
-    id: `NOT-${Date.now()}`,
-    read: false,
+  const n: Notification = {
+    ...input,
+    id: createNotificationId(),
     createdAt: new Date().toISOString(),
+    read: false,
   };
 
-  saveNotifications([
-    newNotification,
-    ...notifications,
-  ]);
+  write([n, ...v]);
 
-  return newNotification;
+  return n;
 }
 
-/* =========================================
-   GET ONE NOTIFICATION
-========================================= */
-
-export function getNotificationById(
-  notificationId: string
-) {
-  return getNotifications().find(
-    (notification) =>
-      notification.id === notificationId
-  );
-}
-
-/* =========================================
-   MARK AS READ
-========================================= */
-
-export function markNotificationRead(
-  notificationId: string
-) {
-  const notifications = getNotifications();
-
-  const updatedNotifications =
-    notifications.map((notification) =>
-      notification.id === notificationId
+export function markNotificationRead(id: string) {
+  write(
+    read().map((n) =>
+      n.id === id
         ? {
-            ...notification,
+            ...n,
             read: true,
           }
-        : notification
-    );
-
-  saveNotifications(updatedNotifications);
-
-  return updatedNotifications.find(
-    (notification) =>
-      notification.id === notificationId
+        : n
+    )
   );
 }
 
-/* =========================================
-   MARK AS UNREAD
-========================================= */
-
-export function markNotificationUnread(
-  notificationId: string
-) {
-  const notifications = getNotifications();
-
-  const updatedNotifications =
-    notifications.map((notification) =>
-      notification.id === notificationId
+export function markAllNotificationsRead(userId?: string) {
+  write(
+    read().map((n) =>
+      !userId || !n.userId || n.userId === userId
         ? {
-            ...notification,
-            read: false,
+            ...n,
+            read: true,
           }
-        : notification
-    );
+        : n
+    )
+  );
+}
 
-  saveNotifications(updatedNotifications);
+export function unreadNotificationCount(userId?: string): number {
+  return getNotifications(userId).filter((n) => !n.read).length;
+}
 
-  return updatedNotifications.find(
+export function getUnreadNotificationCount(): number {
+  return getNotifications().filter((notification) => !notification.read)
+    .length;
+}
+
+export function hasNotification(key: string): boolean {
+  return getNotifications().some(
     (notification) =>
-      notification.id === notificationId
+      notification.id === key || notification.title === key
   );
-}
-
-/* =========================================
-   MARK ALL AS READ
-========================================= */
-
-export function markAllNotificationsRead() {
-  const notifications = getNotifications();
-
-  const updatedNotifications =
-    notifications.map((notification) => ({
-      ...notification,
-      read: true,
-    }));
-
-  saveNotifications(updatedNotifications);
-
-  return updatedNotifications;
-}
-
-/* =========================================
-   GET UNREAD
-========================================= */
-
-export function getUnreadNotifications() {
-  return getNotifications().filter(
-    (notification) => !notification.read
-  );
-}
-
-/* =========================================
-   UNREAD COUNT
-========================================= */
-
-export function getUnreadNotificationCount() {
-  return getUnreadNotifications().length;
-}
-
-/* =========================================
-   DELETE NOTIFICATION
-========================================= */
-
-export function deleteNotification(
-  notificationId: string
-) {
-  const notifications = getNotifications();
-
-  const updatedNotifications =
-    notifications.filter(
-      (notification) =>
-        notification.id !== notificationId
-    );
-
-  saveNotifications(updatedNotifications);
-
-  return true;
-}
-
-/* =========================================
-   ALERT HELPERS
-========================================= */
-
-export function hasNotification(title: string) {
-  return getNotifications().some((notification) => notification.title === title);
-}
-
-export function clearReadNotifications() {
-  const unread = getNotifications().filter((notification) => !notification.read);
-  saveNotifications(unread);
-  return unread;
-}
-
-/* =========================================
-   CLEAR ALL
-========================================= */
-
-export function clearNotifications() {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  localStorage.removeItem(STORAGE_KEY);
 }

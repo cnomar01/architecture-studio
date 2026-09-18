@@ -38,6 +38,10 @@ export async function runNotificationEngine() {
   const events = getCalendarEvents();
   const transactions = getFinanceTransactions();
 
+  // ─────────────────────────────────────────────
+  // OVERDUE TASKS
+  // ─────────────────────────────────────────────
+
   const overdueTasks = tasks.filter(
     (task) =>
       task.status === "Overdue" ||
@@ -51,17 +55,21 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Task",
+          type: "task",
           priority: "Critical",
           title,
           message: `${overdueTasks.length} task${
             overdueTasks.length === 1 ? " is" : "s are"
           } overdue and need attention.`,
-          link: "/app/admin/tasks",
+          href: "/app/admin/tasks",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // TASKS DUE SOON
+  // ─────────────────────────────────────────────
 
   const dueSoon = tasks.filter(
     (task) =>
@@ -76,17 +84,21 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Task",
-          priority: "Warning",
+          type: "task",
+          priority: "High",
           title,
           message: `${dueSoon.length} active task${
             dueSoon.length === 1 ? " is" : "s are"
           } due today or tomorrow.`,
-          link: "/app/admin/tasks",
+          href: "/app/admin/tasks",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // PENDING APPROVALS
+  // ─────────────────────────────────────────────
 
   const pendingApprovals = approvals.filter(
     (approval) => approval.status === "Pending"
@@ -98,17 +110,21 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Approval",
-          priority: "Warning",
+          type: "approval",
+          priority: "High",
           title,
           message: `${pendingApprovals.length} approval${
             pendingApprovals.length === 1 ? " is" : "s are"
           } waiting for review.`,
-          link: "/app/admin/approvals",
+          href: "/app/admin/approvals",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // TEAM OVERLOAD
+  // ─────────────────────────────────────────────
 
   const overloaded = team.filter(
     (member) => member.status === "Overloaded"
@@ -120,17 +136,21 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Project",
+          type: "project",
           priority: "Critical",
           title,
           message: `${overloaded.length} team member${
             overloaded.length === 1 ? " is" : "s are"
           } currently overloaded.`,
-          link: "/app/admin/team",
+          href: "/app/admin/team",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // UPCOMING CALENDAR EVENTS
+  // ─────────────────────────────────────────────
 
   const upcomingEvents = events.filter(
     (event) =>
@@ -144,17 +164,21 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Project",
-          priority: "Info",
+          type: "project",
+          priority: "Low",
           title,
           message: `${upcomingEvents.length} calendar event${
             upcomingEvents.length === 1 ? " is" : "s are"
           } scheduled today or tomorrow.`,
-          link: "/app/admin/calendar",
+          href: "/app/admin/calendar",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // PENDING FINANCE
+  // ─────────────────────────────────────────────
 
   const pendingFinance = transactions.filter(
     (transaction) => transaction.status === "Pending"
@@ -166,29 +190,33 @@ export async function runNotificationEngine() {
     if (!hasNotification(title)) {
       created.push(
         addNotification({
-          type: "Finance",
-          priority: "Warning",
+          type: "finance",
+          priority: "High",
           title,
           message: `${pendingFinance.length} finance transaction${
             pendingFinance.length === 1 ? " is" : "s are"
           } still pending.`,
-          link: "/app/admin/finance",
+          href: "/app/admin/finance",
         })
       );
     }
   }
+
+  // ─────────────────────────────────────────────
+  // DAILY SYSTEM HEARTBEAT
+  // ─────────────────────────────────────────────
 
   const heartbeatTitle = `Studio check ${todayKey()}`;
 
   if (!hasNotification(heartbeatTitle)) {
     created.push(
       addNotification({
-        type: "System",
-        priority: "Info",
+        type: "system",
+        priority: "Low",
         title: heartbeatTitle,
         message:
           "Studio alert engine completed its daily operational check.",
-        link: "/app/admin/intelligence",
+        href: "/app/admin/intelligence",
       })
     );
   }
@@ -201,17 +229,20 @@ export function getNotificationSummary() {
 
   return {
     total: notifications.length,
+
     unread: notifications.filter(
       (notification) => !notification.read
     ).length,
+
     critical: notifications.filter(
       (notification) =>
         notification.priority === "Critical" &&
         !notification.read
     ).length,
+
     warning: notifications.filter(
       (notification) =>
-        notification.priority === "Warning" &&
+        notification.priority === "High" &&
         !notification.read
     ).length,
   };

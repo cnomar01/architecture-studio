@@ -23,6 +23,11 @@ import {
   Client,
 } from "@/lib/core/clientStore";
 
+import {
+  getTeam,
+  TeamMember,
+} from "@/lib/core/teamStore";
+
 const phases: ProjectPhase[] = [
   "Concept Design",
   "Design Development",
@@ -72,6 +77,12 @@ export default function EditProjectPage() {
   const [clients, setClients] =
     useState<Client[]>([]);
 
+  const [team, setTeam] =
+    useState<TeamMember[]>([]);
+
+  const [teamMemberIds, setTeamMemberIds] =
+    useState<string[]>([]);
+
   const [projectManagerName, setProjectManagerName] =
     useState("");
 
@@ -93,6 +104,8 @@ export default function EditProjectPage() {
 
   useEffect(() => {
     setClients(getClients());
+
+    getTeam().then(setTeam).catch(() => setTeam([]));
 
     const found =
       getProjectById(projectId);
@@ -120,6 +133,10 @@ export default function EditProjectPage() {
 
     setProjectManagerName(
       found.projectManagerName ?? ""
+    );
+
+    setTeamMemberIds(
+      found.teamMemberIds ?? []
     );
 
     setStartDate(found.startDate);
@@ -180,6 +197,8 @@ export default function EditProjectPage() {
 
       projectManagerName:
         projectManagerName.trim(),
+
+      teamMemberIds,
 
       startDate,
       targetDate,
@@ -517,6 +536,80 @@ export default function EditProjectPage() {
 
             </div>
 
+          </section>
+
+          {/* PROJECT TEAM */}
+
+          <section className="border-b border-white/10 p-6 md:p-8">
+            <SectionTitle
+              eyebrow="04"
+              title="Project Team"
+              description="Assign Mason & Arc team members to this project workspace."
+            />
+
+            <div className="mt-7">
+              {team.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-6 text-sm text-white/35">
+                  No active team members are available yet.
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {team.map((member) => {
+                    const selected = teamMemberIds.includes(member.id);
+
+                    return (
+                      <label
+                        key={member.id}
+                        className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition ${
+                          selected
+                            ? "border-white/25 bg-white/[0.07]"
+                            : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={(event) => {
+                            setTeamMemberIds((current) =>
+                              event.target.checked
+                                ? [...current, member.id]
+                                : current.filter((id) => id !== member.id)
+                            );
+                          }}
+                          className="h-4 w-4"
+                        />
+
+                        {member.avatarUrl ? (
+                          <img
+                            src={member.avatarUrl}
+                            alt=""
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-xs text-white/55">
+                            {member.initials}
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-white/80">
+                            {member.name}
+                          </p>
+                          <p className="mt-1 truncate text-xs text-white/35">
+                            {member.position || member.role}
+                          </p>
+                          {member.department && (
+                            <p className="mt-0.5 truncate text-[10px] uppercase tracking-wider text-white/20">
+                              {member.department}
+                            </p>
+                          )}
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </section>
 
           {/* DATES */}

@@ -25,18 +25,10 @@ export type Project = {
 
   projectManagerId?: string;
   projectManagerName?: string;
+  teamMemberIds?: string[];
 
   startDate: string;
   targetDate: string;
-
-  // Public website / CMS presentation fields
-  slug?: string;
-  featured?: boolean;
-  image?: string;
-  gallery?: string[];
-  year?: string;
-  program?: string[];
-  scope?: string[];
 
   createdAt: string;
   updatedAt: string;
@@ -61,17 +53,10 @@ const initialProjects: Project[] = [
 
     projectManagerId: "OM-001",
     projectManagerName: "Omar Mohamed",
+    teamMemberIds: [],
 
     startDate: "2026-09-01",
     targetDate: "",
-
-    slug: "city-edge",
-    featured: true,
-    image: "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
-    gallery: ["/images/projects/city-edge/city-edge-exterior-wip.jpeg"],
-    year: "2025 — Ongoing",
-    program: ["Shopping Mall", "Retail", "Offices", "Medical Clinics", "Residential", "Rooftop Leisure"],
-    scope: ["Architecture", "Façade", "MEP", "HVAC", "Vertical Transportation", "Interior Finishing"],
 
     createdAt: "2026-09-01",
     updatedAt: "2026-09-11",
@@ -99,7 +84,11 @@ export function getProjects(): Project[] {
   }
 
   try {
-    return JSON.parse(stored) as Project[];
+    const parsed = JSON.parse(stored) as Project[];
+    return parsed.map((project) => ({
+      ...project,
+      teamMemberIds: Array.isArray(project.teamMemberIds) ? project.teamMemberIds : [],
+    }));
   } catch {
     localStorage.setItem(
       STORAGE_KEY,
@@ -175,7 +164,7 @@ export function updateProject(
 
   const updatedProjects = projects.map(
     (project) =>
-      project.id === projectId
+      (project.id === projectId || project.code === projectId)
         ? {
             ...project,
             ...updates,
@@ -199,7 +188,7 @@ export function deleteProject(
   const projects = getProjects();
 
   const updatedProjects = projects.filter(
-    (project) => project.id !== projectId
+    (project) => project.id !== projectId && project.code !== projectId
   );
 
   saveProjects(updatedProjects);
@@ -267,6 +256,38 @@ export function removeClientFromProject(projectId: string) {
   return updateProject(projectId, {
     clientId: "",
     clientName: "",
+  });
+}
+
+/* -------------------------------- */
+/* PROJECT TEAM */
+/* -------------------------------- */
+
+export function assignProjectTeam(projectId: string, memberIds: string[]) {
+  const uniqueIds = Array.from(new Set(memberIds.filter(Boolean)));
+  return updateProject(projectId, {
+    teamMemberIds: uniqueIds,
+  });
+}
+
+export function addTeamMemberToProject(projectId: string, memberId: string) {
+  const project = getProjectById(projectId);
+  if (!project || !memberId) return getProjects();
+
+  const currentIds = project.teamMemberIds ?? [];
+  if (currentIds.includes(memberId)) return getProjects();
+
+  return updateProject(projectId, {
+    teamMemberIds: [...currentIds, memberId],
+  });
+}
+
+export function removeTeamMemberFromProject(projectId: string, memberId: string) {
+  const project = getProjectById(projectId);
+  if (!project) return getProjects();
+
+  return updateProject(projectId, {
+    teamMemberIds: (project.teamMemberIds ?? []).filter((id) => id !== memberId),
   });
 }
 

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireServerUser } from "@/lib/server/auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -144,6 +145,7 @@ function workflow({
 
 export async function POST(request: Request) {
   try {
+    await requireServerUser(["Owner", "Manager", "Engineer"]);
     const body = await request.json();
     const prompt = String(body?.prompt || "").trim();
     const reference = body?.reference && typeof body.reference === "object" ? body.reference : null;

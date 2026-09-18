@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import {
   addTaskComment,
@@ -19,12 +19,14 @@ import {
   linkTaskToFile,
   linkTaskToApproval,
   linkTaskToSiteIssue,
+  deleteTask,
 } from "../taskStore";
 
 import { getUsers } from "@/lib/core/authStore";
 
 export default function TaskDetailsPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const taskId = params.id;
 
   const [task, setTask] = useState<Task | undefined>(undefined);
@@ -139,6 +141,16 @@ export default function TaskDetailsPage() {
     load();
   }
 
+  function removeTask() {
+    const warning = subtasks.length
+      ? `Delete “${currentTask.title}” and its ${subtasks.length} subtask(s)? This cannot be undone.`
+      : `Delete “${currentTask.title}”? This cannot be undone.`;
+    if (!window.confirm(warning)) return;
+
+    deleteTask(currentTask.id);
+    router.replace("/app/admin/tasks");
+  }
+
   return (
     <main className="min-h-screen bg-[#080808] p-6 text-white md:p-8">
       <div className="mx-auto max-w-6xl">
@@ -186,6 +198,13 @@ export default function TaskDetailsPage() {
                 {status}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={removeTask}
+              className="rounded-xl border border-red-400/30 px-3 py-2 text-xs text-red-300 transition hover:bg-red-400/10"
+            >
+              Delete task
+            </button>
           </div>
         </div>
 

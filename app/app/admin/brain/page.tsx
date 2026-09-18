@@ -115,9 +115,26 @@ export default function BrainPage() {
   }, [searchParams, question, messages.length]);
 
   function readFile(file: File, setter: (value: Attachment) => void) {
-    if (file.size > 10 * 1024 * 1024) { alert("Please keep uploads under 10 MB."); return; }
+    const maxSize = file.type.startsWith("video/")
+      ? 500 * 1024 * 1024
+      : file.type.startsWith("image/")
+        ? 10 * 1024 * 1024
+        : 50 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      const limitLabel = file.type.startsWith("video/")
+        ? "500 MB"
+        : file.type.startsWith("image/")
+          ? "10 MB"
+          : "50 MB";
+
+      alert(`Please keep this file under ${limitLabel}.`);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => setter({ file, dataUrl: String(reader.result) });
+    reader.onerror = () => alert("Could not read this file.");
     reader.readAsDataURL(file);
   }
 

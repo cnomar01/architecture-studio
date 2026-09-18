@@ -9,6 +9,11 @@ export type TeamMember = {
   initials: string;
   role: string;
   department: string;
+  departmentId?: string;
+  position: string;
+  positionId?: string;
+  avatarUrl?: string;
+  email?: string;
   status: TeamStatus;
   project?: string;
   projectRole?: string;
@@ -16,6 +21,7 @@ export type TeamMember = {
 
 function mapUser(user: any): TeamMember {
   const name = String(user.name || "");
+
   const initials =
     name
       .split(" ")
@@ -30,8 +36,13 @@ function mapUser(user: any): TeamMember {
     code: user.employeeId || user.id,
     name,
     initials,
-    role: user.role,
+    role: user.role || "",
     department: user.department || "",
+    departmentId: user.departmentId || undefined,
+    position: user.position || "",
+    positionId: user.positionId || undefined,
+    avatarUrl: user.avatarUrl || undefined,
+    email: user.email || undefined,
     status: user.active ? "Active" : "Inactive",
   };
 }
@@ -52,7 +63,10 @@ export async function getTeam(): Promise<TeamMember[]> {
 
 export async function getActiveTeam(): Promise<TeamMember[]> {
   const team = await getTeam();
-  return team.filter((member) => member.status === "Active");
+
+  return team.filter(
+    (member) => member.status === "Active"
+  );
 }
 
 export async function getTeamMemberById(

@@ -1,471 +1,443 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
-import { ArrowLeft, Save, Trash2, UserRound } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { prepareAvatar } from "@/lib/core/avatar";
 
-type TeamMember = {
+type Department = { id: string; code: string; name: string; active: boolean };
+type Position = { id: string; department_id: string; code: string; name: string; active: boolean };
+
+type Member = {
   id: string;
   name: string;
   email: string;
-  role: "Owner" | "Manager" | "Engineer" | "Client";
-  employeeId: string;
-  department: string;
+  role: string;
+  department?: string;
+  departmentId?: string;
+  position?: string;
+  positionId?: string;
+  employeeId?: string;
   active: boolean;
-  createdAt?: string;
+  avatarUrl?: string;
 };
 
-export default function EditTeamMemberPage() {
-  const [member, setMember] = useState<TeamMember | null>(null);
+const roles = ["Owner", "Manager", "Engineer", "Client"];
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [role, setRole] = useState<
-    "Owner" | "Manager" | "Engineer" | "Client"
-  >("Engineer");
-  const [department, setDepartment] = useState("");
-  const [status, setStatus] = useState<"Active" | "Inactive">(
-    "Active"
-  );
-  const [password, setPassword] = useState("");
+export default function EditTeamMemberPage() {
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
+
+  const [member, setMember] = useState<Member | null>(null);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    role: "Engineer",
+    departmentId: "",
+    positionId: "",
+    employeeId: "",
+    password: "",
+    avatarUrl: "",
+  });
 
   const [loading, setLoading] = useState(true);
+  const [loadingDepartments, setLoadingDepartments] = useState(true);
+  const [loadingPositions, setLoadingPositions] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function loadMember() {
+    async function loadDepartments() {
       try {
-        setLoading(true);
-
-        const id =
-          window.location.pathname.split("/")[4];
-
-        const response = await fetch("/api/admin/team", {
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to load team.");
-        }
-
+        const response = await fetch("/api/admin/departments", { cache: "no-store" });
         const data = await response.json();
-
-        const found = (data.users || []).find(
-          (user: TeamMember) =>
-            user.id === id ||
-            user.employeeId === id
-        );
-
-        if (!found) {
-          setMember(null);
-          return;
-        }
-
-        setMember(found);
-        setName(found.name);
-        setEmail(found.email);
-        setCode(found.employeeId || "");
-        setRole(found.role);
-        setDepartment(found.department || "");
-        setStatus(found.active ? "Active" : "Inactive");
+        if (!response.ok) throw new Error(data?.error || "Failed to load departments.");
+        setDepartments((data.departments || []).filter((item: Department) => item.active));
       } catch (err) {
-        console.error(err);
-        setError("Failed to load employee.");
+        setError(err instanceof Error ? err.message : "Failed to load departments.");
       } finally {
-        setLoading(false);
+        setLoadingDepartments(false);
+      }
+    }
+    void loadDepartments();
+  }, []);
+
+  async function loadMember() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch("/api/admin/team", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data?.error || "Failed to load team.");
+
+      const found = (data.users || []).find((user: Member) => user.id === params.id);
+      if (!found) throw new Error("Team member not found.");
+
+      setMember(found);
+      setForm({
+        name: found.name || "",
+        email: found.email || "",
+        role: found.role || "Engineer",
+        departmentId: found.departmentId || "",
+        positionId: found.positionId || "",
+        employeeId: found.employeeId || "",
+        password: "",
+        avatarUrl: found.avatarUrl || "",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load team member.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (params.id) void loadMember();
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!form.departmentId) {
+      setPositions([]);
+      return;
+    }
+
+    async function loadPositions() {
+      try {
+        setLoadingPositions(true);
+        const response = await fetch(
+          `/api/admin/positions?departmentId=${encodeURIComponent(form.departmentId)}`,
+          { cache: "no-store" }
+        );
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error || "Failed to load positions.");
+
+        const activePositions = (data.positions || []).filter((item: Position) => item.active);
+        setPositions(activePositions);
+
+        setForm((current) => ({
+          ...current,
+          positionId: activePositions.some((item: Position) => item.id === current.positionId)
+            ? current.positionId
+            : "",
+        }));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load positions.");
+      } finally {
+        setLoadingPositions(false);
       }
     }
 
-    loadMember();
-  }, []);
+    void loadPositions();
+  }, [form.departmentId]);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>
+  function updateField(field: string, value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+  }
+
+  async function handleAvatarChange(
+    event: React.ChangeEvent<HTMLInputElement>
   ) {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setError("");
+
+      const avatar = await prepareAvatar(file);
+
+      if (avatar.length > 2_000_000) {
+        throw new Error("Processed image is too large.");
+      }
+
+      setForm((current) => ({
+        ...current,
+        avatarUrl: avatar,
+      }));
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to process image."
+      );
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
-
     if (!member) return;
-
-    if (!name.trim()) {
-      setError("Employee name is required.");
-      return;
-    }
-
-    if (!email.trim()) {
-      setError("Email is required.");
-      return;
-    }
-
-    if (!department.trim()) {
-      setError("Department is required.");
-      return;
-    }
-
-    if (!role) {
-      setError("Role is required.");
-      return;
-    }
 
     try {
       setSaving(true);
+      setError("");
 
       const response = await fetch("/api/admin/team", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: member.id,
-          name: name.trim(),
-          email: email.trim(),
-          employeeId: code.trim().toUpperCase(),
-          role,
-          department: department.trim(),
-          active: status === "Active",
-          ...(password
-            ? { password }
-            : {}),
+          name: form.name.trim(),
+          email: form.email.trim(),
+          role: form.role,
+          departmentId: form.departmentId || undefined,
+          positionId: form.positionId || undefined,
+          employeeId: form.employeeId.trim() || undefined,
+          password: form.password || undefined,
+          avatarUrl: form.avatarUrl || undefined,
         }),
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || "Failed to update team member.");
 
-      if (!response.ok) {
-        throw new Error(
-          data?.error || "Failed to update employee."
-        );
-      }
-
-      window.location.href =
-        `/app/admin/team/${member.id}`;
+      router.push(`/app/admin/team/${member.id}`);
+      router.refresh();
     } catch (err) {
-      console.error(err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to update employee."
-      );
+      setError(err instanceof Error ? err.message : "Failed to update team member.");
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleDelete() {
+  async function toggleStatus() {
     if (!member) return;
 
-    const confirmed = window.confirm(
-      `Delete ${member.name}? This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
     try {
-      setDeleting(true);
+      setSaving(true);
       setError("");
 
-      const response = await fetch(
-        "/api/admin/team",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: member.id,
-          }),
-        }
-      );
+      const response = await fetch("/api/admin/team", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: member.id, active: !member.active }),
+      });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || "Failed to update status.");
 
-      if (!response.ok) {
-        throw new Error(
-          data?.error || "Failed to delete employee."
-        );
-      }
-
-      window.location.href =
-        "/app/admin/team";
+      await loadMember();
     } catch (err) {
-      console.error(err);
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to delete employee."
-      );
+      setError(err instanceof Error ? err.message : "Failed to update status.");
     } finally {
-      setDeleting(false);
+      setSaving(false);
     }
   }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#050505] text-white">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
-            <p className="text-sm text-white/40">
-              Loading employee...
-            </p>
-          </div>
-        </div>
+      <main className="min-h-screen bg-[#080808] text-white">
+        <div className="mx-auto max-w-[900px] px-6 py-20 text-center text-sm text-white/35">Loading team member...</div>
       </main>
     );
   }
 
   if (!member) {
     return (
-      <main className="min-h-screen bg-[#050505] text-white">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <Link
-            href="/app/admin/team"
-            className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white"
-          >
-            <ArrowLeft size={15} />
-            Back to Team
+      <main className="min-h-screen bg-[#080808] text-white">
+        <div className="mx-auto max-w-[900px] px-6 py-20">
+          <p className="text-red-300">{error || "Team member not found."}</p>
+          <Link href="/app/admin/team" className="mt-6 inline-flex rounded-full border border-white/10 px-5 py-3 text-[10px] uppercase tracking-[0.18em] text-white/50">
+            ← Back to Team
           </Link>
-
-          <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-8">
-            <h1 className="text-2xl font-medium">
-              Team Member Not Found
-            </h1>
-          </div>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
-      <div className="mx-auto max-w-4xl px-5 py-8 md:px-8">
-
-        <div className="mb-8 border-b border-white/10 pb-7">
-          <Link
-            href={`/app/admin/team/${member.id}`}
-            className="mb-6 inline-flex items-center gap-2 text-xs text-white/40 hover:text-white"
-          >
-            <ArrowLeft size={14} />
-            Back to Employee
+    <main className="min-h-screen bg-[#080808] text-white">
+      <div className="mx-auto max-w-[900px] px-6 py-10 lg:px-10">
+        <div className="mb-10 border-b border-white/10 pb-8">
+          <Link href={`/app/admin/team/${member.id}`} className="mb-6 inline-flex items-center text-[10px] uppercase tracking-[0.18em] text-white/35 transition hover:text-white">
+            ← Back to Profile
           </Link>
-
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-              <UserRound
-                size={19}
-                className="text-white/50"
-              />
-            </div>
-
-            <div>
-              <p className="text-[9px] uppercase tracking-[0.25em] text-white/25">
-                Team Management
-              </p>
-
-              <h1 className="mt-1 text-3xl font-medium">
-                Edit Employee
-              </h1>
-
-              <p className="mt-2 text-xs text-white/30">
-                Update employee information and access.
-              </p>
-            </div>
-          </div>
+          <p className="mb-2 text-[10px] uppercase tracking-[0.28em] text-white/30">Mason & Arc OS</p>
+          <h1 className="text-4xl font-light tracking-tight">Edit Team Member</h1>
+          <p className="mt-3 text-sm text-white/45">Update account, role, department, position and access.</p>
         </div>
 
-        {error && (
-          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {error}
-          </div>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 lg:p-8">
+            <div className="mb-6">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Profile</p>
+              <h2 className="mt-1 text-lg font-medium">Profile Picture</h2>
+            </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6"
-        >
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-            <SectionTitle
-              title="Employee Information"
-              description="Basic employee identity and role."
-            />
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <Field
-                label="Full Name"
-                value={name}
-                onChange={setName}
-                placeholder="Employee name"
-                required
-              />
-
-              <Field
-                label="Email"
-                value={email}
-                onChange={setEmail}
-                placeholder="employee@masonandarc.com"
-                type="email"
-                required
-              />
-
-              <Field
-                label="Employee Code"
-                value={code}
-                onChange={setCode}
-                placeholder="EMP-001"
-              />
-
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Role
-                </label>
-
-                <select
-                  value={role}
-                  onChange={(event) =>
-                    setRole(
-                      event.target.value as TeamMember["role"]
-                    )
-                  }
-                  className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-white outline-none focus:border-white/30"
-                >
-                  <option value="Engineer">
-                    Engineer
-                  </option>
-
-                  <option value="Manager">
-                    Manager
-                  </option>
-
-                  <option value="Owner">
-                    Owner
-                  </option>
-
-                  <option value="Client">
-                    Client
-                  </option>
-                </select>
+            <div className="flex items-center gap-5">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/[0.05]">
+                {form.avatarUrl ? (
+                  <img
+                    src={form.avatarUrl}
+                    alt={`${form.name || "Team member"} profile`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xl text-white/30">
+                    {form.name
+                      .split(" ")
+                      .filter(Boolean)
+                      .map((part) => part[0])
+                      .join("")
+                      .slice(0, 2)
+                      .toUpperCase() || "TM"}
+                  </span>
+                )}
               </div>
 
-              <Field
-                label="Department"
-                value={department}
-                onChange={setDepartment}
-                placeholder="Architecture"
-                required
-              />
-            </div>
-          </section>
+              <div>
+                <div className="flex flex-wrap gap-2">
+                  <label className="inline-flex h-10 cursor-pointer items-center rounded-full border border-white/10 px-4 text-[10px] uppercase tracking-[0.16em] text-white/60 transition hover:border-white/25 hover:text-white">
+                    Change Photo
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={handleAvatarChange}
+                    />
+                  </label>
 
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-            <SectionTitle
-              title="Employment Status"
-              description="Control availability for project assignments."
-            />
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {(["Active", "Inactive"] as const).map(
-                (item) => {
-                  const selected = status === item;
-
-                  return (
+                  {form.avatarUrl && (
                     <button
-                      key={item}
                       type="button"
                       onClick={() =>
-                        setStatus(item)
+                        setForm((current) => ({
+                          ...current,
+                          avatarUrl: "",
+                        }))
                       }
-                      className={`rounded-xl border px-4 py-4 text-left transition ${
-                        selected
-                          ? "border-white/30 bg-white/[0.08]"
-                          : "border-white/10 bg-white/[0.02] hover:bg-white/[0.05]"
-                      }`}
+                      className="h-10 rounded-full border border-red-400/10 px-4 text-[10px] uppercase tracking-[0.16em] text-red-300/60 transition hover:border-red-400/20 hover:text-red-300"
                     >
-                      <p className="text-sm font-medium">
-                        {item}
-                      </p>
-
-                      <p className="mt-1 text-xs text-white/30">
-                        {item === "Active"
-                          ? "Available for assignments"
-                          : "Not available for assignments"}
-                      </p>
+                      Remove
                     </button>
-                  );
-                }
-              )}
+                  )}
+                </div>
+
+                <p className="mt-2 text-[10px] text-white/25">
+                  JPG, PNG or WebP · Max 5MB. The image is resized before upload.
+                </p>
+              </div>
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-            <SectionTitle
-              title="Password"
-              description="Leave empty to keep the current password."
-            />
+          <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 lg:p-8">
+            <div className="mb-7">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Personal Information</p>
+              <h2 className="mt-1 text-lg font-medium">Member Details</h2>
+            </div>
 
-            <div className="mt-6">
-              <Field
-                label="New Password"
-                value={password}
-                onChange={setPassword}
-                placeholder="Minimum 8 characters"
-                type="password"
+            <div className="grid gap-5 md:grid-cols-2">
+              <Field label="Full Name" required value={form.name} onChange={(value) => updateField("name", value)} />
+              <Field label="Email" type="email" required value={form.email} onChange={(value) => updateField("email", value)} />
+              <Field label="Employee ID" value={form.employeeId} onChange={(value) => updateField("employeeId", value)} />
+
+              <SelectField
+                label="Department"
+                required
+                value={form.departmentId}
+                disabled={loadingDepartments}
+                onChange={(value) => {
+                  setForm((current) => ({ ...current, departmentId: value, positionId: "" }));
+                }}
+                options={departments.map((department) => ({ value: department.id, label: department.name }))}
+                placeholder={loadingDepartments ? "Loading departments..." : "Select department"}
+              />
+
+              <SelectField
+                label="Position"
+                required
+                value={form.positionId}
+                disabled={!form.departmentId || loadingPositions}
+                onChange={(value) => updateField("positionId", value)}
+                options={positions.map((position) => ({ value: position.id, label: position.name }))}
+                placeholder={
+                  !form.departmentId
+                    ? "Select department first"
+                    : loadingPositions
+                      ? "Loading positions..."
+                      : "Select position"
+                }
               />
             </div>
           </section>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleting || saving}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-5 text-sm text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Trash2 size={15} />
+          <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 lg:p-8">
+            <div className="mb-7">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Access</p>
+              <h2 className="mt-1 text-lg font-medium">Account & Permissions</h2>
+            </div>
 
-              {deleting
-                ? "Deleting..."
-                : "Delete Employee"}
-            </button>
+            <div className="grid gap-5 md:grid-cols-2">
+              <SelectField
+                label="System Role"
+                required
+                value={form.role}
+                onChange={(value) => updateField("role", value)}
+                options={roles.map((role) => ({ value: role, label: role }))}
+              />
+
+              <Field
+                label="New Password"
+                type="password"
+                value={form.password}
+                onChange={(value) => updateField("password", value)}
+                placeholder="Leave blank to keep current password"
+              />
+            </div>
+
+            <p className="mt-5 text-xs leading-5 text-white/30">
+              System Role controls permissions inside Mason & Arc OS. Position is the person's actual office job.
+            </p>
+          </section>
+
+          <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 lg:p-8">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Account Status</p>
+                <h2 className="mt-1 text-lg font-medium">{member.active ? "Active Member" : "Inactive Member"}</h2>
+                <p className="mt-2 text-xs text-white/30">
+                  {member.active ? "This member can sign in." : "This member cannot sign in."}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void toggleStatus()}
+                disabled={saving}
+                className="rounded-full border border-white/10 px-5 py-3 text-[10px] uppercase tracking-[0.16em] text-white/55 transition hover:border-white/25 hover:text-white disabled:opacity-40"
+              >
+                {member.active ? "Deactivate" : "Activate"}
+              </button>
+            </div>
+          </section>
+
+          {error && (
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/5 px-5 py-4 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <Link href={`/app/admin/team/${member.id}`} className="inline-flex h-12 items-center justify-center rounded-full border border-white/10 px-6 text-[10px] uppercase tracking-[0.18em] text-white/50 transition hover:border-white/25 hover:text-white">
+              Cancel
+            </Link>
 
             <button
               type="submit"
-              disabled={saving || deleting}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white px-6 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={saving || loadingDepartments || loadingPositions || !form.departmentId || !form.positionId}
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-[10px] font-medium uppercase tracking-[0.18em] text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Save size={15} />
-
-              {saving
-                ? "Saving..."
-                : "Save Changes"}
+              {saving ? "Saving..." : "Save Changes"}
+              {!saving && <span className="ml-3 text-base">→</span>}
             </button>
           </div>
         </form>
       </div>
     </main>
-  );
-}
-
-function SectionTitle({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div>
-      <h2 className="text-sm font-medium">
-        {title}
-      </h2>
-
-      <p className="mt-1 text-xs text-white/30">
-        {description}
-      </p>
-    </div>
   );
 }
 
@@ -486,28 +458,55 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-2 block text-xs text-white/50">
-        {label}
-        {required && (
-          <span className="ml-1 text-white/30">
-            *
-          </span>
-        )}
+      <label className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-white/40">
+        {label}{required && <span className="ml-1 text-white/60">*</span>}
       </label>
-
       <input
         type={type}
-        value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
-        placeholder={placeholder}
         required={required}
-        maxLength={
-          type === "password" ? 256 : 254
-        }
-        className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 text-sm text-white placeholder:text-white/20 outline-none transition focus:border-white/30"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={placeholder}
+        className="h-12 w-full rounded-xl border border-white/10 bg-black px-4 text-sm text-white placeholder:text-white/20 outline-none transition focus:border-white/30"
       />
+    </div>
+  );
+}
+
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder = "Select",
+  required = false,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <label className="mb-2 block text-[10px] uppercase tracking-[0.18em] text-white/40">
+        {label}{required && <span className="ml-1 text-white/60">*</span>}
+      </label>
+      <select
+        required={required}
+        disabled={disabled}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-xl border border-white/10 bg-black px-4 text-sm text-white outline-none transition focus:border-white/30 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
+      </select>
     </div>
   );
 }
