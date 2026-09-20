@@ -74,6 +74,7 @@ const navigation = [
     href: "/app/admin/notifications",
   },
   { label: "Security", href: "/app/admin/security" },
+  { label: "Settings", href: "/app/admin/settings" },
 ];
 
 export default function AdminLayout({
