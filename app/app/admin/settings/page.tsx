@@ -330,6 +330,14 @@ export default function SettingsPage() {
                 >
                   Connect Gmail
                 </a>
+                <a
+                  href="https://developers.facebook.com/apps/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
+                >
+                  Set up WhatsApp API
+                </a>
                 <button
                   type="button"
                   onClick={handleReset}
