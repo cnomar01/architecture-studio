@@ -346,6 +346,25 @@ CREATE TABLE IF NOT EXISTS procurement_items (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS office_documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  legacy_id TEXT UNIQUE,
+  project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  category TEXT,
+  revision TEXT,
+  status TEXT NOT NULL DEFAULT 'Draft',
+  owner_name TEXT,
+  file_url TEXT,
+  tags TEXT[] NOT NULL DEFAULT '{}',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE office_documents ADD COLUMN IF NOT EXISTS legacy_id TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS office_documents_legacy_id_idx
+  ON office_documents(legacy_id) WHERE legacy_id IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS quality_items (
   id TEXT PRIMARY KEY,
   project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,

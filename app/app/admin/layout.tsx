@@ -21,6 +21,7 @@ import {
 import { useEffect, useState } from "react";
 import { runNotificationEngine } from "@/lib/core/notificationEngine";
 import { getUnreadNotificationCount } from "@/lib/core/notificationStore";
+import LegacyStorageMigration from "@/components/core/LegacyStorageMigration";
 
 const navigation = [
   { label: "Overview", href: "/app/admin" },
@@ -158,6 +159,7 @@ function AdminShell({
 
   return (
     <div className="min-h-screen bg-[#111111] text-white">
+      <LegacyStorageMigration />
       {/* Desktop Sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col overflow-hidden border-r border-white/10 bg-[#111111] p-5 lg:flex">
         {/* Logo */}
