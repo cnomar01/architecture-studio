@@ -47,12 +47,19 @@ export async function databaseLogin(
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
+    const fallback = response.status === 401
+      ? "Invalid email or password."
+      : "Sign-in is temporarily unavailable. Please try again later.";
     throw new Error(
-      String(data?.error || "Invalid email or password.")
+      String(data?.error || fallback)
     );
   }
 
-  return (data?.user as AuthUser) || null;
+  if (!data?.user) {
+    throw new Error("The sign-in service returned an invalid response. Please try again later.");
+  }
+
+  return data.user as AuthUser;
 }
 
 export async function databaseLogout(): Promise<void> {

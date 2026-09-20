@@ -14,6 +14,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Login failed", error);
-    return NextResponse.json({ error: "Login failed. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: "Sign-in is temporarily unavailable. Please try again later." }, { status: 500 });
   }
 }
