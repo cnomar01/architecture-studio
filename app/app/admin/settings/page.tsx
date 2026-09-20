@@ -324,6 +324,12 @@ export default function SettingsPage() {
               </div>
 
               <div className="flex gap-2">
+                <a
+                  href="/api/integrations/google-mail/connect"
+                  className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
+                >
+                  Connect Gmail
+                </a>
                 <button
                   type="button"
                   onClick={handleReset}
