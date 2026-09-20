@@ -287,6 +287,12 @@ CREATE TABLE IF NOT EXISTS notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS integration_credentials (
+  key TEXT PRIMARY KEY,
+  encrypted_value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- AI outputs stay review-only until a human explicitly creates the linked item.
 CREATE TABLE IF NOT EXISTS ai_reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
