@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import PermissionGuard from "@/app/app/core/PermissionGuard";
+import PermissionGuard from "@/lib/core/PermissionGuard";
 import {
   getStudioSettings,
   updateStudioSettings,
