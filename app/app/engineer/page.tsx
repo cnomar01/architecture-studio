@@ -2,28 +2,20 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getTasks, Task } from "../admin/tasks/taskStore";
-
-const engineer = {
-  id: "OM-001",
-  name: "Omar Mohamed",
-  role: "Architect",
-  department: "Architecture",
-  project: "City Edge Mall",
-};
+import { getStudioTasks, type StudioTask } from "@/lib/client/studioTasks";
+import { getDatabaseCurrentUser, type AuthUser } from "@/lib/core/authStore";
 
 export default function EngineerDashboard() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<StudioTask[]>([]);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    const allTasks = getTasks();
-
-    setTasks(
-      allTasks.filter(
-        (task) => task.assigneeId === engineer.id
-      )
-    );
+    void Promise.all([getDatabaseCurrentUser(), getStudioTasks()]).then(([currentUser, taskList]) => {
+      setUser(currentUser); setTasks(taskList);
+    }).catch(() => { setUser(null); setTasks([]); });
   }, []);
+
+  const engineer = { name: user?.name || "Engineer", role: user?.role || "Engineer", department: "Studio", project: tasks[0]?.projectName || "No assigned project" };
 
   const activeTasks = tasks.filter(
     (task) =>
@@ -229,7 +221,7 @@ export default function EngineerDashboard() {
                           </h3>
 
                           <p className="mt-2 text-xs text-white/25">
-                            {task.project}
+                            {task.projectName}
                           </p>
 
                         </div>
