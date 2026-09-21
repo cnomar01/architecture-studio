@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-export default function Hero() {
+export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: string }) {
   const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -68,7 +68,7 @@ export default function Hero() {
     >
       <div ref={imageRef} className="absolute inset-[-2%] will-change-transform">
         <Image
-          src="/images/hero.png"
+          src={imageUrl}
           alt="Mason & Arc architecture"
           fill
           priority

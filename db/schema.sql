@@ -407,6 +407,13 @@ CREATE TABLE IF NOT EXISTS website_projects (
 );
 CREATE INDEX IF NOT EXISTS website_projects_published_idx ON website_projects(published, updated_at DESC);
 
+-- Global public website content managed by the Owner.
+CREATE TABLE IF NOT EXISTS website_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS website_project_sections (
   id TEXT PRIMARY KEY,
   project_id TEXT NOT NULL REFERENCES website_projects(id) ON DELETE CASCADE,
