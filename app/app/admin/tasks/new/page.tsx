@@ -3,28 +3,17 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { addTask, TaskPriority, TaskStatus } from "../taskStore";
-import { getSmartAssignmentRecommendations } from "../smartAssign";
-import { getProjects, Project } from "@/lib/core/projectStore";
-import { getUsers } from "@/lib/core/authStore";
+import { TaskPriority, TaskStatus } from "../taskStore";
+import { createStudioTask } from "@/lib/client/studioTasks";
 
-type Recommendation = {
-  id: string;
-  name: string;
-  initials: string;
-  role: string;
-  department: string;
-  status: string;
-};
+type Project = { id: string; name: string };
+type TeamMember = { id: string; name: string; active: boolean };
 
 export default function NewTaskPage() {
   const router = useRouter();
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [recommendations, setRecommendations] = useState<
-    Recommendation[]
-  >([]);
+  const [users, setUsers] = useState<TeamMember[]>([]);
 
   const [form, setForm] = useState({
     title: "",
@@ -38,21 +27,25 @@ export default function NewTaskPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [loadingRecommendations, setLoadingRecommendations] =
-    useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadData() {
       try {
-        setProjects(getProjects());
+        const response = await fetch("/api/data/projects?limit=500", { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load projects.");
+        setProjects((data.data || []).map((project: Project) => ({ id: project.id, name: project.name })));
       } catch (error) {
         console.error("Failed to load projects:", error);
         setProjects([]);
       }
 
       try {
-        setUsers(getUsers());
+        const response = await fetch("/api/admin/team", { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not load team.");
+        setUsers((data.users || []).filter((user: TeamMember) => user.active));
       } catch (error) {
         console.error("Failed to load users:", error);
         setUsers([]);
@@ -61,33 +54,6 @@ export default function NewTaskPage() {
 
     loadData();
   }, []);
-
-  useEffect(() => {
-    async function loadRecommendations() {
-      setLoadingRecommendations(true);
-
-      try {
-        const results =
-          await getSmartAssignmentRecommendations({
-            tasks: [],
-            department: form.department,
-            project: form.project,
-          });
-
-        setRecommendations(results || []);
-      } catch (error) {
-        console.error(
-          "Failed to load assignment recommendations:",
-          error
-        );
-        setRecommendations([]);
-      } finally {
-        setLoadingRecommendations(false);
-      }
-    }
-
-    loadRecommendations();
-  }, [form.department, form.project]);
 
   function updateField(
     field: keyof typeof form,
@@ -118,25 +84,21 @@ export default function NewTaskPage() {
         (user) => user.id === form.assigneeId
       );
 
-      const selectedRecommendation = recommendations.find(
-        (member) => member.id === form.assigneeId
-      );
+      const assigneeName = selectedUser?.name || "";
+      const selectedProject = projects.find((project) => project.id === form.project);
+      if (!selectedProject) throw new Error("Choose a project for this shared task.");
 
-      const assigneeName =
-        selectedUser?.name ||
-        selectedRecommendation?.name ||
-        "";
-
-      addTask({
+      await createStudioTask({
         title: form.title.trim(),
         description: form.description.trim(),
-        project: form.project,
+        projectId: selectedProject.id,
+        projectName: selectedProject.name,
         department: form.department,
         priority: form.priority,
         status: form.status,
         assigneeId: form.assigneeId,
-        assignee: assigneeName,
-        deadline: form.dueDate,
+        assigneeName,
+        deadline: form.dueDate || "No deadline",
       });
 
       router.push("/app/admin/tasks");
@@ -229,7 +191,7 @@ export default function NewTaskPage() {
                 {projects.map((project) => (
                   <option
                     key={project.id}
-                    value={project.name}
+                    value={project.id}
                   >
                     {project.name}
                   </option>
@@ -333,7 +295,7 @@ export default function NewTaskPage() {
             </h2>
 
             <p className="mt-1 text-sm text-gray-500">
-              Choose a team member or use the smart recommendations.
+              Choose a team member. This task will be saved in the shared studio database.
             </p>
           </div>
 
@@ -365,65 +327,7 @@ export default function NewTaskPage() {
             </select>
           </div>
 
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-900">
-                Smart Recommendations
-              </h3>
-
-              {loadingRecommendations && (
-                <span className="text-xs text-gray-500">
-                  Loading...
-                </span>
-              )}
-            </div>
-
-            {!loadingRecommendations &&
-              recommendations.length === 0 && (
-                <div className="rounded-xl border border-dashed border-gray-300 p-4 text-sm text-gray-500">
-                  No active team members available.
-                </div>
-              )}
-
-            <div className="grid gap-3 md:grid-cols-2">
-              {recommendations.map((member) => (
-                <button
-                  key={member.id}
-                  type="button"
-                  onClick={() =>
-                    updateField(
-                      "assigneeId",
-                      member.id
-                    )
-                  }
-                  className={`rounded-xl border p-4 text-left transition ${
-                    form.assigneeId === member.id
-                      ? "border-gray-900 bg-gray-50"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-sm font-semibold text-gray-700">
-                      {member.initials}
-                    </div>
-
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-gray-900">
-                        {member.name}
-                      </p>
-
-                      <p className="text-xs text-gray-500">
-                        {member.role}
-                        {member.department
-                          ? ` · ${member.department}`
-                          : ""}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm leading-6 text-blue-900">The assigned engineer will see this task after signing in. Changes are shared between devices.</p>
         </section>
 
         {error && (

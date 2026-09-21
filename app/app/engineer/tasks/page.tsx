@@ -2,33 +2,34 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getTasks, updateTask, Task } from "../../admin/tasks/taskStore";
-
-const ENGINEER_ID = "OM-001";
+import { getStudioTasks, updateStudioTaskStatus, type StudioTask } from "@/lib/client/studioTasks";
+import { getDatabaseCurrentUser, type AuthUser } from "@/lib/core/authStore";
 
 export default function EngineerTasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<StudioTask[]>([]);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadTasks();
   }, []);
 
-  function loadTasks() {
-    const allTasks = getTasks();
-
-    setTasks(
-      allTasks.filter(
-        (task) => task.assigneeId === ENGINEER_ID
-      )
-    );
+  async function loadTasks() {
+    try {
+      const [currentUser, data] = await Promise.all([getDatabaseCurrentUser(), getStudioTasks()]);
+      setUser(currentUser);
+      setTasks(data);
+      setError("");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not load shared tasks.");
+    }
   }
 
   function changeStatus(
     taskId: string,
-    status: Task["status"]
+    status: StudioTask["status"]
   ) {
-    updateTask(taskId, { status });
-    loadTasks();
+    void updateStudioTaskStatus(taskId, status).then(loadTasks).catch((cause) => setError(cause instanceof Error ? cause.message : "Could not update task."));
   }
 
   const open = tasks.filter(
@@ -75,7 +76,7 @@ export default function EngineerTasksPage() {
           {/* TITLE */}
           <div>
             <p className="text-[9px] uppercase tracking-[0.25em] text-white/20">
-              Omar Mohamed · Architect
+              {user?.name || "Engineer workspace"}
             </p>
 
             <h1 className="mt-4 text-5xl font-light tracking-[-0.05em] md:text-7xl">
@@ -83,7 +84,7 @@ export default function EngineerTasksPage() {
             </h1>
 
             <p className="mt-5 max-w-xl text-sm leading-6 text-white/30">
-              Tasks assigned to you for City Edge Mall.
+              Shared tasks assigned to your account.
             </p>
           </div>
 
@@ -97,11 +98,11 @@ export default function EngineerTasksPage() {
 
               <div>
                 <h2 className="text-2xl font-light">
-                  City Edge Mall
+                  Your current assignments
                 </h2>
 
                 <p className="mt-2 text-xs text-white/25">
-                  Architecture · Current Assignment
+                  {user?.role || "Engineer"} · Project access is controlled by the studio.
                 </p>
               </div>
 
@@ -153,7 +154,7 @@ export default function EngineerTasksPage() {
 
             <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
 
-              {tasks.length === 0 ? (
+              {error ? <div className="px-7 py-10 text-sm text-red-300">{error}</div> : tasks.length === 0 ? (
                 <div className="px-7 py-24 text-center">
 
                   <p className="text-sm text-white/30">
@@ -217,11 +218,11 @@ function TaskItem({
   index,
   onStatusChange,
 }: {
-  task: Task;
+  task: StudioTask;
   index: number;
   onStatusChange: (
     taskId: string,
-    status: Task["status"]
+    status: StudioTask["status"]
   ) => void;
 }) {
   const completed = task.status === "Completed";
@@ -258,7 +259,7 @@ function TaskItem({
             </div>
 
             <p className="mt-2 text-xs text-white/25">
-              {task.project}
+              {task.projectName}
             </p>
 
             <div className="mt-4 flex flex-wrap gap-5">

@@ -2,15 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  getTasks,
-  getSubtasks,
-  getTaskDependencies,
-  Task,
-  TaskStatus,
-} from "./taskStore";
+import { getStudioTasks, type StudioTask } from "@/lib/client/studioTasks";
 
-const columns: TaskStatus[] = [
+const columns: StudioTask["status"][] = [
   "Open",
   "In Progress",
   "Completed",
@@ -18,28 +12,30 @@ const columns: TaskStatus[] = [
 ];
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<StudioTask[]>([]);
+  const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
   const [projectFilter, setProjectFilter] = useState("All");
   const [assigneeFilter, setAssigneeFilter] = useState("All");
 
-  function load() {
-    setTasks(getTasks());
+  async function load() {
+    try { setTasks(await getStudioTasks()); setLoadError(""); }
+    catch (cause) { setLoadError(cause instanceof Error ? cause.message : "Could not load shared tasks."); }
   }
 
   useEffect(() => {
     load();
-    const interval = setInterval(load, 1000);
+    const interval = setInterval(() => { void load(); }, 30000);
     return () => clearInterval(interval);
   }, []);
 
   const projects = useMemo(
-    () => Array.from(new Set(tasks.map((task) => task.project))),
+    () => Array.from(new Set(tasks.map((task) => task.projectName))),
     [tasks]
   );
 
   const assignees = useMemo(
-    () => Array.from(new Set(tasks.map((task) => task.assignee))),
+    () => Array.from(new Set(tasks.map((task) => task.assigneeName))),
     [tasks]
   );
 
@@ -50,22 +46,22 @@ export default function TasksPage() {
       const matchesSearch =
         !query ||
         task.title.toLowerCase().includes(query) ||
-        task.project.toLowerCase().includes(query) ||
-        task.assignee.toLowerCase().includes(query);
+        task.projectName.toLowerCase().includes(query) ||
+        task.assigneeName.toLowerCase().includes(query);
 
       const matchesProject =
         projectFilter === "All" ||
-        task.project === projectFilter;
+        task.projectName === projectFilter;
 
       const matchesAssignee =
         assigneeFilter === "All" ||
-        task.assignee === assigneeFilter;
+        task.assigneeName === assigneeFilter;
 
       return (
         matchesSearch &&
         matchesProject &&
         matchesAssignee &&
-        !task.parentTaskId
+        true
       );
     });
   }, [tasks, search, projectFilter, assigneeFilter]);
@@ -128,6 +124,7 @@ export default function TasksPage() {
             {filtered.length} active task records
           </div>
         </div>
+        {loadError && <p role="alert" className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200">{loadError}</p>}
 
         <div className="grid gap-4 xl:grid-cols-4">
           {columns.map((status) => {
@@ -151,14 +148,9 @@ export default function TasksPage() {
                 </div>
 
                 <div className="space-y-3 p-3">
-                  {column.map((task) => {
-                    const subtasks = getSubtasks(task.id);
-                    const dependencies = getTaskDependencies(task.id);
-
-                    return (
-                      <Link
+                  {column.map((task) => (
+                      <div
                         key={task.id}
-                        href={`/app/admin/tasks/${task.id}`}
                         className="block rounded-xl border border-white/10 bg-black/20 p-4 transition hover:border-white/20 hover:bg-white/[0.04]"
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -170,31 +162,18 @@ export default function TasksPage() {
                         </div>
 
                         <p className="mt-2 text-xs text-white/40">
-                          {task.project}
+                          {task.projectName}
                         </p>
 
                         <div className="mt-4 flex flex-wrap gap-2 text-[10px] text-white/35">
-                          <span>{task.assignee}</span>
+                          <span>{task.assigneeName}</span>
                           <span>·</span>
                           <span>{task.deadline}</span>
                         </div>
 
-                        <div className="mt-4 flex gap-2">
-                          {subtasks.length > 0 && (
-                            <span className="rounded-md bg-white/5 px-2 py-1 text-[10px] text-white/40">
-                              {subtasks.length} subtasks
-                            </span>
-                          )}
-
-                          {dependencies.length > 0 && (
-                            <span className="rounded-md bg-white/5 px-2 py-1 text-[10px] text-white/40">
-                              {dependencies.length} dependencies
-                            </span>
-                          )}
-                        </div>
-                      </Link>
-                    );
-                  })}
+                        {task.description && <p className="mt-3 text-xs leading-5 text-white/35">{task.description}</p>}
+                      </div>
+                  ))}
 
                   {column.length === 0 && (
                     <div className="py-10 text-center text-xs text-white/25">
@@ -214,9 +193,9 @@ export default function TasksPage() {
 function PriorityBadge({
   priority,
 }: {
-  priority: Task["priority"];
+  priority: StudioTask["priority"];
 }) {
-  const styles: Record<Task["priority"], string> = {
+  const styles: Record<StudioTask["priority"], string> = {
     Low: "bg-white/5 text-white/40",
     Medium: "bg-white/10 text-white/50",
     High: "bg-orange-400/10 text-orange-300",
