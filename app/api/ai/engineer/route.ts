@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireServerUser } from "@/lib/server/auth";
+import { audit, requireServerUser } from "@/lib/server/auth";
 
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -189,7 +189,7 @@ async function extractVideoFrames(dataUrl: string, type: string) {
 
 export async function POST(request: Request) {
   try {
-    await requireServerUser(["Owner", "Manager", "Engineer"]);
+    const user = await requireServerUser(["Owner", "Manager", "Engineer"]);
     const body = await request.json();
 
     const question = String(body?.question || "").trim();
@@ -349,6 +349,14 @@ export async function POST(request: Request) {
         { status: 502 },
       );
     }
+
+    await audit("ai.engineer.completed", "AiUsage", undefined, {
+      actor: user.id,
+      model,
+      attachmentType: attachment?.type ? String(attachment.type).slice(0, 100) : null,
+      attachmentFrames: images.length,
+      questionLength: question.length,
+    });
 
     return NextResponse.json({
       answer,

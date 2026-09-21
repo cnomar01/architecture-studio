@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireServerUser } from "@/lib/server/auth";
+import { audit, requireServerUser } from "@/lib/server/auth";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -145,7 +145,7 @@ function workflow({
 
 export async function POST(request: Request) {
   try {
-    await requireServerUser(["Owner", "Manager", "Engineer"]);
+    const user = await requireServerUser(["Owner", "Manager", "Engineer"]);
     const body = await request.json();
     const prompt = String(body?.prompt || "").trim();
     const reference = body?.reference && typeof body.reference === "object" ? body.reference : null;
@@ -230,6 +230,15 @@ export async function POST(request: Request) {
         if (!imageRes.ok) continue;
         const bytes = Buffer.from(await imageRes.arrayBuffer());
         const mime = image.filename.toLowerCase().endsWith(".jpg") || image.filename.toLowerCase().endsWith(".jpeg") ? "image/jpeg" : "image/png";
+        await audit("ai.image.completed", "AiUsage", promptId, {
+          actor: user.id,
+          engine: "ComfyUI",
+          model: DEFAULT_UNET,
+          referenceUsed: Boolean(referenceName),
+          width,
+          height,
+          steps,
+        });
         return NextResponse.json({
           image: `data:${mime};base64,${bytes.toString("base64")}`,
           provider: "local",

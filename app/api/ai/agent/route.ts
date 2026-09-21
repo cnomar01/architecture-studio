@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { requireServerUser } from "@/lib/server/auth";
+import { audit, requireServerUser } from "@/lib/server/auth";
 
 export const runtime = "nodejs";
 
@@ -17,7 +17,7 @@ const agents: Record<AgentKey, { name: string; role: string; system: string }> =
 
 export async function POST(request: Request) {
   try {
-    await requireServerUser(["Owner", "Manager", "Engineer"]);
+    const user = await requireServerUser(["Owner", "Manager", "Engineer"]);
     const body = await request.json();
     const key = String(body?.agent || "project") as AgentKey;
     const agent = agents[key] || agents.project;
@@ -44,6 +44,7 @@ export async function POST(request: Request) {
     if (!response.ok) return NextResponse.json({ error: String(data?.error || `Could not connect to Ollama at ${baseUrl}.`) }, { status: 502 });
     const answer = String(data?.message?.content || "").trim();
     if (!answer) return NextResponse.json({ error: "The local agent returned no result." }, { status: 502 });
+    await audit("ai.agent.completed", "AiUsage", undefined, { actor: user.id, agent: key, model, contextLength: context.length });
     return NextResponse.json({ agent: { key, name: agent.name, role: agent.role }, answer, model, provider: "local" });
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Unexpected AI Agent error." }, { status: 500 });
