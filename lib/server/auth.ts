@@ -14,7 +14,13 @@ function mapUser(row: any): ServerUser {
 }
 
 export async function verifyPassword(email: string, password: string) {
-  const result = await query("SELECT * FROM users WHERE lower(email)=lower($1) AND active=true LIMIT 1", [email.trim()]);
+  const result = await query(
+    `SELECT u.* FROM users u
+     LEFT JOIN user_login_aliases a ON a.user_id=u.id
+     WHERE (lower(u.email)=lower($1) OR lower(a.email)=lower($1)) AND u.active=true
+     LIMIT 1`,
+    [email.trim()],
+  );
   const user = result.rows[0];
   if (!user || !(await bcrypt.compare(password, user.password_hash))) return null;
   return mapUser(user);

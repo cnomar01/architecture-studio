@@ -25,14 +25,25 @@ CREATE TABLE IF NOT EXISTS positions (
 -- contact for that account, and may only see projects linked to this record.
 CREATE TABLE IF NOT EXISTS clients (
   id TEXT PRIMARY KEY,
+  code TEXT UNIQUE,
   name TEXT NOT NULL,
+  company TEXT,
   contact_name TEXT NOT NULL DEFAULT '',
   contact_email TEXT,
   contact_phone TEXT,
+  address TEXT,
+  notes TEXT NOT NULL DEFAULT '',
   active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS code TEXT;
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS company TEXT;
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS notes TEXT NOT NULL DEFAULT '';
+UPDATE clients SET code = id WHERE code IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS clients_code_idx ON clients(code) WHERE code IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
@@ -87,6 +98,15 @@ END $$;
 CREATE INDEX IF NOT EXISTS users_department_idx ON users(department_id);
 CREATE INDEX IF NOT EXISTS users_position_idx ON users(position_id);
 
+-- A stable legacy sign-in may point to the same account as its current email.
+-- This avoids locking an owner out when the delivery email changes.
+CREATE TABLE IF NOT EXISTS user_login_aliases (
+  email TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS user_login_aliases_user_idx ON user_login_aliases(user_id);
+
 CREATE TABLE IF NOT EXISTS sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -128,9 +148,16 @@ CREATE TABLE IF NOT EXISTS projects (
   project_manager_name TEXT,
   start_date DATE,
   target_date DATE,
+  contract_value NUMERIC(18,2),
+  budget NUMERIC(18,2),
+  financial_currency TEXT NOT NULL DEFAULT 'EGP',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS contract_value NUMERIC(18,2);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS budget NUMERIC(18,2);
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS financial_currency TEXT NOT NULL DEFAULT 'EGP';
 
 -- Membership is the authoritative assignment of engineers to projects.
 -- Owner and Manager have studio-wide access and do not need membership rows.
@@ -248,8 +275,13 @@ CREATE TABLE IF NOT EXISTS finance_transactions (
   currency TEXT NOT NULL,
   status TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '',
+  transaction_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  created_by_name TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE finance_transactions ADD COLUMN IF NOT EXISTS transaction_date DATE NOT NULL DEFAULT CURRENT_DATE;
+ALTER TABLE finance_transactions ADD COLUMN IF NOT EXISTS created_by_name TEXT;
 
 CREATE TABLE IF NOT EXISTS site_reports (
   id TEXT PRIMARY KEY,

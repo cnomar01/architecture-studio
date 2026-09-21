@@ -11,14 +11,14 @@ const INTERNAL: Role[] = ["Owner", "Manager", "Engineer"];
 const CLIENT_READ: Role[] = ["Owner", "Manager", "Engineer", "Client"];
 
 const RESOURCES: Record<string, Resource> = {
-  clients: { table: "clients", idColumn: "id", allowed: ["Owner", "Manager"], hasUpdatedAt: true, columns: ["id","name","contact_name","contact_email","contact_phone","active"] },
-  projects: { table: "projects", idColumn: "id", allowed: CLIENT_READ, hasUpdatedAt: true, columns: ["id","code","name","type","location","status","phase","description","client_id","client_name","project_manager_id","project_manager_name","start_date","target_date"] },
+  clients: { table: "clients", idColumn: "id", allowed: ["Owner", "Manager"], hasUpdatedAt: true, columns: ["id","code","name","company","contact_name","contact_email","contact_phone","address","notes","active"] },
+  projects: { table: "projects", idColumn: "id", allowed: CLIENT_READ, hasUpdatedAt: true, columns: ["id","code","name","type","location","status","phase","description","client_id","client_name","project_manager_id","project_manager_name","start_date","target_date","contract_value","budget","financial_currency"] },
   project_updates: { table: "project_updates", idColumn: "id", allowed: CLIENT_READ, projectScoped: true, hasUpdatedAt: true, columns: ["id","project_id","title","summary","progress_percent","status","published_at","created_by_id"] },
   tasks: { table: "tasks", idColumn: "id", allowed: INTERNAL, projectScoped: true, hasUpdatedAt: true, columns: ["id","project_id","project_name","title","description","assignee_id","assignee_name","department","priority","status","deadline","parent_task_id"] },
   files: { table: "project_files", idColumn: "id", allowed: CLIENT_READ, projectScoped: true, hasUpdatedAt: true, columns: ["id","project_id","project_name","name","category","revision","document_number","discipline","issue_date","visibility","status","storage_key","file_name","file_type","file_size","uploaded_by_id","uploaded_by_name","parent_file_id","is_current"] },
   approvals: { table: "approvals", idColumn: "id", allowed: CLIENT_READ, projectScoped: true, hasUpdatedAt: true, columns: ["id","project_id","project_name","title","type","revision","status","submitted_by_id","submitted_by_name","reviewed_by_id","reviewed_by_name"] },
   messages: { table: "messages", idColumn: "id", allowed: CLIENT_READ, projectScoped: true, clientWrite: true, columns: ["id","project_id","sender_id","sender_name","body"] },
-  finance: { table: "finance_transactions", idColumn: "id", allowed: ["Owner","Manager"], projectScoped: true, columns: ["id","project_id","type","category","amount","currency","status","description"] },
+  finance: { table: "finance_transactions", idColumn: "id", allowed: ["Owner","Manager"], projectScoped: true, columns: ["id","project_id","type","category","amount","currency","status","description","transaction_date","created_by_name"] },
   site_reports: { table: "site_reports", idColumn: "id", allowed: INTERNAL, projectScoped: true, columns: ["id","project_id","report_date","weather","summary","created_by_id"] },
   site_issues: { table: "site_issues", idColumn: "id", allowed: INTERNAL, projectScoped: true, columns: ["id","project_id","title","description","priority","status","assigned_to_id","task_id"] },
   leads: { table: "leads", idColumn: "id", allowed: ["Owner","Manager"], columns: ["id","company","status","contact_name","email","notes"] },

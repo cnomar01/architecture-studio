@@ -5,9 +5,40 @@ import Link from "next/link";
 
 export default function AddClientForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+  const [createdId, setCreatedId] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+    const form = new FormData(event.currentTarget);
+    const firstName = String(form.get("firstName") || "").trim();
+    const lastName = String(form.get("lastName") || "").trim();
+    const email = String(form.get("email") || "").trim().toLowerCase();
+    const id = `CLI-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    const response = await fetch("/api/data/clients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        id,
+        code: id,
+        name: `${firstName} ${lastName}`.trim(),
+        company: String(form.get("company") || "").trim() || null,
+        contact_name: `${firstName} ${lastName}`.trim(),
+        contact_email: email || null,
+        contact_phone: String(form.get("phone") || "").trim() || null,
+        address: String(form.get("location") || "").trim() || null,
+        notes: String(form.get("notes") || "").trim(),
+        active: true,
+      }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      setError(data.error || "Could not create the client. Please try again.");
+      return;
+    }
+    setCreatedId(data.data?.id || id);
     setSubmitted(true);
   }
 
@@ -60,14 +91,13 @@ export default function AddClientForm() {
               </h2>
 
               <p className="mt-3 max-w-md text-sm leading-6 text-white/40">
-                The client profile has been prepared successfully. Database
-                storage and email invitations will be connected in the next
-                step.
+                The client profile is saved in the shared studio database and
+                can now be linked to a project.
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href="/app/admin/clients"
+                  href={createdId ? `/app/admin/clients/${createdId}` : "/app/admin/clients"}
                   className="rounded-full bg-white px-6 py-3 text-[10px] uppercase tracking-[0.18em] text-black transition hover:bg-white/80"
                 >
                   Back to Clients
@@ -75,7 +105,7 @@ export default function AddClientForm() {
 
                 <button
                   type="button"
-                  onClick={() => setSubmitted(false)}
+                  onClick={() => { setSubmitted(false); setError(""); setCreatedId(""); }}
                   className="rounded-full border border-white/15 px-6 py-3 text-[10px] uppercase tracking-[0.18em] text-white/50 transition hover:border-white/40 hover:text-white"
                 >
                   Add Another
@@ -203,10 +233,10 @@ export default function AddClientForm() {
 
               {/* Submit */}
               <div className="border-t border-white/10 pt-8">
+                {error && <p role="alert" className="mb-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</p>}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-[10px] leading-5 text-white/25">
-                    You can connect this form to the database later without
-                    changing the interface.
+                    This saves immediately to the shared studio database.
                   </p>
 
                   <button

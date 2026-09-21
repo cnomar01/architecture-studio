@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
@@ -99,57 +98,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <Link
-        href="/app/login"
-        aria-label="Open Mason & Arc Studio"
-        className="
-          group
-          absolute
-          bottom-6
-          left-6
-          right-6
-          z-30
-          block
-          rounded-[14px]
-          border
-          border-white/20
-          bg-black/55
-          p-3
-          text-white
-          shadow-2xl
-          backdrop-blur-md
-          transition-all
-          duration-500
-          hover:border-white/35
-          hover:bg-black/70
-          md:block
-          md:left-auto
-          md:w-[285px]
-          md:right-8
-          lg:bottom-8
-          lg:right-10
-          lg:w-[320px]
-        "
-      >
-        <div className="px-3 pt-1 pb-2 text-[9px] font-medium uppercase tracking-[0.28em] text-white/50">
-          Workspace
-        </div>
-
-        <div className="flex items-center justify-between rounded-[11px] border border-white/15 px-4 py-3 transition-colors duration-300 group-hover:border-white/25">
-          <div>
-            <div className="text-[14px] font-medium tracking-[-0.01em]">
-              Mason & Arc Studio
-            </div>
-            <div className="mt-1 text-[10px] tracking-[0.08em] text-white/45">
-              Design · Build · Manage
-            </div>
-          </div>
-
-          <span className="ml-4 text-[22px] font-light text-white/65 transition-transform duration-300 group-hover:translate-x-1">
-            →
-          </span>
-        </div>
-      </Link>
     </section>
   );
 }

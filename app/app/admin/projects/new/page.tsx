@@ -9,20 +9,9 @@ import {
   UserRound,
 } from "lucide-react";
 
-import {
-  addProject,
-  ProjectPhase,
-} from "@/lib/core/projectStore";
-
-import {
-  getClients,
-  Client,
-} from "@/lib/core/clientStore";
-
-import {
-  getActiveTeam,
-  TeamMember,
-} from "@/lib/core/teamStore";
+type ProjectPhase = "Concept Design" | "Design Development" | "Technical Design" | "Tender" | "Construction" | "Handover";
+type Client = { id: string; name: string; company?: string | null; active: boolean };
+type TeamMember = { id: string; name: string; role: string; active: boolean };
 
 const phases: ProjectPhase[] = [
   "Concept Design",
@@ -56,28 +45,28 @@ export default function NewProjectPage() {
   const [targetDate, setTargetDate] = useState("");
 
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      setClients(getClients());
-
+    void (async function loadData() {
       try {
-        const activeTeam = await getActiveTeam();
-        setTeam(activeTeam);
-      } catch (error) {
-        console.error(
-          "Failed to load team:",
-          error
-        );
-
-        setTeam([]);
+        const [clientsResponse, teamResponse] = await Promise.all([
+          fetch("/api/data/clients", { cache: "no-store", credentials: "include" }),
+          fetch("/api/admin/team", { cache: "no-store", credentials: "include" }),
+        ]);
+        const clientsData = await clientsResponse.json().catch(() => ({}));
+        const teamData = await teamResponse.json().catch(() => ({}));
+        if (!clientsResponse.ok) throw new Error(clientsData.error || "Could not load clients.");
+        if (!teamResponse.ok) throw new Error(teamData.error || "Could not load team.");
+        setClients((clientsData.data || []).filter((client: Client) => client.active));
+        setTeam((teamData.users || []).filter((member: TeamMember) => member.active));
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Could not load project options.");
       }
-    }
-
-    loadData();
+    })();
   }, []);
 
-  function handleSubmit(
+  async function handleSubmit(
     event: FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
@@ -111,8 +100,13 @@ export default function NewProjectPage() {
       (member) => member.id === managerId
     );
 
+    setSaving(true);
     try {
-      addProject({
+      const response = await fetch("/api/data/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
         code: code.trim().toUpperCase(),
         name: name.trim(),
         type: type.trim(),
@@ -121,25 +115,21 @@ export default function NewProjectPage() {
         phase,
         description: description.trim(),
 
-        clientId: selectedClient?.id ?? "",
-        clientName: selectedClient?.name ?? "",
-
-        projectManagerId:
-          selectedManager?.id ?? "",
-        projectManagerName:
-          selectedManager?.name ?? "",
-
-        startDate,
-        targetDate,
+        client_id: selectedClient?.id ?? null,
+        client_name: selectedClient?.name ?? null,
+        project_manager_id: selectedManager?.id ?? null,
+        project_manager_name: selectedManager?.name ?? null,
+        start_date: startDate || null,
+        target_date: targetDate || null,
+        }),
       });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Unable to create project.");
 
       window.location.href =
         "/app/admin/projects";
-    } catch {
-      setError(
-        "Unable to create project. Please try again."
-      );
-    }
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to create project. Please try again."); }
+    finally { setSaving(false); }
   }
 
   return (
@@ -431,9 +421,10 @@ export default function NewProjectPage() {
 
             <button
               type="submit"
+              disabled={saving}
               className="rounded-xl bg-white px-6 py-3 text-xs font-medium text-black transition hover:bg-white/90"
             >
-              Create Project
+              {saving ? "Creating..." : "Create Project"}
             </button>
 
           </div>

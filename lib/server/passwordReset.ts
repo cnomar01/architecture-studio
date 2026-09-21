@@ -19,7 +19,10 @@ export async function allowAuthAttempt(key: string, limit: number) {
 
 export async function requestPasswordReset(email: string) {
   const result = await query<{ id: string; email: string }>(
-    "SELECT id,email FROM users WHERE lower(email)=lower($1) AND active=true LIMIT 1", [email],
+    `SELECT u.id,u.email FROM users u
+     LEFT JOIN user_login_aliases a ON a.user_id=u.id
+     WHERE (lower(u.email)=lower($1) OR lower(a.email)=lower($1)) AND u.active=true
+     LIMIT 1`, [email],
   );
   const user = result.rows[0];
   if (!user) return;
