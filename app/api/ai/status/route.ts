@@ -65,7 +65,8 @@ export async function GET() {
   const zImageReady = comfyuiConnected;
 
   return NextResponse.json({
-    provider: "local",
+    provider: ollamaConnected ? "local" : process.env.OPENAI_API_KEY ? "openai" : "unavailable",
+    openai: { configured: Boolean(process.env.OPENAI_API_KEY), model: process.env.OPENAI_MODEL || "gpt-5-mini" },
 
     ollama: {
       connected: ollamaConnected,

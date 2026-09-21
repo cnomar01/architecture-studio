@@ -34,6 +34,22 @@ RULES:
 
 9. Never claim an action was created, assigned, approved or changed unless the application actually performed it.`;
 
+async function hostedOpenAiAnswer(input: string) {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return null;
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ model: process.env.OPENAI_MODEL || "gpt-5-mini", instructions: SYSTEM_PROMPT, input, store: false }),
+    signal: AbortSignal.timeout(60000),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(String(data?.error?.message || "OpenAI request failed."));
+  const answer = String(data?.output_text || "").trim();
+  if (!answer) throw new Error("OpenAI returned no text.");
+  return { answer, model: String(data?.model || process.env.OPENAI_MODEL || "OpenAI"), provider: "openai" };
+}
+
 function decodeTextDataUrl(dataUrl: string) {
   const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
 
@@ -291,9 +307,9 @@ export async function POST(request: Request) {
 
     // This is the Ollama request:
     // Frontend -> Mason & Arc API -> Ollama /api/chat
-    const response = await fetch(
-      `${baseUrl}/api/chat`,
-      {
+    let response: Response | null = null;
+    try {
+      response = await fetch(`${baseUrl}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -318,12 +334,16 @@ export async function POST(request: Request) {
             num_ctx: 16384,
           },
         }),
-      },
-    );
+      });
+    } catch {
+      response = null;
+    }
 
-    const data = await response.json().catch(() => ({}));
+    const data = response ? await response.json().catch(() => ({})) : {};
 
-    if (!response.ok) {
+    if (!response?.ok) {
+      const hosted = await hostedOpenAiAnswer(contentParts.join("\n\n"));
+      if (hosted) return NextResponse.json({ ...hosted, baseUrl: "https://api.openai.com", analyzedFrames: images.length || undefined });
       return NextResponse.json(
         {
           error: `${String(

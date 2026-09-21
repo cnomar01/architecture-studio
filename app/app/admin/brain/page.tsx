@@ -50,7 +50,7 @@ export default function BrainPage() {
   const [generated, setGenerated] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
   const [generationError, setGenerationError] = useState("");
-  const [aiStatus, setAiStatus] = useState<{ ollama: boolean; comfyui: boolean; model: string } | null>(null);
+  const [aiStatus, setAiStatus] = useState<{ ollama: boolean; comfyui: boolean; hosted: boolean; model: string } | null>(null);
   const [studio, setStudio] = useState<StudioContext | null>(null);
   const [studioError, setStudioError] = useState("");
   const searchParams = useSearchParams();
@@ -67,9 +67,9 @@ export default function BrainPage() {
     try {
       const res = await fetch("/api/ai/status", { cache: "no-store" });
       const data = await res.json();
-      setAiStatus({ ollama: Boolean(data.ollama?.connected), comfyui: Boolean(data.comfyui?.zImageReady || data.comfyui?.connected), model: String(data.ollama?.model || "local model") });
+      setAiStatus({ ollama: Boolean(data.ollama?.connected), comfyui: Boolean(data.comfyui?.zImageReady || data.comfyui?.connected), hosted: Boolean(data.openai?.configured), model: String(data.ollama?.connected ? data.ollama?.model : data.openai?.model || "AI model") });
     } catch {
-      setAiStatus({ ollama: false, comfyui: false, model: "local model" });
+      setAiStatus({ ollama: false, comfyui: false, hosted: false, model: "AI unavailable" });
     }
   }
 
@@ -141,7 +141,7 @@ export default function BrainPage() {
         <header className="mb-6 flex flex-col gap-5 border-b border-black/10 pb-7 md:flex-row md:items-end md:justify-between">
           <div><div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.24em] text-black/50"><Sparkles size={14} /> Mason & Arc AI</div><h1 className="text-3xl font-semibold tracking-tight md:text-5xl">AI Engineer</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-black/60">Your senior project engineer, vision analyst and architectural creation engine.</p></div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-xs font-medium"><span className={`h-2 w-2 rounded-full ${aiStatus?.ollama ? "bg-emerald-500" : "bg-amber-500"}`} /> {aiStatus?.ollama ? `Office AI · ${aiStatus.model}` : "Office AI bridge needed"}</div>
+            <div className="flex items-center gap-2 rounded-full border border-black/10 px-4 py-2 text-xs font-medium"><span className={`h-2 w-2 rounded-full ${aiStatus?.ollama || aiStatus?.hosted ? "bg-emerald-500" : "bg-amber-500"}`} /> {aiStatus?.ollama ? `Office AI · ${aiStatus.model}` : aiStatus?.hosted ? `Cloud AI · ${aiStatus.model}` : "Office AI bridge needed"}</div>
             <button onClick={refreshAIStatus} className="grid h-9 w-9 place-items-center rounded-full border border-black/10" title="Refresh AI status"><RefreshCw size={13} /></button>
           </div>
         </header>
