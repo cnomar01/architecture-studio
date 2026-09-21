@@ -8,7 +8,8 @@ import { prepareWebsiteImage } from "@/lib/client/websiteImage";
 type EditorLanguage = "en" | "ar" | "it";
 type ProjectCopy = { title: string; location: string; category: string; description: string };
 type LocalizedText = Record<EditorLanguage, string>;
-type ContentSection = { id: string; title: LocalizedText; body: LocalizedText; images: string[] };
+type SectionImage = { id: string; image_url: string; caption: LocalizedText; alt_text: LocalizedText; layout: "auto" | "landscape" | "portrait" | "drawing" | "full_bleed" };
+type ContentSection = { id: string; eyebrow: LocalizedText; title: LocalizedText; body: LocalizedText; hero_statement: LocalizedText; is_visible: boolean; layout: "editorial" | "gallery" | "drawings" | "full_bleed"; images: SectionImage[] };
 type WebsiteProject = ProjectCopy & {
   id: string;
   slug: string;
@@ -28,6 +29,8 @@ const languages: { code: EditorLanguage; label: string; hint: string }[] = [
   { code: "ar", label: "العربية", hint: "RTL" },
   { code: "it", label: "Italiano", hint: "Translation" },
 ];
+const defaultSectionNames = ["Project Overview", "Design Approach", "Concept", "Façade Language", "Spatial Experience", "Drawings", "Visualization", "Material Palette / Details"];
+const defaultSections = (): ContentSection[] => defaultSectionNames.map((title, index) => ({ id: `section-${Date.now().toString(36)}-${index}`, eyebrow: { ...emptyLocalizedText(), en: String(index + 1).padStart(2, "0") }, title: { ...emptyLocalizedText(), en: title }, body: emptyLocalizedText(), hero_statement: emptyLocalizedText(), is_visible: true, layout: title === "Drawings" ? "drawings" : title === "Visualization" ? "gallery" : "editorial", images: [] }));
 
 const blankProject = (): WebsiteProject => ({
   id: "",
@@ -40,7 +43,7 @@ const blankProject = (): WebsiteProject => ({
   image_url: "",
   gallery: [],
   translations: { ar: emptyCopy(), it: emptyCopy() },
-  content_sections: [],
+  content_sections: defaultSections(),
   published: false,
 });
 
@@ -59,9 +62,8 @@ function normalizedProject(value: WebsiteProject): WebsiteProject {
     },
     content_sections: Array.isArray(value.content_sections) ? value.content_sections.map((section, index) => ({
       id: section.id || `section-${index + 1}`,
-      title: { ...emptyLocalizedText(), ...(section.title || {}) },
-      body: { ...emptyLocalizedText(), ...(section.body || {}) },
-      images: Array.isArray(section.images) ? section.images : [],
+      eyebrow: { ...emptyLocalizedText(), ...(section.eyebrow || {}) }, title: { ...emptyLocalizedText(), ...(section.title || {}) }, body: { ...emptyLocalizedText(), ...(section.body || {}) }, hero_statement: { ...emptyLocalizedText(), ...(section.hero_statement || {}) }, is_visible: section.is_visible !== false, layout: section.layout || "editorial",
+      images: Array.isArray(section.images) ? section.images.map((image, imageIndex) => typeof image === "string" ? { id: `legacy-${index}-${imageIndex}`, image_url: image, caption: emptyLocalizedText(), alt_text: emptyLocalizedText(), layout: "auto" } : ({ id: image.id || `image-${index}-${imageIndex}`, image_url: image.image_url || "", caption: { ...emptyLocalizedText(), ...(image.caption || {}) }, alt_text: { ...emptyLocalizedText(), ...(image.alt_text || {}) }, layout: image.layout || "auto" })) : [],
     })) : [],
   };
 }
@@ -158,9 +160,8 @@ export default function WebsiteProjectsPage() {
   }
 
   function addSection() {
-    if (project.content_sections.length >= 8) return setError("A project can have up to 8 story sections.");
     const id = `section-${Date.now().toString(36)}`;
-    setProject((current) => ({ ...current, content_sections: [...current.content_sections, { id, title: emptyLocalizedText(), body: emptyLocalizedText(), images: [] }] }));
+    setProject((current) => ({ ...current, content_sections: [...current.content_sections, { id, eyebrow: { ...emptyLocalizedText(), en: String(current.content_sections.length + 2).padStart(2, "0") }, title: emptyLocalizedText(), body: emptyLocalizedText(), hero_statement: emptyLocalizedText(), is_visible: true, layout: "editorial", images: [] }] }));
   }
 
   function updateSection(id: string, updater: (section: ContentSection) => ContentSection) {
@@ -182,11 +183,11 @@ export default function WebsiteProjectsPage() {
     event.target.value = "";
     const section = project.content_sections.find((item) => item.id === sectionId);
     if (!section || !files.length) return;
-    if (section.images.length + files.length > 6) return setError("Each content section can have up to 6 images.");
+    if (section.images.length + files.length > 20) return setError("Each content section can have up to 20 images.");
     try {
       setError("");
       const images = await optimizeFiles(files, 2000, 0.82);
-      updateSection(sectionId, (current) => ({ ...current, images: [...current.images, ...images] }));
+      updateSection(sectionId, (current) => ({ ...current, images: [...current.images, ...images.map((image, index) => ({ id: `image-${Date.now().toString(36)}-${index}`, image_url: image, caption: emptyLocalizedText(), alt_text: emptyLocalizedText(), layout: "auto" as const }))] }));
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Could not read these images.");
     }
@@ -286,9 +287,9 @@ export default function WebsiteProjectsPage() {
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h3 className="text-sm font-semibold">Project story sections</h3><p className="mt-1 text-xs text-white/40">Add Concept, Program, Materials, Process or any custom section. The language tabs above also edit each section.</p></div><button type="button" onClick={addSection} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-xs transition hover:bg-white/10"><Plus size={14} /> Add section</button></div>
             <div className="space-y-4">
               {project.content_sections.map((section, sectionIndex) => <article key={section.id} className="rounded-2xl border border-white/10 bg-black/15 p-4 sm:p-5">
-                <div className="mb-4 flex items-center justify-between gap-3"><p className="text-[10px] uppercase tracking-[.2em] text-white/35">Section {String(sectionIndex + 1).padStart(2, "0")}</p><div className="flex items-center gap-1"><button type="button" onClick={() => moveSection(sectionIndex, -1)} disabled={sectionIndex === 0} className="rounded-lg border border-white/10 p-2 text-white/55 disabled:opacity-20" aria-label="Move section up"><ArrowUp size={14} /></button><button type="button" onClick={() => moveSection(sectionIndex, 1)} disabled={sectionIndex === project.content_sections.length - 1} className="rounded-lg border border-white/10 p-2 text-white/55 disabled:opacity-20" aria-label="Move section down"><ArrowDown size={14} /></button><button type="button" onClick={() => updateField("content_sections", project.content_sections.filter((item) => item.id !== section.id))} className="rounded-lg border border-red-400/20 p-2 text-red-200" aria-label="Delete section"><Trash2 size={14} /></button></div></div>
-                <div dir={language === "ar" ? "rtl" : "ltr"} className={language === "ar" ? "font-[var(--font-arabic)]" : ""}><Field label={`Section title · ${language.toUpperCase()}`}><input className={inputClass} value={section.title[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, title: { ...current.title, [language]: event.target.value } }))} placeholder={language === "en" ? "Concept" : language === "ar" ? "الفكرة التصميمية" : "Concept"} /></Field><Field label={`Section text · ${language.toUpperCase()}`} className="mt-3"><textarea className={`${inputClass} resize-y leading-6`} rows={4} value={section.body[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, body: { ...current.body, [language]: event.target.value } }))} placeholder="Write the story for this section and language." /></Field></div>
-                <div className="mt-4"><div className="mb-3 flex items-center justify-between gap-3"><p className="text-xs text-white/40">Section photos · {section.images.length}/6</p><label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-xs"><ImagePlus size={13} /> Add photos<input type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(event) => void uploadSectionImages(section.id, event)} className="hidden" /></label></div>{section.images.length > 0 ? <ImageGrid images={section.images} onRemove={(imageIndex) => updateSection(section.id, (current) => ({ ...current, images: current.images.filter((_, index) => index !== imageIndex) }))} /> : <p className="rounded-xl border border-dashed border-white/10 px-4 py-4 text-xs text-white/30">No dedicated photos. The first public section will use the cover as a visual fallback.</p>}</div>
+                <div className="mb-4 flex items-center justify-between gap-3"><p className="text-[10px] uppercase tracking-[.2em] text-white/35">Case study section</p><div className="flex items-center gap-1"><label className="mr-2 text-xs text-white/55"><input type="checkbox" checked={section.is_visible} onChange={(event) => updateSection(section.id, (current) => ({ ...current, is_visible: event.target.checked }))} className="mr-1 accent-white" />Visible</label><button type="button" onClick={() => moveSection(sectionIndex, -1)} disabled={sectionIndex === 0} className="rounded-lg border border-white/10 p-2 text-white/55 disabled:opacity-20" aria-label="Move section up"><ArrowUp size={14} /></button><button type="button" onClick={() => moveSection(sectionIndex, 1)} disabled={sectionIndex === project.content_sections.length - 1} className="rounded-lg border border-white/10 p-2 text-white/55 disabled:opacity-20" aria-label="Move section down"><ArrowDown size={14} /></button><button type="button" onClick={() => updateField("content_sections", project.content_sections.filter((item) => item.id !== section.id))} className="rounded-lg border border-red-400/20 p-2 text-red-200" aria-label="Delete section"><Trash2 size={14} /></button></div></div>
+                <div dir={language === "ar" ? "rtl" : "ltr"} className={language === "ar" ? "font-[var(--font-arabic)]" : ""}><div className="grid gap-3 sm:grid-cols-2"><Field label={`Section number / eyebrow · ${language.toUpperCase()}`}><input className={inputClass} value={section.eyebrow[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, eyebrow: { ...current.eyebrow, [language]: event.target.value } }))} placeholder="04" /></Field><Field label="Presentation"><select className={inputClass} value={section.layout} onChange={(event) => updateSection(section.id, (current) => ({ ...current, layout: event.target.value as ContentSection["layout"] }))}><option value="editorial">Editorial</option><option value="gallery">Gallery</option><option value="drawings">Drawings</option><option value="full_bleed">Full bleed</option></select></Field></div><Field label={`Section title · ${language.toUpperCase()}`} className="mt-3"><input className={inputClass} value={section.title[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, title: { ...current.title, [language]: event.target.value } }))} /></Field><Field label={`Section text · ${language.toUpperCase()}`} className="mt-3"><textarea className={`${inputClass} resize-y leading-6`} rows={4} value={section.body[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, body: { ...current.body, [language]: event.target.value } }))} /></Field><Field label={`Editorial hero statement · ${language.toUpperCase()}`} className="mt-3"><textarea className={`${inputClass} resize-y leading-6`} rows={3} value={section.hero_statement[language]} onChange={(event) => updateSection(section.id, (current) => ({ ...current, hero_statement: { ...current.hero_statement, [language]: event.target.value } }))} placeholder="Preserves intentional line breaks." /></Field></div>
+                <div className="mt-4"><div className="mb-3 flex items-center justify-between gap-3"><p className="text-xs text-white/40">Section images · {section.images.length}/20</p><label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-xs"><ImagePlus size={13} /> Add images<input type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(event) => void uploadSectionImages(section.id, event)} className="hidden" /></label></div>{section.images.length > 0 ? <SectionImageGrid images={section.images} language={language} onChange={(imageIndex, updater) => updateSection(section.id, (current) => ({ ...current, images: current.images.map((image, index) => index === imageIndex ? updater(image) : image) }))} onRemove={(imageIndex) => updateSection(section.id, (current) => ({ ...current, images: current.images.filter((_, index) => index !== imageIndex) }))} /> : <p className="rounded-xl border border-dashed border-white/10 px-4 py-4 text-xs text-white/30">No dedicated images yet.</p>}</div>
               </article>)}
               {!project.content_sections.length && <p className="rounded-xl border border-dashed border-white/15 px-4 py-8 text-center text-sm text-white/35">No story sections yet. Add Concept first, then Program, Materials or Process.</p>}
             </div>
@@ -315,4 +316,8 @@ function Field({ label, children, className = "" }: { label: string; children: R
 
 function ImageGrid({ images, onRemove }: { images: string[]; onRemove: (index: number) => void }) {
   return <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{images.map((image, index) => <div key={`${image.slice(0, 32)}-${index}`} className="group relative overflow-hidden rounded-xl border border-white/10"><img src={image} alt={`Project image ${index + 1}`} className="aspect-[4/3] h-full w-full object-cover" /><button type="button" onClick={() => onRemove(index)} className="absolute right-2 top-2 rounded-full bg-black/70 p-2 text-white opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100" aria-label={`Remove image ${index + 1}`}><Trash2 size={14} /></button></div>)}</div>;
+}
+
+function SectionImageGrid({ images, language, onChange, onRemove }: { images: SectionImage[]; language: EditorLanguage; onChange: (index: number, updater: (image: SectionImage) => SectionImage) => void; onRemove: (index: number) => void }) {
+  return <div className="space-y-3">{images.map((image, index) => <div key={image.id} className="grid gap-3 rounded-xl border border-white/10 p-3 sm:grid-cols-[120px_1fr_auto]"><img src={image.image_url} alt="Section preview" className="aspect-[4/3] w-full rounded-lg object-cover" /><div className="grid gap-2"><input className={inputClass} value={image.caption[language]} onChange={(event) => onChange(index, (current) => ({ ...current, caption: { ...current.caption, [language]: event.target.value } }))} placeholder={`Caption · ${language.toUpperCase()}`} /><input className={inputClass} value={image.alt_text[language]} onChange={(event) => onChange(index, (current) => ({ ...current, alt_text: { ...current.alt_text, [language]: event.target.value } }))} placeholder={`Alt text · ${language.toUpperCase()}`} /><select className={inputClass} value={image.layout} onChange={(event) => onChange(index, (current) => ({ ...current, layout: event.target.value as SectionImage["layout"] }))}><option value="auto">Auto</option><option value="landscape">Landscape</option><option value="portrait">Portrait</option><option value="drawing">Drawing</option><option value="full_bleed">Full bleed</option></select></div><button type="button" onClick={() => onRemove(index)} className="h-fit rounded-lg border border-red-400/20 p-2 text-red-200" aria-label={`Remove image ${index + 1}`}><Trash2 size={14} /></button></div>)}</div>;
 }

@@ -33,6 +33,10 @@ export async function GET(request: Request, { params }: RouteContext) {
   if (kind === "cover") source = typeof project.image_url === "string" ? project.image_url : "";
   if (kind === "gallery") source = imageList(project.gallery)[index] || "";
   if (kind === "section") source = imageFromSection(project.content_sections, url.searchParams.get("section") || "", index);
+  if (kind === "section-image") {
+    const image = await query<{ image_url: string }>(`SELECT image.image_url FROM website_project_section_images image JOIN website_project_sections section ON section.id=image.section_id JOIN website_projects website ON website.id=section.project_id WHERE image.id=$1 AND website.id=$2 AND website.published=true LIMIT 1`, [url.searchParams.get("id") || "", id]);
+    source = image.rows[0]?.image_url || "";
+  }
 
   const match = /^data:(image\/(?:png|jpe?g|webp|gif));base64,([a-z0-9+/=\s]+)$/i.exec(source);
   if (!match) return NextResponse.json({ error: "Image not found." }, { status: 404 });

@@ -3,8 +3,258 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CheckCircle2, FileText, Pencil, Plus, Wallet } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  FileText,
+  HardHat,
+  Pencil,
+  Plus,
+  Wallet,
+} from "lucide-react";
 
-type Project={id:string;code:string;name:string;type:string;location:string;status:string;phase:string;description:string;client_name:string|null;project_manager_name:string|null;start_date:string|null;target_date:string|null};type Item={id:string;status:string;type?:string;amount?:string|number};
-export default function ProjectPage(){const params=useParams<{id:string}>();const id=params?.id||"";const [project,setProject]=useState<Project|null>(null);const [data,setData]=useState<{tasks:Item[];files:Item[];approvals:Item[];finance:Item[];issues:Item[]}>({tasks:[],files:[],approvals:[],finance:[],issues:[]});const [error,setError]=useState("");useEffect(()=>{void(async()=>{try{const fetcher=(resource:string)=>fetch(`/api/data/${resource}?projectId=${encodeURIComponent(id)}`,{cache:"no-store",credentials:"include"}).then(async response=>{const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||`Could not load ${resource}.`);return body.data||[]});const [projects,tasks,files,approvals,finance,issues]=await Promise.all([fetcher("projects"),fetcher("tasks"),fetcher("files"),fetcher("approvals"),fetcher("finance"),fetcher("site_issues")]);setProject(projects[0]||null);setData({tasks,files,approvals,finance,issues});}catch(cause){setError(cause instanceof Error?cause.message:"Could not load project.");}})()},[id]);const openTasks=useMemo(()=>data.tasks.filter(item=>item.status!=="Completed").length,[data.tasks]);const pending=useMemo(()=>data.approvals.filter(item=>item.status.toLowerCase().includes("pending")).length,[data.approvals]);const expenses=useMemo(()=>data.finance.filter(item=>item.type==="Expense").reduce((sum,item)=>sum+Number(item.amount||0),0),[data.finance]);if(error)return <main className="min-h-screen bg-[#080808] p-8 text-white"><Link href="/app/admin/projects" className="text-sm text-white/45">← Projects</Link><p className="mt-8 rounded-xl border border-red-400/30 p-4 text-red-200">{error}</p></main>;if(!project)return <main className="min-h-screen bg-[#080808] p-8 text-white">Loading project…</main>;return <main className="min-h-screen bg-[#080808] px-5 py-7 text-white sm:px-8"><div className="mx-auto max-w-7xl"><Link href="/app/admin/projects" className="inline-flex items-center gap-2 text-sm text-white/45"><ArrowLeft size={15}/>Projects</Link><header className="mt-7 flex flex-col gap-4 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between"><div><div className="flex flex-wrap gap-2 text-xs text-white/45"><span>{project.code}</span><span>·</span><span>{project.status}</span><span>·</span><span>{project.phase}</span></div><h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{project.name}</h1><p className="mt-2 text-sm text-white/50">{project.type} · {project.location}</p></div><div className="flex gap-2"><Link href={`/app/admin/projects/${project.id}/edit`} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-sm"><Pencil size={15}/>Edit Project</Link><Link href={`/app/admin/tasks/new?project=${project.id}`} className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm text-black"><Plus size={15}/>Assign Task</Link></div></header><section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"><Metric label="Open Tasks" value={openTasks}/><Metric label="Pending Approvals" value={pending}/><Metric label="Files" value={data.files.length}/><Metric label="Open Site Issues" value={data.issues.filter(item=>item.status!=="Resolved").length}/></section><section className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_.8fr]"><div className="rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6"><h2 className="font-semibold">Project Overview</h2><p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-white/60">{project.description||"No project description yet."}</p><dl className="mt-6 grid gap-4 sm:grid-cols-2 text-sm"><div><dt className="text-white/35">Client</dt><dd className="mt-1">{project.client_name||"Unassigned"}</dd></div><div><dt className="text-white/35">Project Manager</dt><dd className="mt-1">{project.project_manager_name||"Unassigned"}</dd></div><div><dt className="text-white/35">Start Date</dt><dd className="mt-1">{project.start_date?.slice(0,10)||"Not set"}</dd></div><div><dt className="text-white/35">Target Date</dt><dd className="mt-1">{project.target_date?.slice(0,10)||"Not set"}</dd></div></dl></div><div className="space-y-4"><Link href={`/app/admin/projects/${project.id}/finance`} className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"><Wallet size={18}/><h2 className="mt-4 font-semibold">Finance</h2><p className="mt-2 text-sm text-white/50">{data.finance.length} shared entries · actual costs {new Intl.NumberFormat("en-US",{style:"currency",currency:"EGP",maximumFractionDigits:0}).format(expenses)}</p></Link><Link href={`/app/admin/files?project=${project.id}`} className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"><FileText size={18}/><h2 className="mt-4 font-semibold">Files & Documents</h2><p className="mt-2 text-sm text-white/50">{data.files.length} files currently linked.</p></Link><Link href="/app/admin/approvals" className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"><CheckCircle2 size={18}/><h2 className="mt-4 font-semibold">Approvals</h2><p className="mt-2 text-sm text-white/50">{pending} waiting for review.</p></Link></div></section></div></main>}
-function Metric({label,value}:{label:string;value:number}){return <div className="rounded-2xl border border-white/10 bg-white/[.03] p-5"><p className="text-xs uppercase tracking-[.16em] text-white/35">{label}</p><p className="mt-4 text-2xl font-semibold">{value}</p></div>}
+type Project = {
+  id: string;
+  code: string;
+  name: string;
+  type: string;
+  location: string;
+  status: string;
+  phase: string;
+  description: string;
+  client_name: string | null;
+  project_manager_name: string | null;
+  start_date: string | null;
+  target_date: string | null;
+};
+type Item = {
+  id: string;
+  status: string;
+  type?: string;
+  amount?: string | number;
+};
+export default function ProjectPage() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id || "";
+  const [project, setProject] = useState<Project | null>(null);
+  const [data, setData] = useState<{
+    tasks: Item[];
+    files: Item[];
+    approvals: Item[];
+    finance: Item[];
+    issues: Item[];
+  }>({ tasks: [], files: [], approvals: [], finance: [], issues: [] });
+  const [error, setError] = useState("");
+  useEffect(() => {
+    void (async () => {
+      try {
+        const fetcher = (resource: string) =>
+          fetch(`/api/data/${resource}?projectId=${encodeURIComponent(id)}`, {
+            cache: "no-store",
+            credentials: "include",
+          }).then(async (response) => {
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok)
+              throw new Error(body.error || `Could not load ${resource}.`);
+            return body.data || [];
+          });
+        const [projects, tasks, files, approvals, finance, issues] =
+          await Promise.all([
+            fetcher("projects"),
+            fetcher("tasks"),
+            fetcher("files"),
+            fetcher("approvals"),
+            fetcher("finance"),
+            fetcher("site_issues"),
+          ]);
+        setProject(projects[0] || null);
+        setData({ tasks, files, approvals, finance, issues });
+      } catch (cause) {
+        setError(
+          cause instanceof Error ? cause.message : "Could not load project.",
+        );
+      }
+    })();
+  }, [id]);
+  const openTasks = useMemo(
+    () => data.tasks.filter((item) => item.status !== "Completed").length,
+    [data.tasks],
+  );
+  const pending = useMemo(
+    () =>
+      data.approvals.filter((item) =>
+        item.status.toLowerCase().includes("pending"),
+      ).length,
+    [data.approvals],
+  );
+  const expenses = useMemo(
+    () =>
+      data.finance
+        .filter((item) => item.type === "Expense")
+        .reduce((sum, item) => sum + Number(item.amount || 0), 0),
+    [data.finance],
+  );
+  if (error)
+    return (
+      <main className="min-h-screen bg-[#080808] p-8 text-white">
+        <Link href="/app/admin/projects" className="text-sm text-white/45">
+          ← Projects
+        </Link>
+        <p className="mt-8 rounded-xl border border-red-400/30 p-4 text-red-200">
+          {error}
+        </p>
+      </main>
+    );
+  if (!project)
+    return (
+      <main className="min-h-screen bg-[#080808] p-8 text-white">
+        Loading project…
+      </main>
+    );
+  return (
+    <main className="min-h-screen bg-[#080808] px-5 py-7 text-white sm:px-8">
+      <div className="mx-auto max-w-7xl">
+        <Link
+          href="/app/admin/projects"
+          className="inline-flex items-center gap-2 text-sm text-white/45"
+        >
+          <ArrowLeft size={15} />
+          Projects
+        </Link>
+        <header className="mt-7 flex flex-col gap-4 border-b border-white/10 pb-7 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="flex flex-wrap gap-2 text-xs text-white/45">
+              <span>{project.code}</span>
+              <span>·</span>
+              <span>{project.status}</span>
+              <span>·</span>
+              <span>{project.phase}</span>
+            </div>
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">
+              {project.name}
+            </h1>
+            <p className="mt-2 text-sm text-white/50">
+              {project.type} · {project.location}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link
+              href={`/app/admin/projects/${project.id}/edit`}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-3 text-sm"
+            >
+              <Pencil size={15} />
+              Edit Project
+            </Link>
+            <Link
+              href={`/app/admin/tasks/new?project=${project.id}`}
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm text-black"
+            >
+              <Plus size={15} />
+              Assign Task
+            </Link>
+          </div>
+        </header>
+        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Metric label="Open Tasks" value={openTasks} />
+          <Metric label="Pending Approvals" value={pending} />
+          <Metric label="Files" value={data.files.length} />
+          <Metric
+            label="Open Site Issues"
+            value={
+              data.issues.filter((item) => item.status !== "Resolved").length
+            }
+          />
+        </section>
+        <section className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
+          <div className="rounded-2xl border border-white/10 bg-white/[.03] p-5 sm:p-6">
+            <h2 className="font-semibold">Project Overview</h2>
+            <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-white/60">
+              {project.description || "No project description yet."}
+            </p>
+            <dl className="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
+              <div>
+                <dt className="text-white/35">Client</dt>
+                <dd className="mt-1">{project.client_name || "Unassigned"}</dd>
+              </div>
+              <div>
+                <dt className="text-white/35">Project Manager</dt>
+                <dd className="mt-1">
+                  {project.project_manager_name || "Unassigned"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/35">Start Date</dt>
+                <dd className="mt-1">
+                  {project.start_date?.slice(0, 10) || "Not set"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-white/35">Target Date</dt>
+                <dd className="mt-1">
+                  {project.target_date?.slice(0, 10) || "Not set"}
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="space-y-4">
+            <Link
+              href={`/app/admin/projects/${project.id}/construction`}
+              className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"
+            >
+              <HardHat size={18} />
+              <h2 className="mt-4 font-semibold">Construction Management</h2>
+              <p className="mt-2 text-sm text-white/50">
+                WBS, activities and dependency logic.
+              </p>
+            </Link>
+            <Link
+              href={`/app/admin/projects/${project.id}/finance`}
+              className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"
+            >
+              <Wallet size={18} />
+              <h2 className="mt-4 font-semibold">Finance</h2>
+              <p className="mt-2 text-sm text-white/50">
+                {data.finance.length} shared entries · actual costs{" "}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "EGP",
+                  maximumFractionDigits: 0,
+                }).format(expenses)}
+              </p>
+            </Link>
+            <Link
+              href={`/app/admin/files?project=${project.id}`}
+              className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"
+            >
+              <FileText size={18} />
+              <h2 className="mt-4 font-semibold">Files & Documents</h2>
+              <p className="mt-2 text-sm text-white/50">
+                {data.files.length} files currently linked.
+              </p>
+            </Link>
+            <Link
+              href="/app/admin/approvals"
+              className="block rounded-2xl border border-white/10 bg-white/[.03] p-5 hover:bg-white/[.05]"
+            >
+              <CheckCircle2 size={18} />
+              <h2 className="mt-4 font-semibold">Approvals</h2>
+              <p className="mt-2 text-sm text-white/50">
+                {pending} waiting for review.
+              </p>
+            </Link>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+function Metric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[.03] p-5">
+      <p className="text-xs uppercase tracking-[.16em] text-white/35">
+        {label}
+      </p>
+      <p className="mt-4 text-2xl font-semibold">{value}</p>
+    </div>
+  );
+}

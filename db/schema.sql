@@ -407,6 +407,34 @@ CREATE TABLE IF NOT EXISTS website_projects (
 );
 CREATE INDEX IF NOT EXISTS website_projects_published_idx ON website_projects(published, updated_at DESC);
 
+CREATE TABLE IF NOT EXISTS website_project_sections (
+  id TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES website_projects(id) ON DELETE CASCADE,
+  eyebrow JSONB NOT NULL DEFAULT '{}'::jsonb,
+  title JSONB NOT NULL DEFAULT '{}'::jsonb,
+  description JSONB NOT NULL DEFAULT '{}'::jsonb,
+  hero_statement JSONB NOT NULL DEFAULT '{}'::jsonb,
+  layout TEXT NOT NULL DEFAULT 'editorial' CHECK (layout IN ('editorial', 'gallery', 'drawings', 'full_bleed')),
+  display_order INTEGER NOT NULL DEFAULT 0,
+  is_visible BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS website_project_sections_project_order_idx ON website_project_sections(project_id, display_order);
+
+CREATE TABLE IF NOT EXISTS website_project_section_images (
+  id TEXT PRIMARY KEY,
+  section_id TEXT NOT NULL REFERENCES website_project_sections(id) ON DELETE CASCADE,
+  image_url TEXT NOT NULL,
+  caption JSONB NOT NULL DEFAULT '{}'::jsonb,
+  alt_text JSONB NOT NULL DEFAULT '{}'::jsonb,
+  layout TEXT NOT NULL DEFAULT 'auto' CHECK (layout IN ('auto', 'landscape', 'portrait', 'drawing', 'full_bleed')),
+  display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS website_project_section_images_section_order_idx ON website_project_section_images(section_id, display_order);
+
 -- AI outputs stay review-only until a human explicitly creates the linked item.
 CREATE TABLE IF NOT EXISTS ai_reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -525,6 +553,46 @@ CREATE TABLE IF NOT EXISTS construction_items (
   description TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS project_wbs_nodes (
+  id TEXT PRIMARY KEY,
+  project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  parent_id TEXT REFERENCES project_wbs_nodes(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  discipline TEXT NOT NULL DEFAULT '',
+  planned_start DATE,
+  planned_finish DATE,
+  progress_percent NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (progress_percent BETWEEN 0 AND 100),
+  budget NUMERIC(18,2), notes TEXT NOT NULL DEFAULT '', display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (project_id, code)
+);
+CREATE INDEX IF NOT EXISTS project_wbs_nodes_project_parent_order_idx ON project_wbs_nodes(project_id, parent_id, display_order);
+
+CREATE TABLE IF NOT EXISTS project_schedule_activities (
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  wbs_id TEXT REFERENCES project_wbs_nodes(id) ON DELETE SET NULL, activity_code TEXT NOT NULL, name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '', discipline TEXT NOT NULL DEFAULT '', responsible_user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+  responsible_name TEXT NOT NULL DEFAULT '', planned_duration_days INTEGER NOT NULL DEFAULT 0 CHECK (planned_duration_days >= 0),
+  planned_start DATE, planned_finish DATE, actual_start DATE, actual_finish DATE,
+  progress_percent NUMERIC(5,2) NOT NULL DEFAULT 0 CHECK (progress_percent BETWEEN 0 AND 100),
+  status TEXT NOT NULL DEFAULT 'Not Started' CHECK (status IN ('Not Started','In Progress','Completed','On Hold')),
+  priority TEXT NOT NULL DEFAULT 'Medium' CHECK (priority IN ('Low','Medium','High','Critical')),
+  is_milestone BOOLEAN NOT NULL DEFAULT FALSE, display_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), UNIQUE (project_id, activity_code)
+);
+CREATE INDEX IF NOT EXISTS project_schedule_activities_project_wbs_order_idx ON project_schedule_activities(project_id, wbs_id, display_order);
+
+CREATE TABLE IF NOT EXISTS project_activity_dependencies (
+  id TEXT PRIMARY KEY, project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  predecessor_activity_id TEXT NOT NULL REFERENCES project_schedule_activities(id) ON DELETE CASCADE,
+  successor_activity_id TEXT NOT NULL REFERENCES project_schedule_activities(id) ON DELETE CASCADE,
+  relationship_type TEXT NOT NULL DEFAULT 'FS' CHECK (relationship_type IN ('FS','SS','FF','SF')),
+  lag_days INTEGER NOT NULL DEFAULT 0, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CHECK (predecessor_activity_id <> successor_activity_id), UNIQUE (predecessor_activity_id, successor_activity_id, relationship_type)
+);
+CREATE INDEX IF NOT EXISTS project_activity_dependencies_project_idx ON project_activity_dependencies(project_id);
 
 CREATE OR REPLACE FUNCTION notify_studio_event() RETURNS trigger AS $$
 BEGIN
