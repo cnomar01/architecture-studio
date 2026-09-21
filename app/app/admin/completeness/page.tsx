@@ -1,7 +1,6 @@
 const nextSteps = [
   { title: "Connect Google Calendar", status: "One click needed", detail: "The API, OAuth callback and encrypted database storage are ready. In Settings, choose Connect Calendar and approve the studio account.", cost: "Free" },
   { title: "Test database backup and restore", status: "Ready to complete", detail: "Error monitoring is live. The remaining check is a safe backup-and-restore drill; this can use a free local backup workflow.", cost: "Free" },
-  { title: "Retire or migrate legacy screens", status: "Code work remaining", detail: "The optional local calendar, forecast and archived project tools need to be moved to the database or removed from navigation.", cost: "Free" },
   { title: "Secure office AI access from the hosted site", status: "External DNS prerequisite", detail: "Ollama and ComfyUI already auto-start locally. A free Cloudflare Tunnel is possible after masonandarc.com is added as a Cloudflare zone and its DNS is pointed there.", cost: "Free, but needs DNS access" },
   { title: "Large shared file storage", status: "Not enabled", detail: "R2 requires activating a billing profile, even with a free allowance and possible overage. Small files remain in the existing database; do not activate R2 if no paid risk is acceptable.", cost: "Potentially paid" },
   { title: "Automated WhatsApp messages", status: "Not enabled", detail: "Direct office WhatsApp remains available. Automation needs a Meta Developer App, WhatsApp Business credentials and may charge per message or conversation.", cost: "Potentially paid" },
