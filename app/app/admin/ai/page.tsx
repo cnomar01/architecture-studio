@@ -1,15 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Activity, ArrowRight, Brain, Camera, FileSearch, Gauge, ShieldAlert, Sparkles, Users, Workflow, Wand2 } from "lucide-react";
-import { getProjects } from "@/lib/core/projectStore";
-import { getTasks } from "@/app/app/admin/tasks/taskStore";
-import { getApprovals } from "@/app/app/admin/approvals/approvalStore";
-import { getFinanceTransactions } from "@/app/app/admin/finance/financeStore";
-import { getSiteReports } from "@/app/app/engineer/site/siteStore";
-import { getFiles } from "@/app/app/admin/files/fileStore";
-import { getUsers } from "@/lib/core/authStore";
+import { getStudioContext, type StudioStats } from "@/lib/client/studioContext";
 
 const capabilities = [
   { title: "Project Brain", text: "Ask questions across live projects, tasks, approvals, site, files and finance.", icon: Brain, href: "/app/admin/brain" },
@@ -22,25 +16,9 @@ const capabilities = [
 ];
 
 export default function AIStudioPage() {
-  const stats = useMemo(() => {
-    const projects = getProjects();
-    const tasks = getTasks();
-    const approvals = getApprovals();
-    const reports = getSiteReports();
-    const files = getFiles();
-    const finance = getFinanceTransactions();
-    const active = getUsers().filter((u) => u.active);
-    return {
-      projects: projects.length,
-      openTasks: tasks.filter((t) => t.status !== "Completed").length,
-      overdue: tasks.filter((t) => t.status === "Overdue").length,
-      pendingApprovals: approvals.filter((a) => String(a.status).toLowerCase().includes("pending")).length,
-      siteIssues: reports.flatMap((r) => r.issues || []).filter((i) => i.status !== "Resolved").length,
-      files: files.length,
-      finance: finance.length,
-      team: active.length,
-    };
-  }, []);
+  const [stats, setStats] = useState<StudioStats | null>(null);
+  const [loadError, setLoadError] = useState("");
+  useEffect(() => { void getStudioContext().then(data => { setStats(data.stats); setLoadError(""); }).catch(error => setLoadError(error instanceof Error ? error.message : "Could not load live studio data.")); }, []);
 
   const askLinks = [
     ["Owner briefing", "Give me today's owner briefing."],
@@ -50,8 +28,8 @@ export default function AIStudioPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#111111] px-5 py-8 text-white md:px-8 lg:px-10">
-      <div className="mx-auto max-w-7xl">
+    <main className="min-h-screen min-w-0 bg-[#111111] px-4 py-6 text-white sm:px-5 sm:py-8 md:px-8 lg:px-10">
+      <div className="mx-auto w-full min-w-0 max-w-[1440px]">
         <header className="border-b border-white/10 pb-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
             <div>
@@ -63,34 +41,35 @@ export default function AIStudioPage() {
                 One intelligence layer for projects, site, documents, risk, team capacity, owner decisions and architectural creation.
               </p>
             </div>
-            <Link href="/app/admin/brain" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-xs hover:bg-white/[0.05]">
+            <Link href="/app/admin/brain" className="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-xs hover:bg-white/[0.05] sm:w-auto">
               Open AI Engineer <ArrowRight size={14} />
             </Link>
           </div>
         </header>
 
-        <section className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+        {loadError && <p role="alert" className="mt-5 rounded-xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200">{loadError}</p>}
+        <section className="mt-6 grid min-w-0 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2 xl:grid-cols-4">
           {([
-            { label: "Projects", value: stats.projects, Icon: Activity },
-            { label: "Open tasks", value: stats.openTasks, Icon: Workflow },
-            { label: "Overdue", value: stats.overdue, Icon: ShieldAlert },
-            { label: "Pending approvals", value: stats.pendingApprovals, Icon: Gauge },
-            { label: "Open site issues", value: stats.siteIssues, Icon: Camera },
-            { label: "Files", value: stats.files, Icon: FileSearch },
-            { label: "Finance records", value: stats.finance, Icon: Gauge },
-            { label: "Active team", value: stats.team, Icon: Users },
-          ] as Array<{ label: string; value: number; Icon: typeof Activity }>).map(({ label, value, Icon }) => (
-            <div key={label} className="bg-[#111111] p-5">
-              <div className="flex items-center justify-between text-white/35">
-                <span className="text-[10px] uppercase tracking-[0.18em]">{label}</span>
+            { label: "Projects", value: stats?.projects, Icon: Activity },
+            { label: "Open tasks", value: stats?.openTasks, Icon: Workflow },
+            { label: "Overdue", value: stats?.overdue, Icon: ShieldAlert },
+            { label: "Pending approvals", value: stats?.pendingApprovals, Icon: Gauge },
+            { label: "Open site issues", value: stats?.siteIssues, Icon: Camera },
+            { label: "Files", value: stats?.files, Icon: FileSearch },
+            { label: "Finance records", value: stats?.finance, Icon: Gauge },
+            { label: "Active team", value: stats?.team, Icon: Users },
+          ] as Array<{ label: string; value: number | undefined; Icon: typeof Activity }>).map(({ label, value, Icon }) => (
+            <div key={label} className="min-w-0 bg-[#111111] p-4 sm:p-5">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-white/35">
+                <span className="min-w-0 text-[10px] uppercase tracking-[0.18em]">{label}</span>
                 <Icon size={14} />
               </div>
-              <div className="mt-3 text-3xl font-semibold">{value}</div>
+              <div className="mt-3 text-3xl font-semibold">{value ?? "—"}</div>
             </div>
           ))}
         </section>
 
-        <section className="mt-8 grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="mt-6 grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2 text-sm font-semibold"><Brain size={16} /> Command Center</div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -115,8 +94,8 @@ export default function AIStudioPage() {
                 ["ACT", "Tasks, issues, reports and notifications with approval gates"],
               ].map(([stage, text], index) => (
                 <div key={stage} className="flex gap-4">
-                  <div className="grid h-7 w-20 shrink-0 place-items-center rounded-md border border-white/10 text-[9px] font-semibold tracking-[0.18em]">{index + 1} · {stage}</div>
-                  <p className="text-xs leading-5 text-white/45">{text}</p>
+                  <div className="inline-flex h-7 min-w-[112px] shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-white/10 px-2 text-[9px] font-semibold tracking-[0.14em]">{index + 1} · {stage}</div>
+                  <p className="min-w-0 text-xs leading-5 text-white/45">{text}</p>
                 </div>
               ))}
             </div>
@@ -125,7 +104,7 @@ export default function AIStudioPage() {
 
         <section className="mt-8">
           <div className="mb-4 text-[10px] uppercase tracking-[0.25em] text-white/30">Capabilities</div>
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {capabilities.map(({ title, text, icon: Icon, href }) => (
               <Link key={title} href={href} className="rounded-2xl border border-white/10 p-5 transition hover:border-white/25 hover:bg-white/[0.03]">
                 <Icon size={17} className="text-white/55" />

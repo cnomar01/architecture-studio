@@ -246,8 +246,9 @@ export async function POST(request: Request) {
 
     throw new Error("Image generation timed out. Check ComfyUI for the execution status.");
   } catch (error) {
+    const message = error instanceof Error ? error.message : "";
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Unexpected local image generation error." },
+      { error: /fetch failed|ECONNREFUSED|network/i.test(message) ? "Image Studio is offline. Start the local AI stack on the office computer, then refresh this page." : message || "Unexpected local image generation error." },
       { status: 500 },
     );
   }

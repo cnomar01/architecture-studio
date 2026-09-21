@@ -1,15 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle, Brain, Camera, CheckCircle2, CircleAlert, Download, FileText, ImagePlus, Paperclip, RefreshCw, Send, Sparkles, Wand2, X } from "lucide-react";
-import { getProjects } from "@/lib/core/projectStore";
-import { getTasks } from "@/app/app/admin/tasks/taskStore";
-import { getApprovals } from "@/app/app/admin/approvals/approvalStore";
-import { getFinanceTransactions } from "@/app/app/admin/finance/financeStore";
-import { getSiteReports } from "@/app/app/engineer/site/siteStore";
-import { getFiles } from "@/app/app/admin/files/fileStore";
-import { getUsers } from "@/lib/core/authStore";
+import { getStudioContext, type StudioContext } from "@/lib/client/studioContext";
 
 type Message = { role: "user" | "assistant"; content: string; attachment?: { name: string; type: string } };
 type Attachment = { file: File; dataUrl: string };
@@ -22,39 +16,6 @@ const starters = [
   "Analyze my team's workload and tell me who needs attention.",
   "Act as my senior architect and tell me what I should check on site.",
 ];
-
-function buildStudioContext() {
-  const projects = getProjects();
-  const tasks = getTasks();
-  const approvals = getApprovals();
-  const finance = getFinanceTransactions();
-  const siteReports = getSiteReports();
-  const files = getFiles();
-  const users = getUsers();
-  const openTasks = tasks.filter((t) => t.status !== "Completed");
-  const overdueTasks = tasks.filter((t) => t.status === "Overdue");
-  const pendingApprovals = approvals.filter((a) => String(a.status).toLowerCase().includes("pending"));
-  const openIssues = siteReports.flatMap((r) => r.issues || []).filter((i) => i.status !== "Resolved");
-  const activeUsers = users.filter((u) => u.active);
-
-  return [
-    `CURRENT DATE: ${new Date().toISOString().slice(0, 10)}`,
-    `PROJECTS (${projects.length}):`,
-    ...projects.map((p) => `- ${p.name} | ${p.code} | ${p.status} | ${p.phase} | PM: ${p.projectManagerName || "Not assigned"} | Target: ${p.targetDate || "Not set"}`),
-    `TASKS (${tasks.length}; open ${openTasks.length}; overdue ${overdueTasks.length}):`,
-    ...tasks.slice(0, 40).map((t) => `- ${t.id} | ${t.title} | ${t.project} | ${t.assignee} | ${t.priority} | ${t.status} | deadline: ${t.deadline}`),
-    `PENDING APPROVALS (${pendingApprovals.length}):`,
-    ...pendingApprovals.slice(0, 30).map((a) => `- ${a.id} | ${a.title || "Approval"} | project: ${a.project || "Unknown"} | status: ${a.status}`),
-    `SITE OPEN ISSUES (${openIssues.length}):`,
-    ...openIssues.slice(0, 30).map((i) => `- ${i.id} | ${i.title || i.description || "Site issue"} | ${i.priority} | ${i.status}`),
-    `FILES (${files.length}):`,
-    ...files.slice(0, 30).map((f) => `- ${f.id} | ${f.name} | ${f.category} | Rev ${f.revision} | ${f.status}`),
-    `FINANCE TRANSACTIONS (${finance.length}):`,
-    ...finance.slice(0, 30).map((f) => `- ${f.id} | ${f.type} | ${f.category} | ${f.amount} ${f.currency} | ${f.status} | project: ${f.projectId || "Studio"}`),
-    `ACTIVE USERS (${activeUsers.length}):`,
-    ...activeUsers.map((u) => `- ${u.name} | ${u.role}${u.employeeId ? ` | ${u.employeeId}` : ""}`),
-  ].join("\n");
-}
 
 function RenderAnswer({ content }: { content: string }) {
   const lines = content.split(/\r?\n/);
@@ -88,12 +49,19 @@ export default function BrainPage() {
   const [reference, setReference] = useState<Attachment | null>(null);
   const [generated, setGenerated] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState("");
   const [aiStatus, setAiStatus] = useState<{ ollama: boolean; comfyui: boolean; model: string } | null>(null);
+  const [studio, setStudio] = useState<StudioContext | null>(null);
+  const [studioError, setStudioError] = useState("");
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const referenceRef = useRef<HTMLInputElement>(null);
-  const projects = useMemo(() => getProjects(), []);
-  const contextText = useMemo(() => buildStudioContext(), [messages.length]);
+  const projects = studio?.projects || [];
+
+  async function refreshStudioContext() {
+    try { const value = await getStudioContext(); setStudio(value); setStudioError(""); return value; }
+    catch (error) { const message = error instanceof Error ? error.message : "Could not load live studio context."; setStudioError(message); throw new Error(message); }
+  }
 
   async function refreshAIStatus() {
     try {
@@ -105,7 +73,7 @@ export default function BrainPage() {
     }
   }
 
-  useEffect(() => { refreshAIStatus(); }, []);
+  useEffect(() => { void refreshAIStatus(); void refreshStudioContext().catch(() => {}); }, []);
 
   useEffect(() => {
     const prompt = searchParams.get("prompt");
@@ -146,7 +114,8 @@ export default function BrainPage() {
     setMessages((m) => [...m, { role: "user", content: clean || "Analyze this upload.", attachment: attachmentForRequest ? { name: attachmentForRequest.file.name, type: attachmentForRequest.file.type } : undefined }]);
     setLoading(true);
     try {
-      const res = await fetch("/api/ai/engineer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: clean || "Analyze the uploaded project material and identify important observations, risks, missing information and recommended actions.", context: contextText, mode: "owner", projectId, attachment: attachmentForRequest ? { name: attachmentForRequest.file.name, type: attachmentForRequest.file.type, dataUrl: attachmentForRequest.dataUrl } : null }) });
+      const liveStudio = await refreshStudioContext();
+      const res = await fetch("/api/ai/engineer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: clean || "Analyze the uploaded project material and identify important observations, risks, missing information and recommended actions.", context: liveStudio.context, mode: "owner", projectId, attachment: attachmentForRequest ? { name: attachmentForRequest.file.name, type: attachmentForRequest.file.type, dataUrl: attachmentForRequest.dataUrl } : null }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "AI request failed.");
       setMessages((m) => [...m, { role: "assistant", content: data.answer }]);
@@ -156,13 +125,13 @@ export default function BrainPage() {
 
   async function generateImage() {
     if (!createPrompt.trim() || generating) return;
-    setGenerating(true); setGenerated(null);
+    setGenerating(true); setGenerated(null); setGenerationError("");
     try {
       const res = await fetch("/api/ai/generate-image", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt: createPrompt, reference: reference ? { name: reference.file.name, type: reference.file.type, dataUrl: reference.dataUrl } : null, size: "1536x1024", quality: "high" }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Image generation failed.");
       setGenerated(data.image);
-    } catch (error) { alert(error instanceof Error ? error.message : "Image generation failed."); }
+    } catch (error) { setGenerationError(error instanceof Error ? error.message : "Image generation failed."); }
     finally { setGenerating(false); }
   }
 
@@ -194,7 +163,7 @@ export default function BrainPage() {
               <div className="mb-2 flex items-center gap-2"><select value={projectId} onChange={(e) => setProjectId(e.target.value)} className="rounded-lg border border-black/10 bg-white px-3 py-2 text-xs outline-none"><option value="">Project: Auto / Studio</option>{projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select><input ref={inputRef} type="file" accept="image/*,video/*,.pdf,.txt,.csv,.json" className="hidden" onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], setAttachment)} /><button onClick={() => inputRef.current?.click()} className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium hover:border-black/30"><ImagePlus size={14} /> Upload photo / video / file</button></div>
               <div className="flex gap-2 rounded-xl border border-black/15 bg-white p-2"><input value={question} onChange={(e) => setQuestion(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask()} placeholder="Ask your AI Engineer anything…" className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none" /><button onClick={() => ask()} disabled={loading || (!question.trim() && !attachment)} className="grid h-9 w-9 place-items-center rounded-lg bg-black text-white disabled:opacity-30"><Send size={15} /></button></div>
             </main>
-            <aside className="space-y-3"><div className="rounded-2xl border border-black/10 p-5"><div className="mb-4 flex items-center justify-between gap-2"><div className="flex items-center gap-2 text-sm font-semibold"><FileText size={15} /> Live Studio context</div><span className="text-[10px] uppercase tracking-[0.15em] text-black/30">Private</span></div><div className="space-y-2 text-xs text-black/55"><div>Projects — {getProjects().length}</div><div>Tasks — {getTasks().length}</div><div>Approvals — {getApprovals().length}</div><div>Site reports — {getSiteReports().length}</div><div>Files — {getFiles().length}</div><div>Team — {getUsers().filter((u) => u.active).length} active users</div></div></div><div className="rounded-2xl border border-black/10 bg-black p-5 text-white"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2 text-sm font-semibold"><Wand2 size={15} /> Local Creation Engine</div><span className={`rounded-full px-2 py-1 text-[9px] uppercase tracking-[0.12em] ${aiStatus?.comfyui ? "bg-white/10 text-white/70" : "bg-white/5 text-white/35"}`}>{aiStatus?.comfyui ? "Ready" : "Setup required"}</span></div><p className="mt-2 text-xs leading-5 text-white/55">Use your local Z-Image-Turbo workflow through ComfyUI. No cloud image API is required.</p><button onClick={() => setMode("create")} className="mt-4 rounded-lg bg-white px-3 py-2 text-xs font-medium text-black">Open Image Studio</button></div><div className="rounded-2xl border border-black/10 p-5"><div className="flex items-center gap-2 text-sm font-semibold"><AlertTriangle size={15} /> Engineering note</div><p className="mt-2 text-xs leading-5 text-black/50">AI supports decisions. Structural, MEP, code and life-safety decisions require review by the responsible licensed professional.</p></div></aside>
+            <aside className="space-y-3"><div className="rounded-2xl border border-black/10 p-5"><div className="mb-4 flex items-center justify-between gap-2"><div className="flex items-center gap-2 text-sm font-semibold"><FileText size={15} /> Live Studio context</div><span className="text-[10px] uppercase tracking-[0.15em] text-black/30">Database</span></div>{studioError ? <p className="text-xs leading-5 text-red-700">{studioError}</p> : <div className="space-y-2 text-xs text-black/55"><div>Projects — {studio?.stats.projects ?? "…"}</div><div>Open tasks — {studio?.stats.openTasks ?? "…"}</div><div>Approvals — {studio?.stats.pendingApprovals ?? "…"} pending</div><div>Open site issues — {studio?.stats.siteIssues ?? "…"}</div><div>Files — {studio?.stats.files ?? "…"}</div><div>Team — {studio?.stats.team ?? "…"} active users</div></div>}</div><div className="rounded-2xl border border-black/10 bg-black p-5 text-white"><div className="flex items-center justify-between gap-3"><div className="flex items-center gap-2 text-sm font-semibold"><Wand2 size={15} /> Local Creation Engine</div><span className={`rounded-full px-2 py-1 text-[9px] uppercase tracking-[0.12em] ${aiStatus?.comfyui ? "bg-white/10 text-white/70" : "bg-white/5 text-white/35"}`}>{aiStatus?.comfyui ? "Ready" : "Setup required"}</span></div><p className="mt-2 text-xs leading-5 text-white/55">Use your local Z-Image-Turbo workflow through ComfyUI. No cloud image API is required.</p><button onClick={() => setMode("create")} className="mt-4 rounded-lg bg-white px-3 py-2 text-xs font-medium text-black">Open Image Studio</button></div><div className="rounded-2xl border border-black/10 p-5"><div className="flex items-center gap-2 text-sm font-semibold"><AlertTriangle size={15} /> Engineering note</div><p className="mt-2 text-xs leading-5 text-black/50">AI supports decisions. Structural, MEP, code and life-safety decisions require review by the responsible licensed professional.</p></div></aside>
           </div>
         ) : (
           <section className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
@@ -205,6 +174,7 @@ export default function BrainPage() {
               <input ref={referenceRef} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0], setReference)} />
               <div className="mt-5 rounded-xl border border-dashed border-black/15 bg-white p-4"><div className="flex items-center justify-between gap-3"><div><div className="text-sm font-medium">Reference image</div><div className="mt-1 text-xs text-black/45">Upload a building/site photo to transform it.</div></div><button onClick={() => referenceRef.current?.click()} className="inline-flex items-center gap-2 rounded-lg border border-black/10 px-3 py-2 text-xs font-medium"><Camera size={14} /> {reference ? "Replace" : "Upload"}</button></div>{reference && <div className="mt-3 flex items-center gap-2 text-xs"><span className="truncate">{reference.file.name}</span><button onClick={() => setReference(null)}><X size={14} /></button></div>}</div>
               <button onClick={generateImage} disabled={generating || !createPrompt.trim()} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-medium text-white disabled:opacity-30">{generating ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Creating…</> : <><Sparkles size={16} /> Generate concept</>}</button>
+              {generationError && <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs leading-5 text-red-800">{generationError}</p>}
             </div>
             <div className="min-h-[520px] rounded-2xl border border-black/10 bg-[#fafafa] p-4 md:p-6">{generated ? <div><div className="mb-4 flex items-center justify-between"><div><div className="text-sm font-semibold">Generated concept</div><div className="text-xs text-black/45">Mason & Arc architectural visualization</div></div><a href={generated} download="mason-arc-concept.png" className="inline-flex items-center gap-2 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-medium"><Download size={14} /> Save</a></div><img src={generated} alt="Generated architectural concept" className="w-full rounded-xl border border-black/10 object-cover" /></div> : <div className="grid h-full min-h-[480px] place-items-center rounded-xl border border-dashed border-black/15 bg-white p-8 text-center"><div><div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-black text-white"><Wand2 size={22} /></div><div className="mt-5 text-sm font-semibold">Your concept appears here</div><p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-black/45">Describe the architecture, materials, mood, camera angle and lighting. Add a reference image when you want the AI to transform an existing building.</p></div></div>}</div>
           </section>

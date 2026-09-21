@@ -30,7 +30,8 @@ else {
         Start-Process `
             -FilePath "cmd.exe" `
             -ArgumentList "/c `"$comfyBat`"" `
-            -WorkingDirectory $comfyPath
+        -WorkingDirectory $comfyPath `
+        -WindowStyle Hidden
 
         Write-Host "[WAIT] Waiting for ComfyUI..."
 
@@ -75,8 +76,21 @@ if (Test-Port 11434) {
     Write-Host "[OK] Ollama is running on port 11434."
 }
 else {
-    Write-Host "[WARNING] Ollama is not running on port 11434."
-    Write-Host "Start Ollama before using the AI Engineer."
+    Write-Host "[START] Starting Ollama..."
+    $ollamaCommand = Get-Command "ollama" -ErrorAction SilentlyContinue
+    if ($ollamaCommand) {
+        Start-Process -FilePath $ollamaCommand.Source -ArgumentList "serve" -WindowStyle Hidden
+        for ($i = 1; $i -le 15; $i++) {
+            Start-Sleep -Seconds 1
+            if (Test-Port 11434) {
+                Write-Host "[OK] Ollama is ready."
+                break
+            }
+        }
+    }
+    else {
+        Write-Host "[ERROR] Ollama was not found in PATH."
+    }
 }
 
 Write-Host ""

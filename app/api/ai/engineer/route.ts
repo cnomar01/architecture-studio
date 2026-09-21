@@ -357,12 +357,12 @@ export async function POST(request: Request) {
         images.length || undefined,
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "";
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Unexpected local AI Engineer error.",
+        error: /fetch failed|ECONNREFUSED|network/i.test(message)
+          ? "AI Engineer is offline. On the office computer, start the local AI stack and then refresh this page. The hosted website cannot reach localhost on the office computer."
+          : message || "Unexpected local AI Engineer error.",
       },
       { status: 500 },
     );
