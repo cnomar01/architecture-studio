@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getServerUser } from "@/lib/server/auth";
 import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
+import ProjectArchive from "@/components/projects/ProjectArchive";
 
-export const metadata: Metadata = { title:"Projects | Mason & Arc", description:"Selected architecture, interiors, and spaces developed by Mason & Arc.", alternates:{canonical:"/projects"} };
+export const metadata: Metadata = {
+  title: "Projects | Mason & Arc",
+  description: "Selected architecture, interiors, and spaces developed by Mason & Arc.",
+  alternates: { canonical: "/projects" },
+};
 export const dynamic = "force-dynamic";
 
-export default async function ProjectsPage(){const [projects,user]=await Promise.all([listPublishedWebsiteProjects(),getServerUser()]);return <main className="min-h-screen bg-[#f8f7f4] text-neutral-900"><section className="px-6 pb-16 pt-32 sm:px-8 md:px-12 md:pt-40 lg:px-16 xl:px-20"><div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">01 — Archive</p><h1 className="mt-6 text-[64px] font-light leading-[.8] tracking-[-.055em] sm:text-[86px] md:text-[115px] lg:text-[145px]">Projects<br/>Archive.</h1><p className="mt-10 max-w-xl text-sm leading-7 text-neutral-500">Architecture, interiors, and spaces developed through design, material and execution.</p></div>{user?.role==="Owner"&&<Link href="/app/admin/website-projects" className="w-fit rounded-full border border-neutral-300 bg-white px-5 py-3 text-xs font-medium uppercase tracking-[.12em]">Edit website projects</Link>}</div></section><section className="border-y border-neutral-300 px-6 py-5 text-[9px] uppercase tracking-[.3em] text-neutral-400 sm:px-8 md:px-12 lg:px-16 xl:px-20">Published work · {projects.length} project{projects.length===1?"":"s"}</section><section className="px-5 pb-32 pt-10 sm:px-8 md:px-10 lg:px-14 xl:px-16"><div className="border-t border-neutral-300">{projects.map((project,index)=><Link key={project.id} href={`/projects/${project.slug}`} className="group block border-b border-neutral-300 py-8 md:py-12"><div className="mb-7 flex items-center justify-between text-[8px] uppercase tracking-[.3em] text-neutral-400"><span>{String(index+1).padStart(2,"0")} · {project.location}</span><span>{project.year}</span></div><div className="relative h-[58vh] min-h-[380px] overflow-hidden bg-neutral-200 md:h-[72vh]"><img src={project.image_url} alt={project.title} className="h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-[1.035]"/></div><div className="mt-7 flex items-end justify-between gap-6"><div><span className="mb-3 block text-[8px] uppercase tracking-[.3em] text-neutral-400">{project.category}</span><h2 className="text-[46px] font-light leading-[.86] tracking-[-.05em] transition-transform duration-700 group-hover:translate-x-2 sm:text-[58px] md:text-[76px] lg:text-[94px]">{project.title}</h2></div><span className="hidden pb-2 text-[9px] uppercase tracking-[.3em] text-neutral-400 md:block">View project ↗</span></div></Link>)}{!projects.length&&<div className="py-24 text-center text-sm text-neutral-500">No published projects yet.</div>}</div></section></main>}
+export default async function ProjectsPage() {
+  const [projects, user] = await Promise.all([listPublishedWebsiteProjects(), getServerUser()]);
+  return <ProjectArchive projects={projects} canEdit={user?.role === "Owner"} />;
+}

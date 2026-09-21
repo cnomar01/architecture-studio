@@ -21,8 +21,6 @@ import {
 } from "@/lib/core/authStore";
 
 import { useEffect, useState } from "react";
-import { runNotificationEngine } from "@/lib/core/notificationEngine";
-import { getUnreadNotificationCount } from "@/lib/core/notificationStore";
 import LegacyStorageMigration from "@/components/core/LegacyStorageMigration";
 
 const navigation = [
@@ -124,13 +122,9 @@ function AdminShell({
 
     const refreshAlerts = async () => {
       try {
-        await runNotificationEngine();
-
-        if (mounted) {
-          setUnreadNotifications(
-            getUnreadNotificationCount()
-          );
-        }
+        const response = await fetch("/api/notifications", { cache: "no-store", credentials: "include" });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && mounted) setUnreadNotifications(Number(data.unread || 0));
       } catch (error) {
         console.error(
           "Notification engine failed",
@@ -142,13 +136,12 @@ function AdminShell({
     void loadUser();
     void refreshAlerts();
 
-    const timer = setInterval(() => {
-      void refreshAlerts();
-    }, 30000);
+    const onFocus = () => void refreshAlerts();
+    window.addEventListener("focus", onFocus);
 
     return () => {
       mounted = false;
-      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
     };
   }, []);
 

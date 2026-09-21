@@ -1,81 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-
 import MessageComposer from "@/components/messages/MessageComposer";
 import MessageThread from "@/components/messages/MessageThread";
-import {
-  getClientMessages,
-  Message,
-} from "@/lib/core/messageStore";
-import { getUsers } from "@/lib/core/authStore";
+import { listResource } from "@/lib/client/dataApi";
+import { getStudioMessages, type StudioMessage } from "@/lib/client/studioMessages";
 
-export default function ClientMessagesPage() {
-  const params = useParams<{ id: string }>();
-  const clientId = params.id;
-
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [user, setUser] = useState<any>(null);
-
-  function load() {
-    setMessages(getClientMessages());
-
-    const users = getUsers();
-
-    setUser(
-      users.find((item: any) => item.role === "Owner" && item.active) ||
-        users.find((item: any) => item.active) ||
-        null
-    );
-  }
-
-  useEffect(() => {
-    load();
-
-    const interval = setInterval(load, 1000);
-
-    return () => clearInterval(interval);
-  }, [clientId]);
-
-  const currentUser = user || {
-    id: "USR-001",
-    name: "Mason & Arc Owner",
-    role: "Owner",
-  };
-
-  return (
-    <main className="min-h-screen bg-[#080808] text-white p-6 md:p-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-            Client Communication
-          </p>
-
-          <h1 className="mt-2 text-3xl font-semibold">
-            Client Messages
-          </h1>
-
-          <p className="mt-2 text-sm text-white/40">
-            Client ↔ Mason & Arc communication with attachments.
-          </p>
-        </div>
-
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
-          <MessageThread
-            messages={messages}
-            currentUserId={currentUser.id}
-          />
-
-          <MessageComposer
-            scope="Client"
-            senderId={currentUser.id}
-            senderName={currentUser.name}
-            senderRole={currentUser.role}
-            onSent={load}
-          />
-        </div>
-      </div>
-    </main>
-  );
-}
+type Project={id:string;code:string;name:string;client_id:string|null};type User={id:string;name:string;role:string};
+export default function ClientMessagesPage(){const params=useParams<{id:string}>();const clientId=params?.id||"";const [projects,setProjects]=useState<Project[]>([]);const [projectId,setProjectId]=useState("");const [messages,setMessages]=useState<StudioMessage[]>([]);const [user,setUser]=useState<User|null>(null);const [error,setError]=useState("");const loadProjects=useCallback(async()=>{try{const [projectData,response]=await Promise.all([listResource<Project>("projects",undefined,500),fetch("/api/auth/me",{cache:"no-store",credentials:"include"})]);const auth=await response.json().catch(()=>({}));const linked=projectData.data.filter((item)=>item.client_id===clientId);setProjects(linked);setProjectId((value)=>value||linked[0]?.id||"");setUser(auth.user||null)}catch(cause){setError(cause instanceof Error?cause.message:"Could not load client projects.")}},[clientId]);const loadMessages=useCallback(async()=>{if(!projectId){setMessages([]);return}try{setMessages(await getStudioMessages(projectId))}catch(cause){setError(cause instanceof Error?cause.message:"Could not load messages.")}},[projectId]);useEffect(()=>{void loadProjects()},[loadProjects]);useEffect(()=>{void loadMessages()},[loadMessages]);const current=user||{id:"",name:"Studio User",role:"User"};return <main className="min-h-screen bg-[#080808] p-6 text-white md:p-8"><div className="mx-auto max-w-6xl"><div className="mb-6"><p className="text-xs uppercase tracking-[.25em] text-white/30">Client Communication</p><h1 className="mt-2 text-3xl font-semibold">Client Messages</h1><p className="mt-2 text-sm text-white/40">Communication stays attached to the client&apos;s shared project.</p></div>{projects.length>1&&<select value={projectId} onChange={(event)=>setProjectId(event.target.value)} className="input mb-5 max-w-md">{projects.map((project)=><option key={project.id} value={project.id}>{project.code} — {project.name}</option>)}</select>}{error&&<p role="alert" className="mb-5 rounded-xl border border-red-400/25 bg-red-400/10 p-4 text-sm text-red-200">{error}</p>}{!projectId?<div className="rounded-2xl border border-white/10 p-10 text-center text-sm text-white/35">This client has no linked project yet.</div>:<div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[.03]"><MessageThread messages={messages} currentUserId={current.id}/><MessageComposer scope="Project" projectId={projectId} senderId={current.id} senderName={current.name} senderRole={current.role} onSent={loadMessages}/></div>}</div></main>}

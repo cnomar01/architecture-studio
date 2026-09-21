@@ -279,9 +279,18 @@ CREATE TABLE IF NOT EXISTS approvals (
   submitted_by_name TEXT,
   reviewed_by_id TEXT,
   reviewed_by_name TEXT,
+  description TEXT NOT NULL DEFAULT '',
+  file_id TEXT REFERENCES project_files(id) ON DELETE SET NULL,
+  review_comment TEXT NOT NULL DEFAULT '',
+  reviewed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS file_id TEXT REFERENCES project_files(id) ON DELETE SET NULL;
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS review_comment TEXT NOT NULL DEFAULT '';
+ALTER TABLE approvals ADD COLUMN IF NOT EXISTS reviewed_at TIMESTAMPTZ;
 
 CREATE TABLE IF NOT EXISTS messages (
   id TEXT PRIMARY KEY,
@@ -314,10 +323,17 @@ CREATE TABLE IF NOT EXISTS site_reports (
   project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
   report_date DATE NOT NULL,
   weather TEXT,
+  project_name TEXT,
+  visit_type TEXT NOT NULL DEFAULT 'Site Visit',
+  engineer_name TEXT,
   summary TEXT NOT NULL DEFAULT '',
   created_by_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE site_reports ADD COLUMN IF NOT EXISTS project_name TEXT;
+ALTER TABLE site_reports ADD COLUMN IF NOT EXISTS visit_type TEXT NOT NULL DEFAULT 'Site Visit';
+ALTER TABLE site_reports ADD COLUMN IF NOT EXISTS engineer_name TEXT;
 
 CREATE TABLE IF NOT EXISTS site_issues (
   id TEXT PRIMARY KEY,
@@ -327,10 +343,17 @@ CREATE TABLE IF NOT EXISTS site_issues (
   priority TEXT NOT NULL,
   status TEXT NOT NULL,
   assigned_to_id TEXT,
+  assigned_to_name TEXT,
+  report_id TEXT REFERENCES site_reports(id) ON DELETE CASCADE,
+  location TEXT NOT NULL DEFAULT '',
   task_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   resolved_at TIMESTAMPTZ
 );
+
+ALTER TABLE site_issues ADD COLUMN IF NOT EXISTS assigned_to_name TEXT;
+ALTER TABLE site_issues ADD COLUMN IF NOT EXISTS report_id TEXT REFERENCES site_reports(id) ON DELETE CASCADE;
+ALTER TABLE site_issues ADD COLUMN IF NOT EXISTS location TEXT NOT NULL DEFAULT '';
 
 CREATE TABLE IF NOT EXISTS audit_logs (
   id BIGSERIAL PRIMARY KEY,
@@ -376,6 +399,8 @@ CREATE TABLE IF NOT EXISTS website_projects (
   description TEXT NOT NULL DEFAULT '',
   image_url TEXT NOT NULL DEFAULT '',
   gallery JSONB NOT NULL DEFAULT '[]'::jsonb,
+  translations JSONB NOT NULL DEFAULT '{}'::jsonb,
+  content_sections JSONB NOT NULL DEFAULT '[]'::jsonb,
   published BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -535,4 +560,28 @@ FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
 
 DROP TRIGGER IF EXISTS notifications_event ON notifications;
 CREATE TRIGGER notifications_event AFTER INSERT OR UPDATE OR DELETE ON notifications
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS finance_event ON finance_transactions;
+CREATE TRIGGER finance_event AFTER INSERT OR UPDATE OR DELETE ON finance_transactions
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS site_issues_event ON site_issues;
+CREATE TRIGGER site_issues_event AFTER INSERT OR UPDATE OR DELETE ON site_issues
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS operations_procurement_event ON procurement_items;
+CREATE TRIGGER operations_procurement_event AFTER INSERT OR UPDATE OR DELETE ON procurement_items
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS operations_quality_event ON quality_items;
+CREATE TRIGGER operations_quality_event AFTER INSERT OR UPDATE OR DELETE ON quality_items
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS operations_safety_event ON safety_items;
+CREATE TRIGGER operations_safety_event AFTER INSERT OR UPDATE OR DELETE ON safety_items
+FOR EACH ROW EXECUTE FUNCTION notify_studio_event();
+
+DROP TRIGGER IF EXISTS operations_construction_event ON construction_items;
+CREATE TRIGGER operations_construction_event AFTER INSERT OR UPDATE OR DELETE ON construction_items
 FOR EACH ROW EXECUTE FUNCTION notify_studio_event();

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Bebas_Neue } from "next/font/google";
+import { Inter, Bebas_Neue, Noto_Sans_Arabic } from "next/font/google";
 
 import "./globals.css";
 
 import RouteChrome from "@/components/layout/RouteChrome";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,6 +16,13 @@ const bebas = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display",
+  display: "swap",
+});
+
+const notoArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-arabic",
   display: "swap",
 });
 
@@ -58,9 +66,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${bebas.variable} antialiased`}
+        className={`${inter.variable} ${bebas.variable} ${notoArabic.variable} antialiased`}
       >
-        <RouteChrome>{children}</RouteChrome>
+        <LocaleProvider><RouteChrome>{children}</RouteChrome></LocaleProvider>
       </body>
     </html>
   );

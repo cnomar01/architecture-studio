@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/api/:path*", headers: [
       { key: "Cache-Control", value: "no-store" },
+    ] }, { source: "/api/public/website-projects/:path*", headers: [
+      { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
     ] }, { source: "/(.*)", headers: [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -17,6 +19,14 @@ const nextConfig: NextConfig = {
     ] }];
   },
   images: {
+    localPatterns: [
+      {
+        pathname: "/images/**",
+      },
+      {
+        pathname: "/api/public/website-projects/**",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

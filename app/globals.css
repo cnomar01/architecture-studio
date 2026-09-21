@@ -111,3 +111,34 @@ button, a, input, textarea, select {
     animation-iteration-count: 1 !important;
   }
 }
+
+.input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #181818;
+  padding: 12px;
+  color: #fff;
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+.input option {
+  background: #181818;
+  color: #fff;
+}
+
+.construction-field input,
+.construction-field select,
+.construction-field textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  padding: 11px 12px;
+  color: #111;
+  outline: none;
+}

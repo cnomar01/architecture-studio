@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function Hero() {
+  const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -22,7 +24,7 @@ export default function Hero() {
       gsap.set(title, {
         scale: 1.28,
         y: 18,
-        transformOrigin: "left bottom",
+        transformOrigin: locale === "ar" ? "right bottom" : "left bottom",
         opacity: 1,
       });
 
@@ -56,7 +58,7 @@ export default function Hero() {
     }, hero);
 
     return () => ctx.revert();
-  }, []);
+  }, [locale]);
 
   return (
     <section
@@ -81,19 +83,17 @@ export default function Hero() {
       <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
         <h1
           ref={titleRef}
-          className="origin-bottom-left font-[var(--font-display)] text-[48px] font-normal uppercase leading-[0.76] tracking-[-0.025em] will-change-transform sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"
+          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[58px] font-light leading-[.95] sm:text-[88px] md:text-[108px] lg:text-[128px]" : "origin-bottom-left font-[var(--font-display)] text-[48px] font-normal uppercase leading-[0.76] tracking-[-0.025em] sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"} will-change-transform`}
         >
-          <span className="block">Design</span>
-          <span className="block">Build</span>
-          <span className="block">Experience</span>
+          <span className="block">{copy.heroDesign}</span>
+          <span className="block">{copy.heroBuild}</span>
+          <span className="block">{copy.heroExperience}</span>
         </h1>
 
         <div ref={contentRef} className="mt-5 max-w-[500px] opacity-0 sm:mt-6 md:mt-7">
           <div className="mb-3 h-px w-[82px] bg-white" />
           <p className="max-w-[520px] text-[11px] font-medium leading-[1.5] text-white sm:text-[16px] md:text-[17px]">
-            We design architecture, interiors, and spaces
-            that bring ideas to life through thoughtful
-            design and precise execution.
+            {copy.heroIntro}
           </p>
         </div>
       </div>

@@ -3,11 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { projects } from "@/lib/data/projects";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
+import { localizedYear, projectCopy, useLocale } from "@/components/i18n/LocaleProvider";
+import type { WebsiteProject } from "@/lib/server/websiteProjects";
 
-export default function ServicesProjects() {
+export default function ServicesProjects({ projects }: { projects: WebsiteProject[] }) {
+  const { locale } = useLocale();
   return (
     <section className="bg-[#f8f7f4] text-neutral-900">
       <Container
@@ -85,7 +87,9 @@ export default function ServicesProjects() {
         {/* PROJECT LIST */}
 
         <div className="mt-32 space-y-40 md:mt-48 md:space-y-56">
-          {projects.map((project, index) => (
+          {projects.map((project, index) => {
+            const translated = projectCopy(project, locale);
+            return (
             <Reveal key={project.id}>
               <Link
                 href={`/projects/${project.slug}`}
@@ -106,8 +110,8 @@ export default function ServicesProjects() {
                   "
                 >
                   <Image
-                    src={project.image}
-                    alt={project.title}
+                    src={project.image_url}
+                    alt={translated.title}
                     fill
                     priority={index === 0}
                     sizes="100vw"
@@ -217,7 +221,7 @@ export default function ServicesProjects() {
                           text-neutral-400
                         "
                       >
-                        {project.location}
+                        {translated.location}
                       </span>
 
                       <span className="h-px w-8 bg-neutral-300" />
@@ -230,7 +234,7 @@ export default function ServicesProjects() {
                           text-neutral-400
                         "
                       >
-                        Architecture
+                        {translated.category}
                       </span>
                     </div>
 
@@ -248,7 +252,7 @@ export default function ServicesProjects() {
                         lg:text-[78px]
                       "
                     >
-                      {project.title}
+                      {translated.title}
                     </h3>
                   </div>
 
@@ -260,12 +264,12 @@ export default function ServicesProjects() {
                       text-neutral-400
                     "
                   >
-                    {project.year}
+                    {localizedYear(project.year, locale)}
                   </span>
                 </div>
               </Link>
             </Reveal>
-          ))}
+          )})}
         </div>
 
         {/* ALL PROJECTS */}

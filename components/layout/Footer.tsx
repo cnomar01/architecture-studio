@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function Footer() {
+  const { copy } = useLocale();
   return (
     <footer className="bg-[#f8f7f4] text-neutral-900">
       <div className="px-8 py-16 md:px-12 md:py-20 lg:px-16">
@@ -18,48 +22,47 @@ export default function Footer() {
             </Link>
 
             <p className="mt-6 max-w-[340px] text-[14px] font-light leading-[1.8] text-neutral-500">
-              Architecture, design, and execution shaped around timeless
-              thinking, material honesty, and human experience.
+              {copy.footerTagline}
             </p>
           </div>
 
           {/* Navigation */}
           <div>
             <p className="mb-6 text-[10px] uppercase tracking-[0.35em] text-neutral-400">
-              Navigate
+              {copy.navigate}
             </p>
 
             <div className="flex flex-col gap-4 text-[13px] font-light">
               <Link href="/" className="transition-opacity hover:opacity-50">
-                Home
+                {copy.home}
               </Link>
 
               <Link
                 href="/projects"
                 className="transition-opacity hover:opacity-50"
               >
-                Projects
+                {copy.projects}
               </Link>
 
               <Link
-                href="/studio"
+                href="/about"
                 className="transition-opacity hover:opacity-50"
               >
-                Studio
+                {copy.about}
               </Link>
 
               <Link
                 href="/services"
                 className="transition-opacity hover:opacity-50"
               >
-                Services
+                {copy.services}
               </Link>
 
               <Link
                 href="/contact"
                 className="transition-opacity hover:opacity-50"
               >
-                Contact
+                {copy.contact}
               </Link>
             </div>
           </div>
@@ -67,7 +70,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <p className="mb-6 text-[10px] uppercase tracking-[0.35em] text-neutral-400">
-              Contact
+              {copy.contact}
             </p>
 
             <div className="flex flex-col gap-4 text-[13px] font-light">
@@ -113,9 +116,9 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="mt-20 flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
-          <span>© MASON & ARC. All rights reserved.</span>
+          <span>© MASON & ARC. {copy.rights}</span>
 
-          <span>Architecture · Design · Execution</span>
+          <span>{copy.disciplines}</span>
         </div>
 
       </div>

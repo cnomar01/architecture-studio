@@ -3,6 +3,7 @@ import ServicesHero from "@/components/services/ServicesHero";
 import ServicesProjects from "@/components/services/Projects";
 import Timeline from "@/components/sections/Timeline";
 import Themes from "@/components/sections/Themes";
+import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
 
 export const metadata: Metadata = {
   title: "Services | Mason & Arc",
@@ -10,11 +11,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
-export default function ServicesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ServicesPage() {
+  const projects = await listPublishedWebsiteProjects();
   return (
     <main>
       <ServicesHero />
-      <ServicesProjects />
+      <ServicesProjects projects={projects} />
       <Timeline />
       <Themes />
     </main>

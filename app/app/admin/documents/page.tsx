@@ -1,3 +1,3 @@
-"use client";
-import {useEffect,useState} from "react"; import {getDocuments,OfficeDocument} from "@/lib/core/documentStore";
-export default function DocumentsPage(){const [items,setItems]=useState<OfficeDocument[]>([]);useEffect(()=>setItems(getDocuments()),[]);return <main className="mx-auto max-w-6xl p-6"><h1 className="text-2xl font-semibold">Documents</h1><div className="mt-6 overflow-hidden rounded-2xl border"><table className="w-full text-sm"><thead><tr className="border-b text-left"><th className="p-3">Document</th><th className="p-3">Category</th><th className="p-3">Revision</th><th className="p-3">Status</th></tr></thead><tbody>{items.map(x=><tr key={x.id} className="border-b last:border-0"><td className="p-3">{x.name}</td><td className="p-3">{x.category}</td><td className="p-3">{x.revision}</td><td className="p-3">{x.status}</td></tr>)}</tbody></table>{!items.length&&<div className="p-8 text-center opacity-60">No office documents yet.</div>}</div></main>}
+import { redirect } from "next/navigation";
+
+export default function DocumentsPage(){redirect("/app/admin/files")}

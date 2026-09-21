@@ -8,20 +8,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
-
-import { projects } from "@/lib/data/projects";
+import { localizedYear, projectCopy, useLocale } from "@/components/i18n/LocaleProvider";
+import type { WebsiteProject } from "@/lib/server/websiteProjects";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const themes = [
-  "Architecture",
-  "Interiors",
-  "Design Development",
-  "Execution",
-];
-
-export default function Projects() {
+export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   const sectionRef = useRef<HTMLElement>(null);
+  const { locale, copy } = useLocale();
+  const themes = locale === "ar" ? ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ"] : locale === "it" ? ["Architettura", "Interni", "Sviluppo del progetto", "Realizzazione"] : ["Architecture", "Interiors", "Design Development", "Execution"];
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -104,7 +99,7 @@ export default function Projects() {
                 text-neutral-400
               "
             >
-              Projects
+              {copy.featuredLabel}
             </span>
           </Reveal>
 
@@ -123,9 +118,9 @@ export default function Projects() {
                   xl:text-[160px]
                 "
               >
-                Experience
+                {copy.featuredTitle1}
                 <br />
-                our work.
+                {copy.featuredTitle2}
               </h2>
 
               <p
@@ -139,8 +134,7 @@ export default function Projects() {
                   md:text-[15px]
                 "
               >
-                A selection of projects exploring architecture,
-                interiors, material, and the experience of space.
+                {copy.featuredIntro}
               </p>
             </div>
           </Reveal>
@@ -158,7 +152,9 @@ export default function Projects() {
             md:mt-40
           "
         >
-          {projects.map((project, index) => (
+          {projects.map((project, index) => {
+            const translated = projectCopy(project, locale);
+            return (
             <article
               key={project.id}
               className="
@@ -213,7 +209,7 @@ export default function Projects() {
                         text-neutral-400
                       "
                     >
-                      {project.location}
+                      {translated.location}
                     </span>
                   </div>
 
@@ -225,7 +221,7 @@ export default function Projects() {
                       text-neutral-400
                     "
                   >
-                    {project.year}
+                      {localizedYear(project.year, locale)}
                   </span>
                 </div>
 
@@ -254,8 +250,8 @@ export default function Projects() {
                     "
                   >
                     <Image
-                      src={project.image}
-                      alt={project.title}
+                      src={project.image_url}
+                      alt={translated.title}
                       fill
                       priority={index === 0}
                       sizes="100vw"
@@ -337,7 +333,7 @@ export default function Projects() {
                       lg:text-[92px]
                     "
                   >
-                    {project.title}
+                    {translated.title}
                   </h3>
 
                   <span
@@ -351,12 +347,12 @@ export default function Projects() {
                       md:block
                     "
                   >
-                    View
+                    {copy.view}
                   </span>
                 </div>
               </Link>
             </article>
-          ))}
+          )})}
         </div>
 
         {/* =====================================================
@@ -396,7 +392,7 @@ export default function Projects() {
                     text-neutral-400
                   "
                 >
-                  Archive
+                  {copy.archive}
                 </span>
 
                 <span
@@ -410,7 +406,7 @@ export default function Projects() {
                     sm:text-[38px]
                   "
                 >
-                  Explore all projects
+                  {copy.exploreAll}
                 </span>
               </div>
 
@@ -451,7 +447,7 @@ export default function Projects() {
                   text-neutral-400
                 "
               >
-                Experience More
+                {copy.experienceMore}
               </span>
 
               <h3
@@ -466,11 +462,11 @@ export default function Projects() {
                   lg:text-[105px]
                 "
               >
-                Explore the
+                {copy.workWays1}
                 <br />
-                different ways
+                {copy.workWays2}
                 <br />
-                we work.
+                {copy.workWays3}
               </h3>
             </div>
           </Reveal>
