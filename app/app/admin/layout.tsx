@@ -31,10 +31,6 @@ const navigation = [
   { label: "Team", href: "/app/admin/team" },
   { label: "Intelligence", href: "/app/admin/intelligence" },
   { label: "AI Studio OS", href: "/app/admin/ai" },
-  {
-    label: "Predictive Intelligence",
-    href: "/app/admin/intelligence/forecast",
-  },
   { label: "Project Brain", href: "/app/admin/brain" },
   { label: "AI Agents", href: "/app/admin/agents" },
   { label: "AI Actions", href: "/app/admin/agents/actions" },

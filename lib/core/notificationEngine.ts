@@ -35,7 +35,7 @@ export async function runNotificationEngine() {
   const tasks = getTasks();
   const approvals = getApprovals();
   const team = await getTeamIntelligence();
-  const events = getCalendarEvents();
+  const events = await getCalendarEvents();
   const transactions = getFinanceTransactions();
 
   // ─────────────────────────────────────────────
