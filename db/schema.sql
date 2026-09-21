@@ -339,6 +339,23 @@ CREATE TABLE IF NOT EXISTS integration_credentials (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Public portfolio content is managed by the Owner from the website CMS.
+CREATE TABLE IF NOT EXISTS website_projects (
+  id TEXT PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  location TEXT NOT NULL DEFAULT '',
+  year TEXT NOT NULL DEFAULT '',
+  category TEXT NOT NULL DEFAULT 'Architecture',
+  description TEXT NOT NULL DEFAULT '',
+  image_url TEXT NOT NULL DEFAULT '',
+  gallery JSONB NOT NULL DEFAULT '[]'::jsonb,
+  published BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS website_projects_published_idx ON website_projects(published, updated_at DESC);
+
 -- AI outputs stay review-only until a human explicitly creates the linked item.
 CREATE TABLE IF NOT EXISTS ai_reviews (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
