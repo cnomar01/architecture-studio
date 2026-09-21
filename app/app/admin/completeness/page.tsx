@@ -1,33 +1,18 @@
-export default function CompletenessPage() {
-  const shared = [
-    "Postgres database, migrations, secure sessions and sign-in rate limits",
-    "Password reset with one-time expiring tokens",
-    "Clients, projects, finance and team records shared from the database",
-    "Dashboard, Finance Snapshot, Intelligence and Reports share one live database overview",
-    "Files, revisions, transmittals and document metadata shared from the database",
-    "Approvals, project messages, notifications, audit, site reports, construction and timesheets are shared",
-    "Public project imagery, multilingual content and project story sections are managed from the website CMS",
-    "CRM, contracts, procurement, QA/QC and HSE records with Create / Edit / Delete",
-    "Server-side authorization and audit foundation",
-    "Production deployment, domain and SSL",
-    "Gmail send-only authorization is saved",
-    "Office AI autostart is configured; Ollama and ComfyUI run on the office computer",
-    "Direct office WhatsApp link (+20 1044007555)",
-  ];
-  const remaining = [
-    "Secure office-AI bridge: the hosted website cannot reach the office computer's localhost without a protected tunnel or cloud AI provider",
-    "Shared S3 / R2 file storage for large files and independently verified upload/download permissions",
-    "Calendar provider connection and automatic notification delivery",
-    "WhatsApp automation: Meta Business / WhatsApp Cloud API setup is required and messages may incur fees",
-    "Production error monitoring plus a tested backup-and-restore drill",
-    "Migrate or retire optional legacy specialist screens such as calendar, forecast and archived project-specific tools",
-    "AI audit trail, usage controls and model governance",
-  ];
+const nextSteps = [
+  { title: "Connect Google Calendar", status: "One click needed", detail: "The API, OAuth callback and encrypted database storage are ready. In Settings, choose Connect Calendar and approve the studio account.", cost: "Free" },
+  { title: "Test database backup and restore", status: "Ready to complete", detail: "Error monitoring is live. The remaining check is a safe backup-and-restore drill; this can use a free local backup workflow.", cost: "Free" },
+  { title: "Retire or migrate legacy screens", status: "Code work remaining", detail: "The optional local calendar, forecast and archived project tools need to be moved to the database or removed from navigation.", cost: "Free" },
+  { title: "Secure office AI access from the hosted site", status: "External DNS prerequisite", detail: "Ollama and ComfyUI already auto-start locally. A free Cloudflare Tunnel is possible after masonandarc.com is added as a Cloudflare zone and its DNS is pointed there.", cost: "Free, but needs DNS access" },
+  { title: "Large shared file storage", status: "Not enabled", detail: "R2 requires activating a billing profile, even with a free allowance and possible overage. Small files remain in the existing database; do not activate R2 if no paid risk is acceptable.", cost: "Potentially paid" },
+  { title: "Automated WhatsApp messages", status: "Not enabled", detail: "Direct office WhatsApp remains available. Automation needs a Meta Developer App, WhatsApp Business credentials and may charge per message or conversation.", cost: "Potentially paid" },
+];
 
-  return <main className="min-h-screen bg-white px-6 py-10 text-black lg:px-12"><div className="mx-auto max-w-6xl">
-    <p className="text-[10px] uppercase tracking-[0.3em] text-black/40">Mason & Arc / System Status</p>
-    <h1 className="mt-3 text-4xl font-medium">What is finished — what remains</h1>
-    <div className="mt-8 grid gap-6 lg:grid-cols-2"><section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Shared production workflow</h2><div className="mt-5 space-y-3">{shared.map((item) => <div key={item} className="flex gap-3 text-sm"><span>✓</span><span>{item}</span></div>)}</div></section><section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Still needs external setup or a remaining migration</h2><div className="mt-5 space-y-3">{remaining.map((item) => <div key={item} className="flex gap-3 text-sm"><span>○</span><span>{item}</span></div>)}</div></section></div>
-    <div className="mt-6 rounded-xl bg-black p-6 text-white"><p className="text-sm font-medium">Current rollout status</p><p className="mt-2 text-sm leading-6 text-white/70">The primary studio workflows — dashboards, clients, projects, finance, approvals, messages, site work, files, transmittals and the Operations Hub — are now database-backed and shared across devices. Public portfolio updates and translations also flow from one CMS record. The remaining items require an external provider account, a secure office connection, or retirement of an optional legacy screen.</p></div>
+export default function CompletenessPage() {
+  return <main className="min-h-screen bg-white px-6 py-10 text-black lg:px-12"><div className="mx-auto max-w-5xl">
+    <p className="text-[10px] uppercase tracking-[0.3em] text-black/40">Mason & Arc / Remaining work</p>
+    <h1 className="mt-3 text-4xl font-medium">What still needs attention</h1>
+    <p className="mt-3 max-w-3xl text-sm leading-6 text-black/60">Completed production, AI governance, Sentry monitoring, Calendar API setup and database workflows are intentionally hidden here. This page lists only open work.</p>
+    <div className="mt-8 grid gap-4">{nextSteps.map((item) => <section key={item.title} className="rounded-xl border border-black/10 p-6"><div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="font-medium">{item.title}</h2><p className="mt-2 text-sm leading-6 text-black/65">{item.detail}</p></div><div className="shrink-0 text-xs"><p className="rounded-full bg-black px-3 py-1.5 text-white">{item.status}</p><p className="mt-2 text-right text-black/45">{item.cost}</p></div></div></section>)}</div>
+    <div className="mt-6 rounded-xl bg-black p-6 text-white"><p className="text-sm font-medium">No-cost path</p><p className="mt-2 text-sm leading-6 text-white/70">Finish Calendar connection, test backup/restore, and migrate or retire the legacy screens. Keep R2 and WhatsApp automation disabled unless you later accept their billing terms. The office AI remains fully available on the office computer without any paid provider.</p></div>
   </div></main>;
 }
