@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "node scripts/production-preflight.mjs && next start",
     "lint": "eslint",
+    "test": "node --test tests/*.test.cjs",
     "ai:check": "node scripts/check-local-ai.mjs",
     "db:setup": "node --env-file=.env.local scripts/db-setup.mjs",
     "db:backup": "node --env-file=.env.local scripts/db-backup.mjs",

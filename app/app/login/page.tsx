@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
 
 import {
@@ -156,9 +157,9 @@ export default function LoginPage() {
                   className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
                 />
 
-                <p className="mt-2 text-[10px] text-white/20">
-                  Secure database authentication.
-                </p>
+                <Link href="/app/forgot-password" className="mt-2 flex min-h-11 items-center justify-end text-sm text-white/70 underline underline-offset-4 hover:text-white">
+                  Forgot your password?
+                </Link>
               </div>
 
               {/* ERROR */}

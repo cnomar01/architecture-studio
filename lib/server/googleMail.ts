@@ -43,11 +43,13 @@ export async function sendGoogleMail({ to, subject, text }: { to: string; subjec
   const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
   if (!clientId || !clientSecret) throw new Error("Google Mail OAuth is not configured.");
-  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, refresh_token: credential.refreshToken, grant_type: "refresh_token" }) });
+  const tokenResponse = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ client_id: clientId, client_secret: clientSecret, refresh_token: credential.refreshToken, grant_type: "refresh_token" }), cache: "no-store", signal: AbortSignal.timeout(15000) });
   const token = await tokenResponse.json() as { access_token?: string };
   if (!tokenResponse.ok || !token.access_token) throw new Error("Could not refresh Google Mail access.");
-  const from = process.env.EMAIL_FROM || credential.email;
-  const raw = Buffer.from([`From: ${from}`, `To: ${to}`, `Subject: ${subject}`, "MIME-Version: 1.0", "Content-Type: text/plain; charset=UTF-8", "", text].join("\r\n")).toString("base64url");
-  const response = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", { method: "POST", headers: { Authorization: `Bearer ${token.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ raw }) });
+  const from = credential.email;
+  if ([from, to, subject].some(value => /[\r\n]/.test(value))) throw new Error("Invalid email headers.");
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`;
+  const raw = Buffer.from([`From: ${from}`, `To: ${to}`, `Subject: ${encodedSubject}`, "MIME-Version: 1.0", "Content-Type: text/plain; charset=UTF-8", "Content-Transfer-Encoding: base64", "", Buffer.from(text).toString("base64").match(/.{1,76}/g)?.join("\r\n") || ""].join("\r\n")).toString("base64url");
+  const response = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", { method: "POST", headers: { Authorization: `Bearer ${token.access_token}`, "Content-Type": "application/json" }, body: JSON.stringify({ raw }), cache: "no-store", signal: AbortSignal.timeout(15000) });
   if (!response.ok) throw new Error("Google Mail could not send the message.");
 }

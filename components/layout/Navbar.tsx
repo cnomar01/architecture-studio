@@ -106,6 +106,7 @@ export default function Navbar() {
         className={`
           fixed
           inset-0
+          overflow-y-auto
           z-[900]
           bg-black
           text-white
@@ -114,7 +115,7 @@ export default function Navbar() {
           ${open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
         `}
       >
-        <div className="flex h-full flex-col justify-center px-6 sm:px-8 md:px-16 lg:px-20">
+        <div className="flex min-h-full flex-col justify-center px-6 pb-10 pt-28 sm:px-8 md:px-16 lg:px-20">
           <nav className="flex flex-col">
             {[
               ["Home", "/"],
@@ -143,6 +144,9 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
+          <Link href="/app/login" onClick={() => setOpen(false)} className="mt-8 flex min-h-14 max-w-sm items-center justify-between gap-4 rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm text-white">
+            <span><span className="block text-[9px] uppercase tracking-[0.2em] text-white/50">Workspace login</span><span className="mt-1 block font-medium">Mason & Arc Studio</span></span><span aria-hidden="true">↗</span>
+          </Link>
         </div>
       </div>
     </>

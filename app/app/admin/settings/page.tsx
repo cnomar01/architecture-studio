@@ -35,10 +35,19 @@ export default function SettingsPage() {
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [gmail, setGmail] = useState<{ authorized: boolean; email: string | null } | null>(null);
+  const [gmailError, setGmailError] = useState("");
 
   useEffect(() => {
     setSettings(getStudioSettings());
     loadOrganization();
+    fetch("/api/integrations/google-mail/status", { cache: "no-store" })
+      .then(async (response) => {
+        if (response.status === 403 || response.status === 401) return;
+        if (!response.ok) throw new Error("Could not check Gmail authorization. Please refresh and try again.");
+        setGmail(await response.json());
+      })
+      .catch(() => setGmailError("Could not check Gmail authorization. Please refresh and try again."));
   }, []);
 
   async function loadOrganization() {
@@ -304,7 +313,7 @@ export default function SettingsPage() {
 
   return (
     <PermissionGuard permission="team.manage">
-      <main className="min-h-screen p-6">
+      <main className="min-h-screen bg-white p-5 text-black sm:p-6">
         <div className="mx-auto max-w-6xl space-y-6">
           {/* Header */}
           <section>
@@ -323,20 +332,20 @@ export default function SettingsPage() {
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <a
                   href="/api/integrations/google-mail/connect"
                   className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
                 >
-                  Connect Gmail
+                  {gmail?.authorized ? "Reconnect Gmail" : "Connect Gmail"}
                 </a>
                 <a
-                  href="https://developers.facebook.com/apps/"
+                  href="https://wa.me/201044007555"
                   target="_blank"
                   rel="noreferrer"
                   className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
                 >
-                  Set up WhatsApp API
+                  Office WhatsApp ↗
                 </a>
                 <button
                   type="button"
@@ -356,6 +365,15 @@ export default function SettingsPage() {
                 </button>
               </div>
             </div>
+            {gmail && (
+              <p className="mt-4 break-words text-sm" role="status">
+                {gmail.authorized
+                  ? `Gmail authorization saved for ${gmail.email}. Reconnect if Google access expires.`
+                  : "Gmail is not connected yet. Choose Connect Gmail to authorize the studio account."}
+              </p>
+            )}
+            {gmailError && <p className="mt-4 text-sm text-red-600" role="alert">{gmailError}</p>}
+            <p className="mt-3 text-sm leading-6 text-black/60">WhatsApp: +20 1044007555. Direct chat only; automated API messaging is not enabled. No paid messaging service has been activated.</p>
           </section>
 
           {/* Studio Settings */}

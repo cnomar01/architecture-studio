@@ -93,6 +93,10 @@ export default function Footer() {
                 +39 320 053 4654
               </a>
 
+              <a href="https://wa.me/201044007555" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-50">
+                WhatsApp ↗
+              </a>
+
               <a
                 href="https://www.instagram.com/masonandarc/"
                 target="_blank"

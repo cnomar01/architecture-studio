@@ -79,7 +79,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
-      <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
+      <div className="absolute bottom-[190px] left-6 right-6 z-20 sm:bottom-[190px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
         <h1
           ref={titleRef}
           className="origin-bottom-left font-[var(--font-display)] text-[48px] font-normal uppercase leading-[0.76] tracking-[-0.025em] will-change-transform sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"
@@ -106,10 +106,10 @@ export default function Hero() {
           group
           absolute
           bottom-6
+          left-6
           right-6
           z-30
-          hidden
-          w-[285px]
+          block
           rounded-[14px]
           border
           border-white/20
@@ -123,6 +123,8 @@ export default function Hero() {
           hover:border-white/35
           hover:bg-black/70
           md:block
+          md:left-auto
+          md:w-[285px]
           md:right-8
           lg:bottom-8
           lg:right-10

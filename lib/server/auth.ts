@@ -22,8 +22,7 @@ export async function verifyPassword(email: string, password: string) {
 
 export async function createSession(userId: string) {
   const expires = new Date(Date.now() + SESSION_DAYS * 86400000);
-  await query("INSERT INTO sessions(id,user_id,expires_at) VALUES (gen_random_uuid(),$1,$2)", [userId, expires]);
-  const result = await query<{ id: string }>("SELECT id::text FROM sessions WHERE user_id=$1 ORDER BY created_at DESC LIMIT 1", [userId]);
+  const result = await query<{ id: string }>("INSERT INTO sessions(id,user_id,expires_at) VALUES (gen_random_uuid(),$1,$2) RETURNING id::text", [userId, expires]);
   const sessionId = result.rows[0]?.id;
   if (!sessionId) throw new Error("Could not create session.");
   const token = sessionId;
@@ -35,7 +34,7 @@ export async function createSession(userId: string) {
 export async function destroySession() {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
-  if (token) {
+  if (token && /^[a-f0-9-]{36}$/i.test(token)) {
     await query("DELETE FROM sessions WHERE id=$1", [token]).catch(() => {});
   }
   jar.set(SESSION_COOKIE, "", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 0 });
@@ -44,7 +43,7 @@ export async function destroySession() {
 export async function getServerUser(): Promise<ServerUser | null> {
   const jar = await cookies();
   const token = jar.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  if (!token || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(token)) return null;
   const sessionId = token;
   const result = await query("SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=$1 AND s.expires_at>NOW() AND u.active=true LIMIT 1", [sessionId]);
   if (!result.rows[0]) return null;

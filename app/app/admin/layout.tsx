@@ -6,6 +6,8 @@ import {
   LogOut,
   UserRound,
   Bell,
+  Menu,
+  X,
 } from "lucide-react";
 
 import AuthGuard from "@/lib/core/AuthGuard";
@@ -99,6 +101,7 @@ function AdminShell({
   const [user, setUser] = useState<AuthUser | null>(null);
   const [unreadNotifications, setUnreadNotifications] =
     useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -280,7 +283,7 @@ function AdminShell({
       </aside>
 
       {/* Mobile Header */}
-      <header className="flex h-20 items-center justify-between border-b border-white/10 px-6 lg:hidden">
+      <header className="flex h-20 items-center justify-between border-b border-white/10 px-4 sm:px-6 lg:hidden">
         <Link href="/app/admin">
           <img
             src="/images/logo-mason-arc.png"
@@ -289,7 +292,18 @@ function AdminShell({
           />
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="flex h-11 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs font-medium"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-workspace-navigation"
+            aria-label={mobileMenuOpen ? "Close workspace menu" : "Open workspace menu"}
+          >
+            {mobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
+            <span className="hidden sm:inline">Menu</span>
+          </button>
           <Link
             href="/app/admin/notifications"
             className="relative flex h-11 w-11 items-center justify-center rounded-lg border border-white/10"
@@ -316,6 +330,44 @@ function AdminShell({
           </button>
         </div>
       </header>
+
+      {/* Mobile workspace navigation: the desktop sidebar is otherwise hidden. */}
+      {mobileMenuOpen && (
+        <section
+          id="mobile-workspace-navigation"
+          className="border-b border-white/10 bg-[#111111] px-4 py-4 lg:hidden"
+        >
+          <div className="mx-auto max-w-2xl">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <div>
+                <p className="text-xs font-medium text-white/80">Workspace</p>
+                <p className="mt-1 text-[10px] text-white/40">
+                  {user?.name || "Studio User"} · {user?.role || "User"}
+                </p>
+              </div>
+              <Link
+                href="/app"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-xs text-white/55"
+              >
+                Client portal ↗
+              </Link>
+            </div>
+            <nav className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Workspace navigation">
+              {navigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex min-h-12 items-center rounded-xl border border-white/10 px-3 py-2 text-xs leading-4 text-white/70 transition hover:bg-white/[0.06] hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </section>
+      )}
 
       {/* Main Content */}
       <main className="min-h-screen lg:pl-64">
