@@ -72,6 +72,7 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
           alt="Mason & Arc architecture"
           fill
           priority
+          unoptimized
           sizes="100vw"
           className="object-cover object-center"
         />
