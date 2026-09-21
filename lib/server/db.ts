@@ -2,15 +2,27 @@ import { Pool, type PoolClient, type QueryResultRow } from "pg";
 
 const globalForDb = globalThis as unknown as { masonArcPool?: Pool };
 
-export function getDb(): Pool {
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not configured.");
+function connectionString() {
+  const value = process.env.DATABASE_URL;
+  if (!value) throw new Error("DATABASE_URL is not configured.");
+
+  const url = new URL(value);
+  if (process.env.DATABASE_SSL === "false") {
+    // This explicit opt-out is for a local, trusted development database only.
+    url.searchParams.delete("sslmode");
+  } else if (url.searchParams.has("sslmode")) {
+    // Keep TLS verification strict and avoid relying on the pg driver's legacy
+    // interpretation of sslmode=require.
+    url.searchParams.set("sslmode", "verify-full");
   }
+  return url.toString();
+}
+
+export function getDb(): Pool {
   if (!globalForDb.masonArcPool) {
     globalForDb.masonArcPool = new Pool({
-      connectionString: process.env.DATABASE_URL,
+      connectionString: connectionString(),
       max: Number(process.env.DB_POOL_MAX || 10),
-      ssl: process.env.DATABASE_SSL === "false" ? false : process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
     });
   }
   return globalForDb.masonArcPool;
