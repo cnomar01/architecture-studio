@@ -39,6 +39,10 @@ const navigation = [
   { label: "AI Actions", href: "/app/admin/agents/actions" },
   { label: "Timesheets", href: "/app/admin/timesheets" },
   {
+    label: "System Completeness",
+    href: "/app/admin/completeness",
+  },
+  {
     label: "Operations Hub",
     href: "/app/admin/operations-hub",
   },

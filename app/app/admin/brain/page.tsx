@@ -73,7 +73,12 @@ export default function BrainPage() {
     }
   }
 
-  useEffect(() => { void refreshAIStatus(); void refreshStudioContext().catch(() => {}); }, []);
+  useEffect(() => {
+    void refreshAIStatus();
+    void refreshStudioContext().catch(() => {});
+    const retry = window.setInterval(() => { void refreshAIStatus(); }, 5000);
+    return () => window.clearInterval(retry);
+  }, []);
 
   useEffect(() => {
     const prompt = searchParams.get("prompt");
