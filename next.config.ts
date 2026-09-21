@@ -27,6 +27,9 @@ const nextConfig: NextConfig = {
       {
         pathname: "/api/public/website-projects/**",
       },
+      {
+        pathname: "/api/public/website-home-hero/**",
+      },
     ],
     remotePatterns: [
       {
