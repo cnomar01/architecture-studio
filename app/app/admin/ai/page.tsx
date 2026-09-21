@@ -85,7 +85,7 @@ export default function AIStudioPage() {
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="mb-5 flex items-center gap-2 text-sm font-semibold"><Activity size={16} /> Intelligence Pipeline</div>
-            <div className="space-y-4">
+            <div className="space-y-3 text-left">
               {[
                 ["SEE", "Photos, drawings, documents and project signals"],
                 ["UNDERSTAND", "Project context, history and relationships"],
@@ -93,9 +93,9 @@ export default function AIStudioPage() {
                 ["DECIDE", "Priorities, recommendations and assignments"],
                 ["ACT", "Tasks, issues, reports and notifications with approval gates"],
               ].map(([stage, text], index) => (
-                <div key={stage} className="flex gap-4">
-                  <div className="inline-flex h-7 min-w-[112px] shrink-0 items-center justify-center whitespace-nowrap rounded-md border border-white/10 px-2 text-[9px] font-semibold tracking-[0.14em]">{index + 1} · {stage}</div>
-                  <p className="min-w-0 text-xs leading-5 text-white/45">{text}</p>
+                <div key={stage} className="grid grid-cols-[148px_minmax(0,1fr)] items-center gap-3">
+                  <div className="flex min-h-8 items-center rounded-md border border-white/10 px-3 text-left text-[9px] font-semibold tracking-[0.14em]">{index + 1} · {stage}</div>
+                  <p className="min-w-0 text-left text-xs leading-5 text-white/45">{text}</p>
                 </div>
               ))}
             </div>
