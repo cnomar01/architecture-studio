@@ -37,6 +37,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [gmail, setGmail] = useState<{ authorized: boolean; email: string | null } | null>(null);
   const [gmailError, setGmailError] = useState("");
+  const [calendar, setCalendar] = useState<{ authorized: boolean; email: string | null } | null>(null);
 
   useEffect(() => {
     setSettings(getStudioSettings());
@@ -48,6 +49,13 @@ export default function SettingsPage() {
         setGmail(await response.json());
       })
       .catch(() => setGmailError("Could not check Gmail authorization. Please refresh and try again."));
+    fetch("/api/integrations/calendar/status", { cache: "no-store" })
+      .then(async (response) => {
+        if (response.status === 403 || response.status === 401) return;
+        if (!response.ok) throw new Error("Could not check Calendar authorization.");
+        setCalendar(await response.json());
+      })
+      .catch(() => undefined);
   }, []);
 
   async function loadOrganization() {
@@ -340,6 +348,12 @@ export default function SettingsPage() {
                   {gmail?.authorized ? "Reconnect Gmail" : "Connect Gmail"}
                 </a>
                 <a
+                  href="/api/integrations/calendar/connect"
+                  className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
+                >
+                  {calendar?.authorized ? "Reconnect Calendar" : "Connect Calendar"}
+                </a>
+                <a
                   href="https://wa.me/201044007555"
                   target="_blank"
                   rel="noreferrer"
@@ -373,6 +387,7 @@ export default function SettingsPage() {
               </p>
             )}
             {gmailError && <p className="mt-4 text-sm text-red-600" role="alert">{gmailError}</p>}
+            {calendar && <p className="mt-2 break-words text-sm" role="status">{calendar.authorized ? `Google Calendar is connected for ${calendar.email}.` : "Google Calendar is ready to connect."}</p>}
             <p className="mt-3 text-sm leading-6 text-black/60">WhatsApp: +20 1044007555. Direct chat only; automated API messaging is not enabled. No paid messaging service has been activated.</p>
           </section>
 
