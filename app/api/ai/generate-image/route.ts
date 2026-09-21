@@ -248,7 +248,7 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     return NextResponse.json(
-      { error: /fetch failed|ECONNREFUSED|network/i.test(message) ? "Image Studio is offline. Start the local AI stack on the office computer, then refresh this page." : message || "Unexpected local image generation error." },
+      { error: /fetch failed|ECONNREFUSED|network/i.test(message) ? "The office image engine is running locally, but this hosted workspace needs a secure office-AI bridge before it can reach it." : message || "Unexpected local image generation error." },
       { status: 500 },
     );
   }

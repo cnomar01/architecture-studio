@@ -222,9 +222,35 @@ ALTER TABLE project_files ADD COLUMN IF NOT EXISTS document_number TEXT;
 ALTER TABLE project_files ADD COLUMN IF NOT EXISTS discipline TEXT;
 ALTER TABLE project_files ADD COLUMN IF NOT EXISTS issue_date DATE;
 ALTER TABLE project_files ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'Internal';
+ALTER TABLE project_files ADD COLUMN IF NOT EXISTS description TEXT NOT NULL DEFAULT '';
+ALTER TABLE project_files ADD COLUMN IF NOT EXISTS folder TEXT NOT NULL DEFAULT 'General';
+ALTER TABLE project_files ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}';
 CREATE UNIQUE INDEX IF NOT EXISTS project_files_document_revision_idx
   ON project_files(project_id, document_number, revision)
   WHERE document_number IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS transmittals (
+  id TEXT PRIMARY KEY,
+  number TEXT NOT NULL UNIQUE,
+  project_id TEXT REFERENCES projects(id) ON DELETE SET NULL,
+  project_name TEXT,
+  subject TEXT NOT NULL,
+  recipient TEXT NOT NULL,
+  issued_by TEXT NOT NULL,
+  issued_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  status TEXT NOT NULL DEFAULT 'Draft' CHECK (status IN ('Draft', 'Issued', 'Acknowledged')),
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS transmittal_files (
+  transmittal_id TEXT NOT NULL REFERENCES transmittals(id) ON DELETE CASCADE,
+  file_id TEXT NOT NULL REFERENCES project_files(id) ON DELETE CASCADE,
+  PRIMARY KEY (transmittal_id, file_id)
+);
+
+CREATE INDEX IF NOT EXISTS transmittals_project_idx ON transmittals(project_id, issued_date DESC);
 
 -- Progress updates are the deliberately curated client-facing status feed.
 -- They are separate from internal tasks, cost, QA and site information.

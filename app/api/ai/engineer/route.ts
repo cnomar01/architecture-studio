@@ -361,7 +361,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: /fetch failed|ECONNREFUSED|network/i.test(message)
-          ? "AI Engineer is offline. On the office computer, start the local AI stack and then refresh this page. The hosted website cannot reach localhost on the office computer."
+          ? "The office AI is running locally, but this hosted workspace needs a secure office-AI bridge before it can reach it."
           : message || "Unexpected local AI Engineer error.",
       },
       { status: 500 },

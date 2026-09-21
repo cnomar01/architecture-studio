@@ -1,11 +1,30 @@
-export default function CompletenessPage(){
- const done=["Public website locked","Project / task / file / approval foundation","Site management","Finance & profitability","Client portal","Calendar & notifications","Reports / permissions / audit foundation","AI Project Brain","Local Qwen Vision","Local Z-Image-Turbo + ComfyUI","AI Agents","AI Actions","Predictive project intelligence","Construction controls: RFI / Submittal / Material / Inspection / NCR / Snag / Handover","Command Center","CRM / Contracts / Procurement / QA-QC / HSE foundation"];
- const production=["Postgres database + migrations","Database sessions and sign-in rate limits","Password-reset pages and one-time expiring tokens","Gmail send-only OAuth implementation","S3 signed-upload API foundation","Realtime event-stream foundation","Backup + guarded restore scripts","Server-side authorization foundation","GitHub Actions build CI","Production deployment + domain / SSL","Mobile Workspace login and navigation","Direct office WhatsApp link (+20 1044007555)"];
- const remaining=["Complete Gmail consent and verify a real password-reset email reaches the inbox","Configure shared file storage and verify upload/download permissions","Calendar integration and automatic notification delivery","WhatsApp automation is disabled: API messages can incur fees","Production error monitoring and a verified backup restore","Complete localStorage-to-Postgres migration and test separate staff accounts","Secure office-computer connection for hosted AI Engineer access","AI audit, usage controls and model governance"];
- return <main className="min-h-screen bg-white px-6 py-10 text-black lg:px-12"><div className="mx-auto max-w-6xl">
-  <p className="text-[10px] uppercase tracking-[0.3em] text-black/40">Mason & Arc / System Status</p><h1 className="mt-3 text-4xl font-medium">What is finished — what remains</h1>
-  <div className="mt-8 grid gap-6 lg:grid-cols-2"><section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Studio OS foundation</h2><div className="mt-5 space-y-3">{done.map(x=><div key={x} className="flex gap-3 text-sm"><span>✓</span><span>{x}</span></div>)}</div></section>
-  <section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Implemented foundations — not end-to-end certification</h2><div className="mt-5 space-y-3">{production.map(x=><div key={x} className="flex gap-3 text-sm"><span>✓</span><span>{x}</span></div>)}</div><h2 className="mt-8 border-t border-black/10 pt-6 font-medium">Required before full team rollout</h2><div className="mt-5 space-y-3">{remaining.map(x=><div key={x} className="flex gap-3 text-sm"><span>○</span><span>{x}</span></div>)}</div></section></div>
-  <div className="mt-6 rounded-xl bg-black p-6 text-white"><p className="text-sm font-medium">Full team rollout is not ready yet</p><p className="mt-2 text-sm leading-6 text-white/70">Several workspace modules still save records in this browser only. Those changes are not reliably shared with colleagues or other devices. Do not use these modules as the only copy of live project data. Implemented integrations still need configuration and end-to-end tests. Gmail authorization status is shown in Settings.</p></div>
- </div></main>
+export default function CompletenessPage() {
+  const shared = [
+    "Postgres database, migrations, secure sessions and sign-in rate limits",
+    "Password reset with one-time expiring tokens",
+    "Clients, projects, finance and team records shared from the database",
+    "Files, revisions, transmittals and document metadata shared from the database",
+    "CRM, contracts, procurement, QA/QC and HSE records with Create / Edit / Delete",
+    "Server-side authorization and audit foundation",
+    "Production deployment, domain and SSL",
+    "Gmail send-only authorization is saved",
+    "Office AI autostart is configured; Ollama and ComfyUI run on the office computer",
+    "Direct office WhatsApp link (+20 1044007555)",
+  ];
+  const remaining = [
+    "Secure office-AI bridge: the hosted website cannot reach the office computer's localhost without a protected tunnel or cloud AI provider",
+    "Shared S3 / R2 file storage for large files and independently verified upload/download permissions",
+    "Calendar provider connection and automatic notification delivery",
+    "WhatsApp automation: Meta Business / WhatsApp Cloud API setup is required and messages may incur fees",
+    "Production error monitoring plus a tested backup-and-restore drill",
+    "Migrate or retire the remaining legacy local-only screens before relying on every legacy module across staff devices",
+    "AI audit trail, usage controls and model governance",
+  ];
+
+  return <main className="min-h-screen bg-white px-6 py-10 text-black lg:px-12"><div className="mx-auto max-w-6xl">
+    <p className="text-[10px] uppercase tracking-[0.3em] text-black/40">Mason & Arc / System Status</p>
+    <h1 className="mt-3 text-4xl font-medium">What is finished — what remains</h1>
+    <div className="mt-8 grid gap-6 lg:grid-cols-2"><section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Shared production workflow</h2><div className="mt-5 space-y-3">{shared.map((item) => <div key={item} className="flex gap-3 text-sm"><span>✓</span><span>{item}</span></div>)}</div></section><section className="rounded-xl border border-black/10 p-6"><h2 className="font-medium">Still needs external setup or a remaining migration</h2><div className="mt-5 space-y-3">{remaining.map((item) => <div key={item} className="flex gap-3 text-sm"><span>○</span><span>{item}</span></div>)}</div></section></div>
+    <div className="mt-6 rounded-xl bg-black p-6 text-white"><p className="text-sm font-medium">Current rollout status</p><p className="mt-2 text-sm leading-6 text-white/70">The primary studio workflows — clients, projects, finance, files, transmittals and the Operations Hub — are now database-backed and shared across devices. The remaining items require an external provider account or a secure connection to the office computer; they cannot be safely faked inside the website.</p></div>
+  </div></main>;
 }
