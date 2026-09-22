@@ -12,18 +12,18 @@ export async function DELETE(request: Request) {
       "Engineer",
     ]);
 
-    const fileId = new URL(request.url).searchParams
-      .get("fileId")
-      ?.trim();
+    const url = new URL(request.url);
+    const fileId = url.searchParams.get("fileId")?.trim();
+    const projectId = url.searchParams.get("projectId")?.trim();
 
-    if (!fileId) {
+    if (!fileId || !projectId) {
       return NextResponse.json(
-        { error: "fileId is required." },
+        { error: "fileId and projectId are required." },
         { status: 400 }
       );
     }
 
-    const result = await deleteDriveFile(fileId);
+    const result = await deleteDriveFile(fileId, projectId);
 
     await audit(
       "integration.google_drive.file_delete",
