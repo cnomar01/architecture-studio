@@ -21,7 +21,7 @@ function normalizePhone(value: string) {
 
 export default function ManualWhatsAppPage() {
   const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState(
+  const [message, setMessage] = useState<string>(
     templates["Project update"]
   );
   const [template, setTemplate] =
