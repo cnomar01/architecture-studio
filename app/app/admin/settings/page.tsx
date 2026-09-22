@@ -354,12 +354,10 @@ export default function SettingsPage() {
                   {calendar?.authorized ? "Reconnect Calendar" : "Connect Calendar"}
                 </a>
                 <a
-                  href="https://wa.me/201044007555"
-                  target="_blank"
-                  rel="noreferrer"
+                  href="/app/admin/whatsapp"
                   className="rounded-xl border border-black/10 px-4 py-2.5 text-sm font-medium transition hover:bg-black/[0.03]"
                 >
-                  Office WhatsApp ↗
+                  Manual WhatsApp
                 </a>
                 <button
                   type="button"
@@ -388,7 +386,7 @@ export default function SettingsPage() {
             )}
             {gmailError && <p className="mt-4 text-sm text-red-600" role="alert">{gmailError}</p>}
             {calendar && <p className="mt-2 break-words text-sm" role="status">{calendar.authorized ? `Google Calendar is connected for ${calendar.email}.` : "Google Calendar is ready to connect."}</p>}
-            <p className="mt-3 text-sm leading-6 text-black/60">WhatsApp: +20 1044007555. Direct chat only; automated API messaging is not enabled. No paid messaging service has been activated.</p>
+            <p className="mt-3 text-sm leading-6 text-black/60">WhatsApp: free manual Click to Chat is available from this page. Automated API messaging remains disabled and no paid messaging service has been activated.</p>
           </section>
 
           {/* Studio Settings */}
