@@ -22,9 +22,14 @@ function driveFileUrl(storageKey: string | null | undefined) {
   return id ? `https://drive.google.com/file/d/${encodeURIComponent(id)}/view` : "";
 }
 
-async function deleteDriveAttachment(fileId: string) {
+async function deleteDriveAttachment(
+  fileId: string,
+  projectId: string
+) {
   const response = await fetch(
-    `/api/integrations/drive/file?fileId=${encodeURIComponent(fileId)}`,
+    `/api/integrations/drive/file?fileId=${encodeURIComponent(
+      fileId
+    )}&projectId=${encodeURIComponent(projectId)}`,
     { method: "DELETE", credentials: "include" }
   );
 
@@ -229,7 +234,10 @@ export default function AdminFilesPage() {
         previousDriveId !== uploadedDriveId
       ) {
         try {
-          await deleteDriveAttachment(previousDriveId);
+          await deleteDriveAttachment(
+            previousDriveId,
+            String(editing.project_id)
+          );
         } catch (cleanupError) {
           console.error(
             "Old Google Drive attachment cleanup failed",
@@ -253,7 +261,10 @@ export default function AdminFilesPage() {
     } catch (cause) {
       if (uploadedDriveId) {
         try {
-          await deleteDriveAttachment(uploadedDriveId);
+          await deleteDriveAttachment(
+            uploadedDriveId,
+            String(editing.project_id)
+          );
         } catch (cleanupError) {
           console.error(
             "Google Drive rollback cleanup failed",
@@ -299,7 +310,10 @@ export default function AdminFilesPage() {
 
     if (fileId) {
       try {
-        await deleteDriveAttachment(fileId);
+        await deleteDriveAttachment(
+          fileId,
+          String(file.project_id || "")
+        );
       } catch (cleanupError) {
         console.error(
           "Database record deleted, but Drive cleanup failed",
