@@ -144,7 +144,7 @@ export default function NewSiteReportPage() {
             fileName: photo.name,
             contentType:
               photo.type || "application/octet-stream",
-            category: "Other",
+            category: "Site Photo",
             folder: "Site",
             revision: "R01",
           });
@@ -156,7 +156,7 @@ export default function NewSiteReportPage() {
             project_id: projectId,
             project_name: project?.name || "",
             name: photo.name,
-            category: "Other",
+            category: "Site Photo",
             revision: "R01",
             document_number: null,
             discipline: null,
