@@ -7,7 +7,7 @@ import { CheckCircle2, Clock3, Download, FileText, Folder, GitBranch, Pencil, Pl
 type Project = { id: string; code: string; name: string };
 type ProjectFile = { id: string; project_id: string | null; project_name: string | null; name: string; category: string; revision: string; document_number: string | null; discipline: string | null; issue_date: string | null; visibility: "Internal" | "Client"; status: string; storage_key: string | null; file_name: string | null; file_type: string | null; file_size: number | null; uploaded_by_id: string | null; uploaded_by_name: string | null; description: string; folder: string; tags: string[]; parent_file_id: string | null; is_current: boolean };
 
-const categories = ["Architectural Drawing", "Civil Drawing", "Render", "Document", "Other"];
+const categories = ["Architectural Drawing", "Civil Drawing", "Model", "Render", "Report", "Contract", "Deliverable", "Site Photo", "Document", "Other"];
 const statuses = ["Draft", "Pending Approval", "Approved", "Changes Requested"];
 const emptyFile = (): ProjectFile => ({ id: "", project_id: "", project_name: "", name: "", category: "Architectural Drawing", revision: "R01", document_number: "", discipline: "", issue_date: new Date().toISOString().slice(0, 10), visibility: "Internal", status: "Draft", storage_key: "", file_name: "", file_type: "", file_size: 0, uploaded_by_id: "", uploaded_by_name: "Mason & Arc", description: "", folder: "General", tags: [], parent_file_id: null, is_current: true });
 
