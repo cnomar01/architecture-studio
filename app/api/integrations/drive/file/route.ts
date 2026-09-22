@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
+import { query } from "@/lib/server/db";
 import { deleteDriveFile } from "@/lib/server/googleDrive";
 
 export const runtime = "nodejs";
@@ -21,6 +22,48 @@ export async function DELETE(request: Request) {
         { error: "fileId and projectId are required." },
         { status: 400 }
       );
+    }
+
+    if (user.role === "Engineer") {
+      const projectResult = await query(
+        `SELECT project_manager_id
+         FROM projects
+         WHERE id=$1
+         LIMIT 1`,
+        [projectId]
+      );
+
+      const project = projectResult.rows[0];
+
+      if (!project) {
+        return NextResponse.json(
+          { error: "Project not found." },
+          { status: 404 }
+        );
+      }
+
+      const isManager =
+        String(project.project_manager_id || "") === user.id;
+
+      const membership = isManager
+        ? true
+        : Boolean(
+            (
+              await query(
+                `SELECT 1
+                 FROM project_memberships
+                 WHERE project_id=$1
+                   AND user_id=$2
+                   AND active=true
+                 LIMIT 1`,
+                [projectId, user.id]
+              )
+            ).rows[0]
+          );
+
+      if (!membership) {
+        throw new Error("FORBIDDEN");
+      }
     }
 
     const result = await deleteDriveFile(fileId, projectId);
