@@ -719,6 +719,23 @@ export async function POST(
       body.user_id = user.id;
     }
 
+    if (key === "files") {
+      for (const column of [
+        "document_number",
+        "discipline",
+        "issue_date",
+        "uploaded_by_id",
+        "parent_file_id",
+      ]) {
+        if (
+          body[column] !== undefined &&
+          String(body[column] ?? "").trim() === ""
+        ) {
+          body[column] = null;
+        }
+      }
+    }
+
     const columns = Object.keys(
       body
     ).filter((column) =>
@@ -884,6 +901,23 @@ export async function PATCH(
     );
 
     delete clean.id;
+
+    if (key === "files") {
+      for (const column of [
+        "document_number",
+        "discipline",
+        "issue_date",
+        "uploaded_by_id",
+        "parent_file_id",
+      ]) {
+        if (
+          clean[column] !== undefined &&
+          String(clean[column] ?? "").trim() === ""
+        ) {
+          clean[column] = null;
+        }
+      }
+    }
 
     if (
       key === "approvals" &&
