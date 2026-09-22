@@ -9,9 +9,11 @@
     "lint": "eslint",
     "test": "node --test tests/*.test.cjs",
     "ai:check": "node scripts/check-local-ai.mjs",
+    "ai:tunnel": "powershell -ExecutionPolicy Bypass -File scripts/start-office-ai-tunnel.ps1",
     "db:setup": "node --env-file=.env.local scripts/db-setup.mjs",
     "db:backup": "node --env-file=.env.local scripts/db-backup.mjs",
     "db:restore": "node --env-file=.env.local scripts/db-restore.mjs",
+    "db:restore:drill": "node --env-file=.env.local scripts/db-restore.mjs",
     "db:check": "node --env-file=.env.local scripts/db-check.mjs",
     "db:smoke": "node --env-file=.env.local scripts/db-smoke.mjs",
     "qa": "node scripts/production-qa.mjs && next build"
