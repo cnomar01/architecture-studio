@@ -388,6 +388,25 @@ function errorResponse(error: unknown) {
   const message =
     error instanceof Error ? error.message : "";
 
+  const databaseError = error as {
+    code?: string;
+    constraint?: string;
+  };
+
+  if (
+    databaseError?.code === "23505" &&
+    databaseError?.constraint ===
+      "project_files_document_revision_idx"
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "A file with this document number and revision already exists in this project.",
+      },
+      { status: 409 }
+    );
+  }
+
   if (message === "UNAUTHENTICATED") {
     return NextResponse.json(
       { error: "Authentication required." },
