@@ -1,6 +1,8 @@
 import { getGoogleCalendarCredential } from "@/lib/server/googleCalendar";
 
 const GOOGLE_DRIVE_API = "https://www.googleapis.com/drive/v3";
+const GOOGLE_DRIVE_UPLOAD_API =
+  "https://www.googleapis.com/upload/drive/v3";
 
 export const MASON_ARC_ROOT_FOLDER = "Mason & Arc Projects";
 
@@ -14,6 +16,15 @@ export const PROJECT_DRIVE_SUBFOLDERS = [
   "07_Reports",
   "08_Deliverables",
 ] as const;
+
+export type ProjectDriveSubfolder =
+  (typeof PROJECT_DRIVE_SUBFOLDERS)[number];
+
+type ProjectFolderInput = {
+  id: string;
+  code?: string | null;
+  name: string;
+};
 
 async function getDriveAccessToken() {
   const credential = await getGoogleCalendarCredential();
@@ -67,6 +78,13 @@ async function getDriveAccessToken() {
 
 function escapeDriveQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function cleanDriveFileName(value: string) {
+  return value
+    .replace(/[\u0000-\u001f\u007f]/g, "")
+    .trim()
+    .slice(0, 240);
 }
 
 async function findFolder(
@@ -232,28 +250,10 @@ async function getOrCreateFolder(
   return createFolder(accessToken, name, parentId);
 }
 
-export async function initializeDriveStorage() {
-  const accessToken = await getDriveAccessToken();
-
-  const root = await getOrCreateFolder(
-    accessToken,
-    MASON_ARC_ROOT_FOLDER
-  );
-
-  return {
-    id: root.id,
-    name: root.name,
-    webViewLink: root.webViewLink,
-  };
-}
-
-export async function createProjectDriveFolder(input: {
-  id: string;
-  code?: string | null;
-  name: string;
-}) {
-  const accessToken = await getDriveAccessToken();
-
+async function ensureProjectDriveFolder(
+  accessToken: string,
+  input: ProjectFolderInput
+) {
   const root = await getOrCreateFolder(
     accessToken,
     MASON_ARC_ROOT_FOLDER
@@ -299,4 +299,203 @@ export async function createProjectDriveFolder(input: {
       `https://drive.google.com/drive/folders/${projectFolder.id}`,
     subfolders,
   };
+}
+
+export function resolveProjectDriveSubfolder(input: {
+  category?: string | null;
+  folder?: string | null;
+}): ProjectDriveSubfolder {
+  const haystack = `${input.folder || ""} ${input.category || ""}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ");
+
+  if (haystack.includes("contract")) return "02_Contracts";
+  if (haystack.includes("drawing")) return "03_Drawings";
+  if (haystack.includes("model") || haystack.includes("revit")) {
+    return "04_Models";
+  }
+  if (
+    haystack.includes("render") ||
+    haystack.includes("visualization") ||
+    haystack.includes("visualisation")
+  ) {
+    return "05_Renders";
+  }
+  if (
+    haystack.includes("site") ||
+    haystack.includes("photo") ||
+    haystack.includes("inspection")
+  ) {
+    return "06_Site";
+  }
+  if (haystack.includes("report")) return "07_Reports";
+  if (
+    haystack.includes("deliver") ||
+    haystack.includes("issue package")
+  ) {
+    return "08_Deliverables";
+  }
+
+  return "01_Admin";
+}
+
+export async function initializeDriveStorage() {
+  const accessToken = await getDriveAccessToken();
+
+  const root = await getOrCreateFolder(
+    accessToken,
+    MASON_ARC_ROOT_FOLDER
+  );
+
+  return {
+    id: root.id,
+    name: root.name,
+    webViewLink: root.webViewLink,
+  };
+}
+
+export async function createProjectDriveFolder(
+  input: ProjectFolderInput
+) {
+  const accessToken = await getDriveAccessToken();
+  return ensureProjectDriveFolder(accessToken, input);
+}
+
+export async function createProjectDriveUploadSession(input: {
+  project: ProjectFolderInput;
+  recordId?: string | null;
+  fileName: string;
+  contentType?: string | null;
+  fileSize: number;
+  category?: string | null;
+  folder?: string | null;
+  revision?: string | null;
+}) {
+  const accessToken = await getDriveAccessToken();
+
+  const projectFolder = await ensureProjectDriveFolder(
+    accessToken,
+    input.project
+  );
+
+  const targetFolderName = resolveProjectDriveSubfolder({
+    category: input.category,
+    folder: input.folder,
+  });
+
+  const targetFolder = projectFolder.subfolders.find(
+    (item) => item.name === targetFolderName
+  );
+
+  if (!targetFolder) {
+    throw new Error(
+      `Google Drive target folder ${targetFolderName} is unavailable.`
+    );
+  }
+
+  const fileName = cleanDriveFileName(input.fileName);
+
+  if (!fileName) {
+    throw new Error("A valid file name is required.");
+  }
+
+  const contentType =
+    input.contentType?.trim() || "application/octet-stream";
+
+  const appProperties: Record<string, string> = {
+    masonArcProjectId: input.project.id,
+  };
+
+  if (input.recordId) {
+    appProperties.masonArcFileRecordId = input.recordId;
+  }
+
+  if (input.revision) {
+    appProperties.masonArcRevision = input.revision;
+  }
+
+  const params = new URLSearchParams({
+    uploadType: "resumable",
+    fields: "id,name,mimeType,size,webViewLink,webContentLink",
+  });
+
+  const response = await fetch(
+    `${GOOGLE_DRIVE_UPLOAD_API}/files?${params.toString()}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Upload-Content-Type": contentType,
+        "X-Upload-Content-Length": String(input.fileSize),
+      },
+      body: JSON.stringify({
+        name: fileName,
+        parents: [targetFolder.id],
+        appProperties,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    }
+  );
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+
+    throw new Error(
+      `Could not start Google Drive upload (${response.status}): ${detail}`
+    );
+  }
+
+  const uploadUrl = response.headers.get("location");
+
+  if (!uploadUrl) {
+    throw new Error(
+      "Google Drive did not return a resumable upload URL."
+    );
+  }
+
+  return {
+    uploadUrl,
+    targetFolder: {
+      id: targetFolder.id,
+      name: targetFolder.name,
+      webViewLink: targetFolder.webViewLink,
+    },
+    projectFolder: {
+      id: projectFolder.id,
+      name: projectFolder.name,
+      webViewLink: projectFolder.webViewLink,
+    },
+  };
+}
+
+export async function deleteDriveFile(fileId: string) {
+  const accessToken = await getDriveAccessToken();
+
+  const response = await fetch(
+    `${GOOGLE_DRIVE_API}/files/${encodeURIComponent(fileId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    }
+  );
+
+  if (response.status === 404) {
+    return { ok: true, alreadyMissing: true };
+  }
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+
+    throw new Error(
+      `Could not delete Google Drive file (${response.status}): ${detail}`
+    );
+  }
+
+  return { ok: true, alreadyMissing: false };
 }
