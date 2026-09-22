@@ -23,7 +23,12 @@ type CurrentUser = {
 const categories = [
   "Architectural Drawing",
   "Civil Drawing",
+  "Model",
   "Render",
+  "Report",
+  "Contract",
+  "Deliverable",
+  "Site Photo",
   "Document",
   "Other",
 ] as const;
