@@ -4,6 +4,17 @@ const GOOGLE_DRIVE_API = "https://www.googleapis.com/drive/v3";
 
 export const MASON_ARC_ROOT_FOLDER = "Mason & Arc Projects";
 
+export const PROJECT_DRIVE_SUBFOLDERS = [
+  "01_Admin",
+  "02_Contracts",
+  "03_Drawings",
+  "04_Models",
+  "05_Renders",
+  "06_Site",
+  "07_Reports",
+  "08_Deliverables",
+] as const;
+
 async function getDriveAccessToken() {
   const credential = await getGoogleCalendarCredential();
 
@@ -54,12 +65,16 @@ async function getDriveAccessToken() {
   return data.access_token;
 }
 
+function escapeDriveQuery(value: string) {
+  return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
 async function findFolder(
   accessToken: string,
   name: string,
   parentId?: string
 ) {
-  const escapedName = name.replace(/'/g, "\\'");
+  const escapedName = escapeDriveQuery(name);
 
   const conditions = [
     `name='${escapedName}'`,
@@ -94,29 +109,58 @@ async function findFolder(
       name: string;
       webViewLink?: string;
     }>;
-    error?: {
-      code?: number;
-      message?: string;
-      status?: string;
-      errors?: Array<{
-        message?: string;
-        domain?: string;
-        reason?: string;
-      }>;
-    };
+    error?: unknown;
   };
 
   if (!response.ok) {
-    const googleError = JSON.stringify(data);
-
-    console.error("Google Drive search failed", {
-      status: response.status,
-      statusText: response.statusText,
-      googleError,
-    });
-
     throw new Error(
-      `Google Drive search failed (${response.status}): ${googleError}`
+      `Google Drive search failed (${response.status}): ${JSON.stringify(data)}`
+    );
+  }
+
+  return data.files?.[0] ?? null;
+}
+
+async function findProjectFolder(
+  accessToken: string,
+  rootFolderId: string,
+  projectId: string
+) {
+  const escapedProjectId = escapeDriveQuery(projectId);
+
+  const params = new URLSearchParams({
+    q: [
+      `'${rootFolderId}' in parents`,
+      `mimeType='application/vnd.google-apps.folder'`,
+      "trashed=false",
+      `name contains '${escapedProjectId}'`,
+    ].join(" and "),
+    fields: "files(id,name,webViewLink)",
+    pageSize: "10",
+  });
+
+  const response = await fetch(
+    `${GOOGLE_DRIVE_API}/files?${params.toString()}`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    }
+  );
+
+  const data = (await response.json().catch(() => ({}))) as {
+    files?: Array<{
+      id: string;
+      name: string;
+      webViewLink?: string;
+    }>;
+  };
+
+  if (!response.ok) {
+    throw new Error(
+      `Could not search for project folder (${response.status}).`
     );
   }
 
@@ -128,48 +172,43 @@ async function createFolder(
   name: string,
   parentId?: string
 ) {
-  const response = await fetch(`${GOOGLE_DRIVE_API}/files`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-      mimeType: "application/vnd.google-apps.folder",
-      ...(parentId ? { parents: [parentId] } : {}),
-    }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(15000),
-  });
+  const response = await fetch(
+    `${GOOGLE_DRIVE_API}/files?fields=id,name,webViewLink`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        mimeType: "application/vnd.google-apps.folder",
+        ...(parentId ? { parents: [parentId] } : {}),
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    }
+  );
 
   const data = (await response.json().catch(() => ({}))) as {
     id?: string;
     name?: string;
-    error?: {
-      code?: number;
-      message?: string;
-      status?: string;
-    };
+    webViewLink?: string;
+    error?: unknown;
   };
 
   if (!response.ok || !data.id) {
-    const googleError = JSON.stringify(data);
-
-    console.error("Google Drive folder creation failed", {
-      status: response.status,
-      statusText: response.statusText,
-      googleError,
-    });
-
     throw new Error(
-      `Google Drive folder creation failed (${response.status}): ${googleError}`
+      `Google Drive folder creation failed (${response.status}): ${JSON.stringify(data)}`
     );
   }
 
   return {
     id: data.id,
     name: data.name || name,
+    webViewLink:
+      data.webViewLink ||
+      `https://drive.google.com/drive/folders/${data.id}`,
   };
 }
 
@@ -184,6 +223,9 @@ async function getOrCreateFolder(
     return {
       id: existing.id,
       name: existing.name,
+      webViewLink:
+        existing.webViewLink ||
+        `https://drive.google.com/drive/folders/${existing.id}`,
     };
   }
 
@@ -201,6 +243,60 @@ export async function initializeDriveStorage() {
   return {
     id: root.id,
     name: root.name,
-    webViewLink: `https://drive.google.com/drive/folders/${root.id}`,
+    webViewLink: root.webViewLink,
+  };
+}
+
+export async function createProjectDriveFolder(input: {
+  id: string;
+  code?: string | null;
+  name: string;
+}) {
+  const accessToken = await getDriveAccessToken();
+
+  const root = await getOrCreateFolder(
+    accessToken,
+    MASON_ARC_ROOT_FOLDER
+  );
+
+  const existingProjectFolder = await findProjectFolder(
+    accessToken,
+    root.id,
+    input.id
+  );
+
+  const projectFolderName = [
+    input.id,
+    input.code,
+    input.name,
+  ]
+    .filter(Boolean)
+    .join(" - ");
+
+  const projectFolder =
+    existingProjectFolder ||
+    (await createFolder(
+      accessToken,
+      projectFolderName,
+      root.id
+    ));
+
+  const subfolders = await Promise.all(
+    PROJECT_DRIVE_SUBFOLDERS.map((folderName) =>
+      getOrCreateFolder(
+        accessToken,
+        folderName,
+        projectFolder.id
+      )
+    )
+  );
+
+  return {
+    id: projectFolder.id,
+    name: projectFolder.name,
+    webViewLink:
+      projectFolder.webViewLink ||
+      `https://drive.google.com/drive/folders/${projectFolder.id}`,
+    subfolders,
   };
 }
