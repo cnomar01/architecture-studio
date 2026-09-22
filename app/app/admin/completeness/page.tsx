@@ -1,30 +1,30 @@
 const nextSteps = [
   {
-    title: "Test database backup and restore",
-    status: "Ready to complete",
+    title: "Run a safe backup and restore drill",
+    status: "Ready to test",
     detail:
-      "Error monitoring is live. The remaining check is a safe backup-and-restore drill; this can use a free local backup workflow.",
+      "Backups are now verified after creation, and restore is blocked from using the production DATABASE_URL. Set RESTORE_DATABASE_URL to a disposable database, create a backup, then run the restore drill once.",
     cost: "Free",
   },
   {
-    title: "Secure office AI access from the hosted site",
+    title: "Verify Google Drive uploads in production",
+    status: "One live test",
+    detail:
+      "Admin files, engineer files, site photos, models, renders, reports, contracts and deliverables are wired to Google Drive. Upload one real file and one site photo in production, then confirm both appear in the correct project folders.",
+    cost: "Free",
+  },
+  {
+    title: "Connect the Office AI Cloudflare Tunnel",
     status: "External DNS prerequisite",
     detail:
-      "Ollama and ComfyUI already auto-start locally. A free Cloudflare Tunnel is possible after masonandarc.com is added as a Cloudflare zone and its DNS is pointed there.",
+      "The local Office AI bridge and tunnel launcher are ready. The remaining external step is creating the named Cloudflare Tunnel, setting OFFICE_AI_TUNNEL_TOKEN on the office computer, pointing a hostname at it, and setting the hosted OFFICE_AI_BRIDGE_URL.",
     cost: "Free, but needs DNS access",
   },
   {
-    title: "Finish Google Drive shared file uploads",
-    status: "Integration in progress",
-    detail:
-      "Google Drive OAuth and the Mason & Arc Projects root folder are connected. The remaining work is wiring project file and site-photo uploads to the project Drive folders and saving their Drive references in the shared database.",
-    cost: "Free",
-  },
-  {
     title: "Automated WhatsApp messages",
-    status: "Not enabled",
+    status: "Optional",
     detail:
-      "Direct office WhatsApp remains available. Automation needs a Meta Developer App, WhatsApp Business credentials and may charge per message or conversation.",
+      "Free manual WhatsApp Click to Chat is ready in Settings. Official automated sending remains disabled and only needs to be configured later if you want Meta WhatsApp Business automation.",
     cost: "Potentially paid",
   },
 ];
@@ -43,8 +43,10 @@ export default function CompletenessPage() {
 
         <p className="mt-3 max-w-3xl text-sm leading-6 text-black/60">
           Completed production setup, AI governance, Sentry monitoring,
-          Google Calendar connection and Google Drive authorization are
-          intentionally hidden here. This page lists only open work.
+          Google Calendar authorization, Google Drive folder automation,
+          shared file-upload code and free manual WhatsApp are intentionally
+          hidden here. This page lists only checks or external setup that
+          still need attention.
         </p>
 
         <div className="mt-8 grid gap-4">
@@ -77,10 +79,10 @@ export default function CompletenessPage() {
         <div className="mt-6 rounded-xl bg-black p-6 text-white">
           <p className="text-sm font-medium">No-cost path</p>
           <p className="mt-2 text-sm leading-6 text-white/70">
-            Finish the Google Drive upload workflow and test
-            backup/restore. Keep WhatsApp automation disabled unless you
-            later accept its billing terms. The office AI remains fully
-            available on the office computer without any paid provider.
+            Do the two production checks first: one Google Drive upload
+            test and one restore drill against a disposable database. The
+            only remaining external setup after that is the Cloudflare
+            Tunnel/DNS step. WhatsApp can stay manual and free.
           </p>
         </div>
       </div>
