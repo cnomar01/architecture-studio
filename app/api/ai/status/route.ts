@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { officeAiHeaders, officeAiUrl, usingOfficeAiBridge } from "@/lib/server/officeAi";
 
 export const runtime = "nodejs";
 
@@ -8,6 +9,7 @@ const cleanUrl = (value: string, fallback: string) =>
 async function fetchJson(url: string) {
   const response = await fetch(url, {
     cache: "no-store",
+    headers: officeAiHeaders(),
     signal: AbortSignal.timeout(5000),
   });
 
@@ -19,15 +21,8 @@ async function fetchJson(url: string) {
 }
 
 export async function GET() {
-  const ollamaUrl = cleanUrl(
-    process.env.OLLAMA_URL || "http://127.0.0.1:11434",
-    "http://127.0.0.1:11434"
-  );
-
-  const comfyUrl = cleanUrl(
-    process.env.COMFYUI_URL || "http://127.0.0.1:8188",
-    "http://127.0.0.1:8188"
-  );
+  const ollamaUrl = cleanUrl(officeAiUrl("ollama"), "http://127.0.0.1:11434");
+  const comfyUrl = cleanUrl(officeAiUrl("comfyui"), "http://127.0.0.1:8188");
 
   const model =
     process.env.OLLAMA_MODEL || "qwen2.5vl:7b";
@@ -66,6 +61,7 @@ export async function GET() {
 
   return NextResponse.json({
     provider: ollamaConnected ? "local" : "unavailable",
+    bridge: usingOfficeAiBridge() ? "secure-cloudflare" : "local-only",
 
     ollama: {
       connected: ollamaConnected,

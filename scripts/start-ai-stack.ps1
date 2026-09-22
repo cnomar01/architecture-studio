@@ -2,6 +2,7 @@ $ErrorActionPreference = "Continue"
 
 $comfyPath = "C:\Users\cnoma\ComfyUI_windows_portable"
 $comfyBat = Join-Path $comfyPath "run_nvidia_gpu.bat"
+$workspace = Split-Path -Parent $PSScriptRoot
 
 function Test-Port($port) {
     try {
@@ -98,3 +99,10 @@ Write-Host "========================================="
 Write-Host "       AI Stack check completed"
 Write-Host "========================================="
 Write-Host ""
+
+# The bridge only accepts requests carrying OFFICE_AI_BRIDGE_TOKEN and binds to
+# loopback. Cloudflare Tunnel can therefore expose it without exposing either
+# Ollama or ComfyUI directly.
+if (-not (Test-Port 8787) -and $env:OFFICE_AI_BRIDGE_TOKEN) {
+    Start-Process -FilePath "node.exe" -ArgumentList (Join-Path $workspace "scripts\office-ai-bridge.mjs") -WorkingDirectory $workspace -WindowStyle Hidden
+}

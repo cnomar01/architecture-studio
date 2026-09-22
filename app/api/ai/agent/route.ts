@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
+import { officeAiHeaders, officeAiUrl } from "@/lib/server/officeAi";
 
 export const runtime = "nodejs";
 
@@ -25,11 +26,11 @@ export async function POST(request: Request) {
     const instruction = String(body?.instruction || "Run your agent review and give me the highest-value actions.").trim();
     if (!context) return NextResponse.json({ error: "Studio context is required." }, { status: 400 });
 
-    const baseUrl = (process.env.OLLAMA_URL || "http://127.0.0.1:11434").replace(/\/$/, "");
+    const baseUrl = officeAiUrl("ollama");
     const model = process.env.OLLAMA_MODEL || "qwen2.5vl:7b";
     const response = await fetch(`${baseUrl}/api/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: officeAiHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         model,
         stream: false,

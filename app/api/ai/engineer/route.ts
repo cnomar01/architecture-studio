@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
+import { officeAiHeaders, officeAiUrl } from "@/lib/server/officeAi";
 
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -208,10 +209,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const baseUrl = (
-      process.env.OLLAMA_URL ||
-      "http://127.0.0.1:11434"
-    ).replace(/\/$/, "");
+    const baseUrl = officeAiUrl("ollama");
 
     const model =
       process.env.OLLAMA_MODEL || "qwen2.5vl:7b";
@@ -295,9 +293,9 @@ export async function POST(request: Request) {
     try {
       response = await fetch(`${baseUrl}/api/chat`, {
         method: "POST",
-        headers: {
+        headers: officeAiHeaders({
           "Content-Type": "application/json",
-        },
+        }),
         body: JSON.stringify({
           model,
           stream: false,

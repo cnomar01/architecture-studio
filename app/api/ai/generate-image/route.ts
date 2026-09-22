@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
+import { officeAiHeaders, officeAiUrl } from "@/lib/server/officeAi";
 
 export const runtime = "nodejs";
 export const maxDuration = 240;
@@ -19,6 +20,7 @@ function dataUrlToBuffer(dataUrl: string) {
 async function comfyJson(baseUrl: string, path: string, init?: RequestInit) {
   const res = await fetch(`${baseUrl}${path}`, {
     ...init,
+    headers: officeAiHeaders(init?.headers),
     cache: "no-store",
     signal: AbortSignal.timeout(15000),
   });
@@ -154,7 +156,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Describe what you want to create." }, { status: 400 });
     }
 
-    const baseUrl = (process.env.COMFYUI_URL || "http://127.0.0.1:8188").replace(/\/$/, "");
+    const baseUrl = officeAiUrl("comfyui");
     await comfyJson(baseUrl, "/system_stats");
 
     // Do not use the combined object_info endpoint here. ComfyUI 0.35 can return
@@ -226,7 +228,7 @@ export async function POST(request: Request) {
           subfolder: image.subfolder || "",
           type: image.type || "output",
         });
-        const imageRes = await fetch(`${baseUrl}/view?${qs.toString()}`, { cache: "no-store" });
+        const imageRes = await fetch(`${baseUrl}/view?${qs.toString()}`, { cache: "no-store", headers: officeAiHeaders() });
         if (!imageRes.ok) continue;
         const bytes = Buffer.from(await imageRes.arrayBuffer());
         const mime = image.filename.toLowerCase().endsWith(".jpg") || image.filename.toLowerCase().endsWith(".jpeg") ? "image/jpeg" : "image/png";
