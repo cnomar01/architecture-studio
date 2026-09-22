@@ -106,3 +106,14 @@ Write-Host ""
 if (-not (Test-Port 8787) -and $env:OFFICE_AI_BRIDGE_TOKEN) {
     Start-Process -FilePath "node.exe" -ArgumentList (Join-Path $workspace "scripts\office-ai-bridge.mjs") -WorkingDirectory $workspace -WindowStyle Hidden
 }
+
+
+# Start the named Cloudflare Tunnel only when its token is configured.
+if ($env:OFFICE_AI_TUNNEL_TOKEN) {
+    try {
+        & (Join-Path $workspace "scripts\start-office-ai-tunnel.ps1")
+    }
+    catch {
+        Write-Host "[WARNING] Office AI tunnel was not started: $($_.Exception.Message)"
+    }
+}
