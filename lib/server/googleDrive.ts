@@ -35,9 +35,17 @@ async function getDriveAccessToken() {
 
   const data = (await response.json().catch(() => ({}))) as {
     access_token?: string;
+    error?: string;
+    error_description?: string;
   };
 
   if (!response.ok || !data.access_token) {
+    console.error("Google Drive token refresh failed", {
+      status: response.status,
+      error: data.error,
+      description: data.error_description,
+    });
+
     throw new Error(
       "Could not authorize Google Drive. Reconnect Google in Settings."
     );
@@ -86,10 +94,30 @@ async function findFolder(
       name: string;
       webViewLink?: string;
     }>;
+    error?: {
+      code?: number;
+      message?: string;
+      status?: string;
+      errors?: Array<{
+        message?: string;
+        domain?: string;
+        reason?: string;
+      }>;
+    };
   };
 
   if (!response.ok) {
-    throw new Error(`Could not search Google Drive folder: ${name}`);
+    const googleError = JSON.stringify(data);
+
+    console.error("Google Drive search failed", {
+      status: response.status,
+      statusText: response.statusText,
+      googleError,
+    });
+
+    throw new Error(
+      `Google Drive search failed (${response.status}): ${googleError}`
+    );
   }
 
   return data.files?.[0] ?? null;
@@ -118,10 +146,25 @@ async function createFolder(
   const data = (await response.json().catch(() => ({}))) as {
     id?: string;
     name?: string;
+    error?: {
+      code?: number;
+      message?: string;
+      status?: string;
+    };
   };
 
   if (!response.ok || !data.id) {
-    throw new Error(`Could not create Google Drive folder: ${name}`);
+    const googleError = JSON.stringify(data);
+
+    console.error("Google Drive folder creation failed", {
+      status: response.status,
+      statusText: response.statusText,
+      googleError,
+    });
+
+    throw new Error(
+      `Google Drive folder creation failed (${response.status}): ${googleError}`
+    );
   }
 
   return {
