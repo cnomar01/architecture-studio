@@ -470,8 +470,47 @@ export async function createProjectDriveUploadSession(input: {
   };
 }
 
-export async function deleteDriveFile(fileId: string) {
+export async function deleteDriveFile(
+  fileId: string,
+  expectedProjectId: string
+) {
   const accessToken = await getDriveAccessToken();
+
+  const metadataResponse = await fetch(
+    `${GOOGLE_DRIVE_API}/files/${encodeURIComponent(
+      fileId
+    )}?fields=id,appProperties,trashed`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    }
+  );
+
+  if (metadataResponse.status === 404) {
+    return { ok: true, alreadyMissing: true };
+  }
+
+  const metadata = (await metadataResponse
+    .json()
+    .catch(() => ({}))) as {
+    appProperties?: Record<string, string>;
+    trashed?: boolean;
+  };
+
+  if (!metadataResponse.ok) {
+    throw new Error(
+      `Could not verify Google Drive file (${metadataResponse.status}).`
+    );
+  }
+
+  if (
+    metadata.appProperties?.masonArcProjectId !== expectedProjectId
+  ) {
+    throw new Error("FORBIDDEN");
+  }
 
   const response = await fetch(
     `${GOOGLE_DRIVE_API}/files/${encodeURIComponent(fileId)}`,
