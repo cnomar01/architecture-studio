@@ -6,7 +6,7 @@ import Container from "@/components/shared/Container";
 export default function ContactHero() {
   return (
     <section className="min-h-screen bg-[#f8f7f4] text-neutral-900">
-      <Container className="flex min-h-screen flex-col justify-between px-8 py-12 md:px-12 md:py-16 lg:px-16 lg:py-20">
+      <Container className="flex min-h-screen flex-col justify-between px-8 pb-12 pt-28 md:px-12 md:pb-16 md:pt-36 lg:px-16 lg:pb-20 lg:pt-40">
 
         {/* Top */}
         <div>
