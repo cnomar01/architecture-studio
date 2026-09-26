@@ -2,12 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const { locale, setLocale, copy } = useLocale();
+  // Keep the logo and menu visible on light pages and on the black menu overlay.
+  const whiteChrome = pathname === "/" || open;
 
   useEffect(() => {
     if (!open) return;
@@ -44,7 +48,6 @@ export default function Navbar() {
               block
               w-[118px]
               md:w-[128px]
-              mix-blend-difference
             "
           >
             <Image
@@ -53,7 +56,7 @@ export default function Navbar() {
               width={500}
               height={160}
               priority
-              className="block h-auto w-full object-contain object-left"
+              className={`block h-auto w-full object-contain object-left ${whiteChrome ? "brightness-0 invert" : "brightness-0"}`}
             />
           </Link>
 
@@ -71,7 +74,6 @@ export default function Navbar() {
               w-11
               items-center
               justify-center
-              mix-blend-difference
             "
           >
             <span
@@ -80,7 +82,7 @@ export default function Navbar() {
                 block
                 h-[2px]
                 w-full
-                bg-white
+                ${whiteChrome ? "bg-white" : "bg-black"}
                 transition-transform
                 duration-500
                 ease-out
@@ -93,7 +95,7 @@ export default function Navbar() {
                 block
                 h-[2px]
                 w-full
-                bg-white
+                ${whiteChrome ? "bg-white" : "bg-black"}
                 transition-transform
                 duration-500
                 ease-out
