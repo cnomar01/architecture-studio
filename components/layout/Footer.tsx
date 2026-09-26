@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 export default function Footer() {
   const { copy } = useLocale();
+  const isContactPage = usePathname() === "/contact";
   return (
     <footer className="bg-[#f8f7f4] text-neutral-900">
       <div className="px-8 py-16 md:px-12 md:py-20 lg:px-16">
 
         {/* Top */}
-        <div className="grid grid-cols-1 gap-16 border-t border-neutral-300 pt-10 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr]">
+        <div className={`grid grid-cols-1 gap-16 border-t border-neutral-300 pt-10 md:grid-cols-2 ${isContactPage ? "lg:grid-cols-[1.5fr_1fr]" : "lg:grid-cols-[1.5fr_1fr_1fr]"}`}>
 
           {/* Brand */}
           <div>
@@ -67,8 +69,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Contact */}
-          <div>
+          {/* Contact details already appear in the hero on the contact page. */}
+          <div hidden={isContactPage}>
             <p className="mb-6 text-[10px] uppercase tracking-[0.35em] text-neutral-400">
               {copy.contact}
             </p>

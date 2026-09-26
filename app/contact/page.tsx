@@ -17,7 +17,7 @@ export default function ContactPage() {
           <div className="grid gap-10 lg:grid-cols-[0.35fr_1.65fr] lg:gap-x-16">
             <span className="text-[9px] uppercase tracking-[0.35em] text-neutral-400">02 — Inquiry</span>
             <div>
-              <h2 className="max-w-4xl text-4xl font-light tracking-[-0.04em] md:text-6xl">Tell us what you’re building.</h2>
+              <h2 className="max-w-4xl text-4xl font-light tracking-[-0.04em] text-neutral-900 md:text-6xl">Tell us what you’re building.</h2>
               <ContactForm />
             </div>
           </div>
