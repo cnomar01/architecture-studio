@@ -2,13 +2,23 @@
 
 import { useEffect, useState } from "react";
 
+const LOADER_KEY = "masonarc-loader-seen";
+
 export default function Loader() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    try {
+      if (sessionStorage.getItem(LOADER_KEY)) return;
+      sessionStorage.setItem(LOADER_KEY, "1");
+      setVisible(true);
+    } catch {
+      setVisible(true);
+    }
+
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 2600);
+    }, 1800);
 
     return () => clearTimeout(timer);
   }, []);
@@ -75,14 +85,14 @@ export default function Loader() {
           align-items: center;
           justify-content: center;
           background: #000;
-          animation: loaderExit 1.2s ease-in-out 1.8s forwards;
+          animation: loaderExit 0.55s ease-out 1.2s forwards;
         }
 
         .loader-content {
           display: flex;
           flex-direction: column;
           align-items: center;
-          animation: contentExit 1.2s ease-in-out 1.8s forwards;
+          animation: contentExit 0.55s ease-out 1.2s forwards;
         }
 
         .logo-wrap {
@@ -99,7 +109,7 @@ export default function Loader() {
         .logo-wrap svg {
           width: 420px;
           height: 420px;
-          animation: logoFloat 2s ease-in-out 1.2s infinite;
+          animation: none;
           transform-origin: center;
         }
 
@@ -110,7 +120,7 @@ export default function Loader() {
           font-weight: 300;
           letter-spacing: 0.5em;
           opacity: 0;
-          animation: textEnter 0.8s ease 0.5s forwards;
+          animation: textEnter 0.45s ease 0.25s forwards;
         }
 
         @keyframes logoEnter {
@@ -162,7 +172,6 @@ export default function Loader() {
 
           100% {
             opacity: 0;
-            filter: blur(16px);
             visibility: hidden;
             pointer-events: none;
           }
@@ -171,20 +180,17 @@ export default function Loader() {
         @keyframes contentExit {
           0% {
             opacity: 1;
-            filter: blur(0);
             transform: scale(1);
           }
 
           55% {
             opacity: 0.9;
-            filter: blur(3px);
-            transform: scale(1.015);
+            transform: scale(1.005);
           }
 
           100% {
             opacity: 0;
-            filter: blur(16px);
-            transform: scale(1.035);
+            transform: scale(1.01);
           }
         }
 
