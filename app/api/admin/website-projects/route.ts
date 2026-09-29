@@ -59,6 +59,10 @@ function contentSections(value: unknown) {
   });
 }
 
+function isPublicProxy(value: string) {
+  return value.startsWith("/api/public/website-projects/");
+}
+
 function legacySections(sections: ReturnType<typeof contentSections>) {
   return sections.map((section) => ({ id: section.id, eyebrow: section.eyebrow, title: section.title, body: section.body, hero_statement: section.hero_statement, is_visible: section.is_visible, layout: section.layout, images: section.images.map((image) => image.image_url) }));
 }
@@ -137,6 +141,26 @@ export async function PATCH(request: Request) {
     const id = text(raw.id, 100);
     const value = body(raw);
     if (!id || !value.title || !value.slug || !value.imageUrl) return NextResponse.json({ error: "ID, title, public URL and cover image are required." }, { status: 400 });
+
+    // Admin reads use public proxy URLs for previews. Never write those proxy URLs
+    // back over the original image payloads, otherwise the public image endpoint
+    // ends up pointing at itself and returns 404.
+    const existingProject = await query<{ image_url: string }>("SELECT image_url FROM website_projects WHERE id=$1 LIMIT 1", [id]);
+    if (isPublicProxy(value.imageUrl) && existingProject.rows[0]?.image_url) value.imageUrl = existingProject.rows[0].image_url;
+
+    const existingImages = await query<{ id: string; image_url: string }>(
+      `SELECT image.id,image.image_url FROM website_project_section_images image JOIN website_project_sections section ON section.id=image.section_id WHERE section.project_id=$1`,
+      [id],
+    );
+    const existingById = new Map(existingImages.rows.map((image) => [image.id, image.image_url]));
+    value.sections = value.sections.map((section) => ({
+      ...section,
+      images: section.images.map((image) => ({
+        ...image,
+        image_url: isPublicProxy(image.image_url) ? (existingById.get(image.id) || image.image_url) : image.image_url,
+      })),
+    }));
+
     const result = await query(
       `UPDATE website_projects SET slug=$1,title=$2,location=$3,year=$4,category=$5,description=$6,image_url=$7,gallery=$8,translations=$9,content_sections=$10,published=$11,updated_at=NOW()
        WHERE id=$12 RETURNING ${fields}`,
