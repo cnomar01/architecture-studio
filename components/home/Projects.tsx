@@ -253,6 +253,7 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
                       src={project.image_url}
                       alt={translated.title}
                       fill
+                      unoptimized
                       priority={index === 0}
                       sizes="100vw"
                       className="
