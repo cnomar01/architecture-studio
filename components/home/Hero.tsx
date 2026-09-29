@@ -20,6 +20,9 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
 
     if (!hero || !image || !title || !content) return;
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+
     const ctx = gsap.context(() => {
       gsap.set(title, {
         scale: 1.28,
@@ -50,11 +53,13 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
         "-=0.35"
       );
 
-      gsap.to(image, {
-        scale: 1.045,
-        duration: 10,
-        ease: "none",
-      });
+      if (!reduceMotion && !mobile) {
+        gsap.to(image, {
+          scale: 1.035,
+          duration: 10,
+          ease: "none",
+        });
+      }
     }, hero);
 
     return () => ctx.revert();
@@ -66,7 +71,7 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
       data-header-theme="light"
       className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-black text-white"
     >
-      <div ref={imageRef} className="absolute inset-[-2%] will-change-transform">
+      <div ref={imageRef} className="absolute inset-0 md:inset-[-2%] md:will-change-transform">
         <Image
           src={imageUrl}
           alt="Mason & Arc architecture"
