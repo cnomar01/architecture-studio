@@ -21,31 +21,27 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   useEffect(() => {
     if (!sectionRef.current) return;
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    if (reduceMotion || mobile) return;
+
     const ctx = gsap.context(() => {
-      const cards =
-        sectionRef.current!.querySelectorAll(".project-card");
+      const cards = sectionRef.current!.querySelectorAll(".project-card");
 
       cards.forEach((card) => {
         const image = card.querySelector(".project-image");
-
         if (!image) return;
 
-        gsap.fromTo(
-          image,
-          {
-            scale: 1.12,
+        gsap.fromTo(image, { scale: 1.08 }, {
+          scale: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: card,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.6,
           },
-          {
-            scale: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1.2,
-            },
-          }
-        );
+        });
       });
     }, sectionRef);
 
