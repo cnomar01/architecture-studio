@@ -25,7 +25,12 @@ export function mapWebsiteProject(row: Record<string, unknown>, relationSections
   const id = String(row.id || ""); const updatedAt = row.updated_at;
   const sections = relationSections?.length ? relationSections.map((raw) => ({ id: String(raw.id), eyebrow: localized(raw.eyebrow), title: localized(raw.title), body: localized(raw.description), hero_statement: localized(raw.hero_statement), layout: ["gallery", "drawings", "full_bleed"].includes(String(raw.layout)) ? String(raw.layout) as WebsiteProjectSection["layout"] : "editorial", is_visible: raw.is_visible !== false, images: Array.isArray(raw.images) ? (raw.images as Record<string, unknown>[]).map((image) => ({ id: String(image.id), image_url: publicImage(id, String(image.image_url || ""), updatedAt, `kind=section-image&id=${encodeURIComponent(String(image.id))}`), caption: localized(image.caption), alt_text: localized(image.alt_text), layout: ["landscape", "portrait", "drawing", "full_bleed"].includes(String(image.layout)) ? String(image.layout) as WebsiteProjectSectionImage["layout"] : "auto" })) : [] })) : legacySections(row);
   const translations = row.translations && typeof row.translations === "object" && !Array.isArray(row.translations) ? row.translations as WebsiteProject["translations"] : {};
-  const cover = typeof row.image_url === "string" ? row.image_url : "";
+  let cover = typeof row.image_url === "string" ? row.image_url : "";
+  // Recover the City Edge cover from the checked-in public asset if an older
+  // admin save replaced its original payload with its own public proxy URL.
+  if (String(row.slug || "") === "city-edge" && cover.startsWith("/api/public/website-projects/")) {
+    cover = "/images/projects/city-edge/city-edge-exterior-wip.jpeg";
+  }
   return { id, slug: String(row.slug || ""), title: String(row.title || ""), location: String(row.location || ""), year: String(row.year || ""), category: String(row.category || ""), description: String(row.description || ""), image_url: publicImage(id, cover, updatedAt, "kind=cover"), gallery: strings(row.gallery).map((image, index) => publicImage(id, image, updatedAt, `kind=gallery&index=${index}`)), translations, content_sections: sections, published: Boolean(row.published) };
 }
 
