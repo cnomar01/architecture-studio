@@ -11,13 +11,18 @@ export function isWebsiteImage(value: unknown): value is string {
 }
 
 export async function getWebsiteHeroImage() {
-  const result = await query<{ value: { image_url?: unknown }; updated_at: string }>(
-    "SELECT value,updated_at FROM website_settings WHERE key='home_hero' LIMIT 1",
-  );
-  const row = result.rows[0];
-  const image = row?.value?.image_url;
-  if (!isWebsiteImage(image)) return fallbackImage;
-  if (!image.startsWith("data:image/")) return image;
-  const version = new Date(row.updated_at).getTime() || 0;
-  return `/api/public/website-home-hero/image?v=${version}`;
+  try {
+    const result = await query<{ value: { image_url?: unknown }; updated_at: string }>(
+      "SELECT value,updated_at FROM website_settings WHERE key='home_hero' LIMIT 1",
+    );
+    const row = result.rows[0];
+    const image = row?.value?.image_url;
+    if (!isWebsiteImage(image)) return fallbackImage;
+    if (!image.startsWith("data:image/")) return image;
+    const version = new Date(row.updated_at).getTime() || 0;
+    return `/api/public/website-home-hero/image?v=${version}`;
+  } catch (error) {
+    console.error("[public-home] Hero CMS query failed; serving the checked-in hero image.", error);
+    return fallbackImage;
+  }
 }

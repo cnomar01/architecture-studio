@@ -7,6 +7,72 @@ export type WebsiteProjectSectionImage = { id: string; image_url: string; captio
 export type WebsiteProjectSection = { id: string; eyebrow: LocalizedText; title: LocalizedText; body: LocalizedText; hero_statement: LocalizedText; layout: "editorial" | "gallery" | "drawings" | "full_bleed"; is_visible: boolean; images: WebsiteProjectSectionImage[] };
 export type WebsiteProject = { id: string; slug: string; title: string; location: string; year: string; category: string; description: string; image_url: string; gallery: string[]; translations: Partial<Record<Exclude<WebsiteLocale, "en">, Partial<LocalizedProjectCopy>>>; content_sections: WebsiteProjectSection[]; published: boolean };
 
+const emptyLocalizedText: LocalizedText = { en: "", ar: "", it: "" };
+
+// Keep the public portfolio available when the CMS database is temporarily
+// unreachable. This mirrors the initial checked-in CMS migration; admin
+// routes still fail normally so an outage is visible to the studio team.
+const fallbackProjects: WebsiteProject[] = [{
+  id: "WEB-001",
+  slug: "city-edge",
+  title: "City Edge",
+  location: "Fayoum, Egypt",
+  year: "2025 — Ongoing",
+  category: "Architecture",
+  description: "City Edge is a 12-storey mixed-use building in Fayoum, Egypt, marking Mason & Arc’s first project in Egypt. The building combines retail, offices, medical clinics, residential units, and a rooftop pool and barbecue area within one mixed-use development.",
+  image_url: "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
+  gallery: ["/images/projects/city-edge/city-edge-exterior-wip.jpeg"],
+  translations: {
+    ar: {
+      title: "سيتي إيدج",
+      location: "الفيوم، مصر",
+      category: "عمارة",
+      description: "سيتي إيدج مبنى متعدد الاستخدامات من 12 طابقًا في الفيوم، وهو أول مشروعات Mason & Arc في مصر. يجمع المشروع بين المحلات التجارية والمكاتب والعيادات الطبية والوحدات السكنية، مع حمام سباحة ومنطقة للشواء على السطح.",
+    },
+    it: {
+      title: "City Edge",
+      location: "Fayoum, Egitto",
+      category: "Architettura",
+      description: "City Edge è un edificio polifunzionale di 12 piani a Fayoum, il primo progetto di Mason & Arc in Egitto. Il complesso riunisce spazi commerciali, uffici, cliniche mediche, residenze e una terrazza con piscina e area barbecue.",
+    },
+  },
+  content_sections: [
+    {
+      id: "concept",
+      eyebrow: emptyLocalizedText,
+      title: { en: "Concept", ar: "الفكرة التصميمية", it: "Concept" },
+      body: {
+        en: "Conceived as a vertical mixed-use destination, City Edge brings public, professional, clinical and residential life together within one clear architectural identity. The composition balances a grounded commercial base with lighter residential levels above.",
+        ar: "صُمم سيتي إيدج كوجهة رأسية متعددة الاستخدامات تجمع الحياة العامة والعمل والخدمات الطبية والسكن داخل هوية معمارية واحدة وواضحة. يوازن التكوين بين قاعدة تجارية راسخة وطوابق سكنية أكثر خفة في الأعلى.",
+        it: "City Edge è concepito come una destinazione verticale polifunzionale, capace di riunire vita pubblica, lavoro, servizi clinici e residenza in un’identità architettonica chiara. La composizione equilibra un basamento commerciale solido con livelli residenziali più leggeri.",
+      },
+      hero_statement: emptyLocalizedText,
+      layout: "editorial",
+      is_visible: true,
+      images: [],
+    },
+    {
+      id: "program",
+      eyebrow: emptyLocalizedText,
+      title: { en: "Program", ar: "البرنامج", it: "Programma" },
+      body: {
+        en: "Retail activates the lower levels, followed by offices and medical clinics, while the upper floors provide residential units. A rooftop pool and barbecue area complete the building as a shared destination rather than a collection of isolated uses.",
+        ar: "تنشّط المحلات التجارية الطوابق السفلية، تليها المكاتب والعيادات الطبية، بينما تضم الطوابق العليا الوحدات السكنية. ويكمل حمام السباحة ومنطقة الشواء على السطح المبنى كوجهة مشتركة بدلًا من أن يكون مجموعة استخدامات منفصلة.",
+        it: "Gli spazi commerciali animano i livelli inferiori, seguiti da uffici e cliniche mediche, mentre i piani superiori ospitano le residenze. La piscina e l’area barbecue in copertura completano l’edificio come destinazione condivisa, non come semplice somma di funzioni separate.",
+      },
+      hero_statement: emptyLocalizedText,
+      layout: "editorial",
+      is_visible: true,
+      images: [],
+    },
+  ],
+  published: true,
+}];
+
+function reportPublicDatabaseFallback(operation: string, error: unknown) {
+  console.error(`[public-portfolio] ${operation} failed; serving checked-in fallback content.`, error);
+}
+
 const fields = "id,slug,title,location,year,category,description,image_url,gallery,translations,content_sections,published,updated_at";
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
 function localized(value: unknown): LocalizedText { const item = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; return { en: typeof item.en === "string" ? item.en : "", ar: typeof item.ar === "string" ? item.ar : "", it: typeof item.it === "string" ? item.it : "" }; }
@@ -40,7 +106,24 @@ async function sectionRows(projectIds: string[]) {
   const grouped = new Map<string, Record<string, unknown>[]>(); for (const row of result.rows) { const key = String(row.project_id); grouped.set(key, [...(grouped.get(key) || []), row]); } return grouped;
 }
 async function hydrate(rows: Record<string, unknown>[]) { const grouped = await sectionRows(rows.map((row) => String(row.id))); return rows.map((row) => mapWebsiteProject(row, grouped.get(String(row.id)))); }
-export async function listPublishedWebsiteProjects() { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`); return hydrate(result.rows); }
-export async function getPublishedWebsiteProject(slug: string) { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE slug=$1 AND published=true LIMIT 1`, [slug]); const projects = await hydrate(result.rows); return projects[0] || null; }
+export async function listPublishedWebsiteProjects() {
+  try {
+    const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
+    return hydrate(result.rows);
+  } catch (error) {
+    reportPublicDatabaseFallback("listPublishedWebsiteProjects", error);
+    return fallbackProjects;
+  }
+}
+export async function getPublishedWebsiteProject(slug: string) {
+  try {
+    const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE slug=$1 AND published=true LIMIT 1`, [slug]);
+    const projects = await hydrate(result.rows);
+    return projects[0] || null;
+  } catch (error) {
+    reportPublicDatabaseFallback("getPublishedWebsiteProject", error);
+    return fallbackProjects.find((project) => project.slug === slug) || null;
+  }
+}
 export async function listAdminWebsiteProjects() { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects ORDER BY updated_at DESC`); return hydrate(result.rows); }
 export async function getAdminWebsiteProject(id: string) { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE id=$1 LIMIT 1`, [id]); const projects = await hydrate(result.rows); return projects[0] || null; }
