@@ -129,7 +129,10 @@ const loadPublishedWebsiteProjects = unstable_cache(async () => {
 
 export async function listPublishedWebsiteProjects() {
   try {
-    return await loadPublishedWebsiteProjects();
+    const projects = await loadPublishedWebsiteProjects();
+    // A freshly provisioned database is valid but empty. Keep the checked-in
+    // portfolio visible until the studio republishes its CMS projects.
+    return projects.length ? projects : fallbackProjects;
   } catch (error) {
     reportPublicDatabaseFallback("listPublishedWebsiteProjects", error);
     return fallbackProjects;
@@ -137,7 +140,9 @@ export async function listPublishedWebsiteProjects() {
 }
 export async function getPublishedWebsiteProject(slug: string) {
   try {
-    return (await loadPublishedWebsiteProjects()).find((project) => project.slug === slug) || null;
+    const projects = await loadPublishedWebsiteProjects();
+    return projects.find((project) => project.slug === slug)
+      || (projects.length ? null : fallbackProjects.find((project) => project.slug === slug) || null);
   } catch (error) {
     reportPublicDatabaseFallback("getPublishedWebsiteProject", error);
     return fallbackProjects.find((project) => project.slug === slug) || null;

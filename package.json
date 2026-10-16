@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/db-setup.mjs && next build",
     "start": "node scripts/production-preflight.mjs && next start",
     "lint": "eslint",
     "test": "node --test tests/*.test.cjs",
