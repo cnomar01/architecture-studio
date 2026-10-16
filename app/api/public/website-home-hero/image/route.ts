@@ -11,7 +11,14 @@ export async function GET(request: Request) {
     const match = typeof source === "string" ? /^data:(image\/(?:png|jpe?g|webp|gif));base64,([a-z0-9+/=\s]+)$/i.exec(source) : null;
     if (!match) return NextResponse.redirect(new URL("/images/hero.png", request.url), 307);
     const bytes = new Uint8Array(Buffer.from(match[2].replace(/\s/g, ""), "base64"));
-    return new Response(bytes, { headers: { "Content-Type": match[1].toLowerCase(), "Content-Length": String(bytes.byteLength), "Cache-Control": "public, max-age=31536000, immutable", "X-Content-Type-Options": "nosniff" } });
+    return new Response(bytes, { headers: {
+      "Content-Type": match[1].toLowerCase(),
+      "Content-Length": String(bytes.byteLength),
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "CDN-Cache-Control": "public, max-age=31536000, immutable",
+      "Vercel-CDN-Cache-Control": "public, max-age=31536000, immutable",
+      "X-Content-Type-Options": "nosniff",
+    } });
   } catch (error) {
     console.error("[public-home] Hero image query failed; redirecting to the checked-in image.", error);
     return NextResponse.redirect(new URL("/images/hero.png", request.url), 307);

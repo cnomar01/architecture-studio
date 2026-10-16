@@ -1,7 +1,8 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
 import { query, withTransaction } from "@/lib/server/db";
-import { getAdminWebsiteProject, listAdminWebsiteProjects } from "@/lib/server/websiteProjects";
+import { getAdminWebsiteProject, listAdminWebsiteProjects, websiteProjectsCacheTag } from "@/lib/server/websiteProjects";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -128,6 +129,7 @@ export async function POST(request: Request) {
     );
     await replaceSections(id, value.sections);
     await audit("website_project.created", "WebsiteProject", id, { actor: user.id, slug: value.slug });
+    revalidateTag(websiteProjectsCacheTag, { expire: 0 });
     return NextResponse.json({ project: await getAdminWebsiteProject(id) }, { status: 201 });
   } catch (error) {
     return errorResponse(error);
@@ -169,6 +171,7 @@ export async function PATCH(request: Request) {
     if (!result.rows[0]) return NextResponse.json({ error: "Website project not found." }, { status: 404 });
     await replaceSections(id, value.sections);
     await audit("website_project.updated", "WebsiteProject", id, { actor: user.id, slug: value.slug });
+    revalidateTag(websiteProjectsCacheTag, { expire: 0 });
     return NextResponse.json({ project: await getAdminWebsiteProject(id) });
   } catch (error) {
     return errorResponse(error);
@@ -183,6 +186,7 @@ export async function DELETE(request: Request) {
     const result = await query("DELETE FROM website_projects WHERE id=$1 RETURNING id", [id]);
     if (!result.rows[0]) return NextResponse.json({ error: "Website project not found." }, { status: 404 });
     await audit("website_project.deleted", "WebsiteProject", id, { actor: user.id });
+    revalidateTag(websiteProjectsCacheTag, { expire: 0 });
     return NextResponse.json({ ok: true });
   } catch (error) {
     return errorResponse(error);

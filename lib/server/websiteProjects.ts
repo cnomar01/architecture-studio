@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache";
 import { query } from "@/lib/server/db";
 
 export type WebsiteLocale = "en" | "ar" | "it";
@@ -8,6 +9,8 @@ export type WebsiteProjectSection = { id: string; eyebrow: LocalizedText; title:
 export type WebsiteProject = { id: string; slug: string; title: string; location: string; year: string; category: string; description: string; image_url: string; gallery: string[]; translations: Partial<Record<Exclude<WebsiteLocale, "en">, Partial<LocalizedProjectCopy>>>; content_sections: WebsiteProjectSection[]; published: boolean };
 
 const emptyLocalizedText: LocalizedText = { en: "", ar: "", it: "" };
+const databaseImageMarker = "__MASON_ARC_DATABASE_IMAGE__";
+export const websiteProjectsCacheTag = "website-projects";
 
 // Keep the public portfolio available when the CMS database is temporarily
 // unreachable. This mirrors the initial checked-in CMS migration; admin
@@ -74,9 +77,21 @@ function reportPublicDatabaseFallback(operation: string, error: unknown) {
 }
 
 const fields = "id,slug,title,location,year,category,description,image_url,gallery,translations,content_sections,published,updated_at";
+// Public pages only need to know whether an image lives in Postgres. Returning
+// multi-megabyte data URLs here made every page view consume Neon transfer.
+const publicFields = `id,slug,title,location,year,category,description,
+  CASE WHEN image_url LIKE 'data:image/%' THEN '${databaseImageMarker}' ELSE image_url END AS image_url,
+  COALESCE((
+    SELECT jsonb_agg(
+      CASE WHEN item.value LIKE 'data:image/%' THEN '${databaseImageMarker}' ELSE item.value END
+      ORDER BY item.ordinality
+    )
+    FROM jsonb_array_elements_text(COALESCE(gallery, '[]'::jsonb)) WITH ORDINALITY AS item(value, ordinality)
+  ), '[]'::jsonb) AS gallery,
+  translations,NULL::jsonb AS content_sections,published,updated_at`;
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
 function localized(value: unknown): LocalizedText { const item = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; return { en: typeof item.en === "string" ? item.en : "", ar: typeof item.ar === "string" ? item.ar : "", it: typeof item.it === "string" ? item.it : "" }; }
-function publicImage(projectId: string, source: string, updatedAt: unknown, params: string) { if (!source.startsWith("data:image/")) return source; const version = new Date(updatedAt as string | number | Date).getTime() || 0; return `/api/public/website-projects/${encodeURIComponent(projectId)}/image?${params}&v=${version}`; }
+function publicImage(projectId: string, source: string, updatedAt: unknown, params: string) { if (source !== databaseImageMarker && !source.startsWith("data:image/")) return source; const version = new Date(updatedAt as string | number | Date).getTime() || 0; return `/api/public/website-projects/${encodeURIComponent(projectId)}/image?${params}&v=${version}`; }
 
 function legacySections(row: Record<string, unknown>): WebsiteProjectSection[] {
   const id = String(row.id || ""); const updatedAt = row.updated_at;
@@ -102,14 +117,19 @@ export function mapWebsiteProject(row: Record<string, unknown>, relationSections
 
 async function sectionRows(projectIds: string[]) {
   if (!projectIds.length) return new Map<string, Record<string, unknown>[]>();
-  const result = await query<Record<string, unknown>>(`SELECT section.*, COALESCE(jsonb_agg(jsonb_build_object('id', image.id, 'image_url', image.image_url, 'caption', image.caption, 'alt_text', image.alt_text, 'layout', image.layout) ORDER BY image.display_order) FILTER (WHERE image.id IS NOT NULL), '[]'::jsonb) AS images FROM website_project_sections section LEFT JOIN website_project_section_images image ON image.section_id=section.id WHERE section.project_id = ANY($1::text[]) GROUP BY section.id ORDER BY section.display_order`, [projectIds]);
+  const result = await query<Record<string, unknown>>(`SELECT section.*, COALESCE(jsonb_agg(jsonb_build_object('id', image.id, 'image_url', CASE WHEN image.image_url LIKE 'data:image/%' THEN '${databaseImageMarker}' ELSE image.image_url END, 'caption', image.caption, 'alt_text', image.alt_text, 'layout', image.layout) ORDER BY image.display_order) FILTER (WHERE image.id IS NOT NULL), '[]'::jsonb) AS images FROM website_project_sections section LEFT JOIN website_project_section_images image ON image.section_id=section.id WHERE section.project_id = ANY($1::text[]) GROUP BY section.id ORDER BY section.display_order`, [projectIds]);
   const grouped = new Map<string, Record<string, unknown>[]>(); for (const row of result.rows) { const key = String(row.project_id); grouped.set(key, [...(grouped.get(key) || []), row]); } return grouped;
 }
 async function hydrate(rows: Record<string, unknown>[]) { const grouped = await sectionRows(rows.map((row) => String(row.id))); return rows.map((row) => mapWebsiteProject(row, grouped.get(String(row.id)))); }
+
+const loadPublishedWebsiteProjects = unstable_cache(async () => {
+  const result = await query<Record<string, unknown>>(`SELECT ${publicFields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
+  return hydrate(result.rows);
+}, ["published-website-projects-v2"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
+
 export async function listPublishedWebsiteProjects() {
   try {
-    const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
-    return hydrate(result.rows);
+    return await loadPublishedWebsiteProjects();
   } catch (error) {
     reportPublicDatabaseFallback("listPublishedWebsiteProjects", error);
     return fallbackProjects;
@@ -117,9 +137,7 @@ export async function listPublishedWebsiteProjects() {
 }
 export async function getPublishedWebsiteProject(slug: string) {
   try {
-    const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE slug=$1 AND published=true LIMIT 1`, [slug]);
-    const projects = await hydrate(result.rows);
-    return projects[0] || null;
+    return (await loadPublishedWebsiteProjects()).find((project) => project.slug === slug) || null;
   } catch (error) {
     reportPublicDatabaseFallback("getPublishedWebsiteProject", error);
     return fallbackProjects.find((project) => project.slug === slug) || null;

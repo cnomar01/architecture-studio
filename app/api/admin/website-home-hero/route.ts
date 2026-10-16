@@ -1,7 +1,8 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
 import { query } from "@/lib/server/db";
-import { isWebsiteImage } from "@/lib/server/websiteHero";
+import { isWebsiteImage, websiteHeroCacheTag } from "@/lib/server/websiteHero";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +35,7 @@ export async function PATCH(request: Request) {
       [JSON.stringify({ image_url: body.image_url })],
     );
     await audit("website_home_hero.updated", "WebsiteSettings", "home_hero", { actor: user.id });
+    revalidateTag(websiteHeroCacheTag, { expire: 0 });
     return NextResponse.json({ image_url: body.image_url });
   } catch (error) { return failure(error); }
 }
