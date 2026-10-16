@@ -22,7 +22,13 @@ export function getDb(): Pool {
   if (!globalForDb.masonArcPool) {
     globalForDb.masonArcPool = new Pool({
       connectionString: connectionString(),
-      max: Number(process.env.DB_POOL_MAX || 10),
+      // A serverless deployment can run many Node instances concurrently.
+      // Keeping ten connections per instance exhausts small managed Postgres
+      // plans quickly and takes both the CMS and workspace offline.
+      max: Number(process.env.DB_POOL_MAX || 2),
+      connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS || 5_000),
+      idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 10_000),
+      maxLifetimeSeconds: Number(process.env.DB_MAX_LIFETIME_SECONDS || 300),
     });
   }
   return globalForDb.masonArcPool;
