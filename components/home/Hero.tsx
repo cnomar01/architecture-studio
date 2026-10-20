@@ -33,8 +33,8 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
       }
 
       gsap.set(title, {
-        scale: 1.28,
-        y: 18,
+        scale: 1.08,
+        y: 24,
         transformOrigin: "left bottom",
         opacity: 1,
       });
@@ -77,9 +77,9 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
         .to(
           title,
           {
-            scale: mobile ? 0.98 : 0.94,
-            yPercent: mobile ? -5 : -8,
-            autoAlpha: 0.16,
+            scale: mobile ? 0.99 : 0.97,
+            yPercent: mobile ? -4 : -6,
+            autoAlpha: 0.12,
           },
           0
         );
@@ -118,7 +118,7 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
         <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
           <h1
             ref={titleRef}
-            className="origin-bottom-left font-[var(--font-display)] text-[clamp(36px,10vw,150px)] font-normal uppercase leading-[0.78] tracking-[-0.025em] will-change-transform"
+            className="origin-bottom-left text-[clamp(44px,7vw,104px)] font-light leading-[0.94] tracking-[-0.045em] will-change-transform"
           >
             <span className="block whitespace-nowrap">{copy.heroBuild}</span>
             <span className="block whitespace-nowrap">{copy.heroExperience}</span>
