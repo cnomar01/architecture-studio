@@ -1,6 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import Image from "next/image";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Container from "@/components/shared/Container";
@@ -13,35 +15,48 @@ const services = [
     title: "Architecture",
     description:
       "Architectural concepts and complete design solutions shaped around context, function, and timeless form.",
+    image: "/images/hero-florence-sunset.png",
+    imageAlt: "Mason & Arc architectural design",
+    imagePosition: "center",
   },
   {
     number: "02",
     title: "Interior Design",
     description:
       "Interior spaces developed through material, proportion, light, and a clear relationship between architecture and experience.",
+    image: "/images/hero.png",
+    imageAlt: "Mason & Arc spatial and material design",
+    imagePosition: "center",
   },
   {
     number: "03",
     title: "Design Development",
     description:
       "From concept to detailed design, we develop every element with precision, clarity, and attention to detail.",
+    image: "/images/hero-florence-sunset.png",
+    imageAlt: "Architecture developed from concept to detail",
+    imagePosition: "68% center",
   },
   {
     number: "04",
     title: "Execution",
     description:
       "We carry the design into reality through coordinated execution, quality control, and attention to every built detail.",
+    image: "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
+    imageAlt: "Mason & Arc project execution in progress",
+    imagePosition: "center 42%",
   },
 ];
 
 export default function ServicesHero() {
+  const mainRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const statementRef = useRef<HTMLDivElement>(null);
   const asideRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
   const servicesIntroRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useGSAP(() => {
     const hero = heroRef.current;
     const statement = statementRef.current;
     const aside = asideRef.current;
@@ -56,23 +71,28 @@ export default function ServicesHero() {
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
-      const lines = statement.querySelectorAll<HTMLElement>("[data-services-line]");
+      const lines = statement.querySelectorAll<HTMLElement>("[data-services-line-inner]");
       const introItems = hero.querySelectorAll<HTMLElement>("[data-services-intro]");
       const rows = servicesSection.querySelectorAll<HTMLElement>(".service-row");
+      const accents = mainRef.current?.querySelectorAll<HTMLElement>("[data-cinematic-accent]");
 
       if (reduceMotion) {
-        gsap.set([lines, introItems, rows], { clearProps: "all", autoAlpha: 1 });
+        gsap.set([lines, introItems, rows, accents], { clearProps: "all", autoAlpha: 1 });
+        rows.forEach((row) => {
+          const media = row.querySelector<HTMLElement>("[data-service-media]");
+          const image = row.querySelector<HTMLElement>("[data-service-image]");
+          if (media) gsap.set(media, { clearProps: "all", clipPath: "inset(0% 0% 0% 0%)" });
+          if (image) gsap.set(image, { clearProps: "all" });
+        });
         return;
       }
 
+      gsap.set(lines, { yPercent: 112 });
+      gsap.set(accents || [], { scaleX: 0, transformOrigin: "left" });
+
       gsap
         .timeline({ defaults: { ease: "power4.out" } })
-        .from(lines, {
-          y: mobile ? 34 : 68,
-          autoAlpha: 0,
-          duration: 1.25,
-          stagger: 0.1,
-        })
+        .to(lines, { yPercent: 0, duration: 1.2, stagger: 0.11 })
         .from(
           introItems,
           {
@@ -81,8 +101,9 @@ export default function ServicesHero() {
             duration: 0.95,
             stagger: 0.08,
           },
-          "-=0.72"
-        );
+          "-=0.74"
+        )
+        .to(accents || [], { scaleX: 1, duration: 0.85 }, "-=0.65");
 
       gsap
         .timeline({
@@ -120,8 +141,10 @@ export default function ServicesHero() {
 
       rows.forEach((row) => {
         const content = row.querySelector<HTMLElement>("[data-service-content]");
+        const media = row.querySelector<HTMLElement>("[data-service-media]");
+        const image = row.querySelector<HTMLElement>("[data-service-image]");
 
-        if (!content) return;
+        if (!content || !media || !image) return;
 
         gsap.fromTo(
           content,
@@ -138,14 +161,45 @@ export default function ServicesHero() {
             },
           }
         );
+
+        gsap.fromTo(
+          media,
+          { clipPath: mobile ? "inset(9% 0% 9% 0%)" : "inset(15% 0% 15% 0%)" },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            ease: "none",
+            scrollTrigger: {
+              trigger: row,
+              start: "top 92%",
+              end: mobile ? "top 48%" : "center 58%",
+              scrub: mobile ? 0.3 : 0.75,
+            },
+          }
+        );
+
+        gsap.fromTo(
+          image,
+          { scale: mobile ? 1.08 : 1.14, yPercent: mobile ? 0 : -3 },
+          {
+            scale: 1,
+            yPercent: mobile ? -1 : 2,
+            ease: "none",
+            scrollTrigger: {
+              trigger: row,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: mobile ? 0.35 : 0.85,
+            },
+          }
+        );
       });
     });
 
     return () => ctx.revert();
-  }, []);
+  }, { scope: mainRef });
 
   return (
-    <main className="bg-[var(--mason-off-white)] text-[var(--mason-black)]">
+    <main ref={mainRef} className="bg-[var(--mason-off-white)] text-[var(--mason-black)]">
       <section
         ref={heroRef}
         className="relative h-[160svh] min-h-[980px] overflow-clip motion-reduce:h-auto motion-reduce:min-h-0 md:h-[185svh]"
@@ -157,13 +211,21 @@ export default function ServicesHero() {
                 ref={statementRef}
                 className="flex h-full flex-col justify-end pb-10 will-change-transform lg:pb-20"
               >
-                <h1 className="max-w-[850px] text-[72px] font-extralight leading-[0.82] tracking-[-0.065em] sm:text-[100px] md:text-[125px] lg:text-[145px] xl:text-[165px]">
+                <h1 className="max-w-[850px] text-[clamp(54px,16.4vw,72px)] font-medium leading-[0.88] tracking-[-0.025em] sm:text-[96px] md:text-[116px] lg:text-[132px] xl:text-[148px]">
                   {["Design.", "Build.", "Experience."].map((line) => (
-                    <span key={line} data-services-line className="block will-change-transform">
-                      {line}
+                    <span key={line} data-services-line className="block overflow-hidden pb-[0.04em]">
+                      <span data-services-line-inner className="block will-change-transform">
+                        {line}
+                      </span>
                     </span>
                   ))}
                 </h1>
+
+                <span
+                  data-cinematic-accent
+                  aria-hidden="true"
+                  className="mt-8 block h-[3px] w-20 bg-[var(--mason-blue)] will-change-transform"
+                />
 
                 <p
                   data-services-intro
@@ -231,21 +293,44 @@ export default function ServicesHero() {
               >
                 <div
                   data-service-content
-                  className="grid grid-cols-[35px_1fr] gap-x-5 will-change-transform md:grid-cols-[55px_0.8fr_1.2fr_30px] md:gap-x-8 lg:gap-x-12"
+                  className="grid grid-cols-[35px_1fr] gap-x-5 will-change-transform md:grid-cols-[55px_minmax(210px,0.75fr)_minmax(360px,1.25fr)_30px] md:gap-x-8 lg:gap-x-12"
                 >
                   <span className="pt-2 text-[8px] tracking-[0.25em] text-neutral-400">
                     {service.number}
                   </span>
 
-                  <h3 className="text-[32px] font-extralight leading-[0.95] tracking-[-0.04em] transition-transform duration-500 group-hover:translate-x-3 sm:text-[40px] md:text-[44px] lg:text-[50px]">
-                    {service.title}
-                  </h3>
+                  <div>
+                    <h3 className="text-[32px] font-medium leading-[1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-3 sm:text-[40px] md:text-[44px] lg:text-[50px]">
+                      {service.title}
+                    </h3>
 
-                  <p className="col-start-2 mt-5 max-w-[650px] text-[13px] font-light leading-[1.8] text-neutral-500 md:col-start-3 md:mt-0 md:text-[14px] lg:text-[15px]">
-                    {service.description}
-                  </p>
+                    <p className="mt-5 max-w-[520px] text-[13px] font-normal leading-[1.75] text-neutral-500 md:text-[14px] lg:text-[15px]">
+                      {service.description}
+                    </p>
+                  </div>
 
-                  <span className="hidden pt-1 text-[16px] font-light text-neutral-400 transition-transform duration-500 group-hover:translate-x-2 md:block">
+                  <figure
+                    data-service-media
+                    className="relative col-start-2 mt-8 aspect-[16/10] min-h-[250px] overflow-hidden bg-neutral-200 will-change-[clip-path] md:col-start-3 md:row-start-1 md:mt-0 md:aspect-[4/3] md:min-h-[340px]"
+                  >
+                    <div data-service-image className="absolute inset-[-5%] will-change-transform">
+                      <Image
+                        src={service.image}
+                        alt={service.imageAlt}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 767px) 85vw, 50vw"
+                        className="object-cover"
+                        style={{ objectPosition: service.imagePosition }}
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+                    <figcaption className="absolute bottom-4 left-4 text-[8px] font-medium uppercase tracking-[0.18em] text-white/80 md:bottom-5 md:left-5">
+                      {service.number} / {service.title}
+                    </figcaption>
+                  </figure>
+
+                  <span className="hidden pt-1 text-[16px] font-normal text-neutral-400 transition-transform duration-500 group-hover:translate-x-2 md:block">
                     ↗
                   </span>
                 </div>

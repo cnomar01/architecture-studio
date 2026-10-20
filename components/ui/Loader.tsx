@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const LOADER_KEY = "masonarc-loader-seen";
@@ -8,17 +9,21 @@ export default function Loader() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     try {
       if (sessionStorage.getItem(LOADER_KEY)) return;
       sessionStorage.setItem(LOADER_KEY, "1");
+      if (reduceMotion) return;
       setVisible(true);
     } catch {
+      if (reduceMotion) return;
       setVisible(true);
     }
 
     const timer = setTimeout(() => {
       setVisible(false);
-    }, 1800);
+    }, 1400);
 
     return () => clearTimeout(timer);
   }, []);
@@ -29,50 +34,20 @@ export default function Loader() {
     <div className="loader">
       <div className="loader-content">
 
-        {/* Mason & Arc Logo */}
         <div className="logo-wrap">
-          <svg
-            width="420"
-            height="420"
-            viewBox="0 0 488 488"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M150 97L136 134V375L150 405V97Z"
-              fill="white"
-            />
-
-            <path
-              d="M207 98H212V335H207V98Z"
-              fill="white"
-            />
-
-            <path
-              d="
-                M280 98
-                H268
-                V403
-                L279 388
-                L284 374
-                V159
-                L269 170
-                L280 132
-                V98
-                Z
-              "
-              fill="white"
-            />
-
-            <path
-              d="M358 172H344V403L358 376V172Z"
-              fill="white"
-            />
-          </svg>
+          <Image
+            src="/favicon.png"
+            alt=""
+            width={488}
+            height={488}
+            priority
+            unoptimized
+            className="h-full w-full object-contain"
+          />
         </div>
 
         <p className="loading-text">
-          FROM DRAWING TO REALITY
+          DESIGNED AS ONE. BUILT AS INTENDED.
         </p>
       </div>
 
@@ -84,70 +59,52 @@ export default function Loader() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #000;
-          animation: loaderExit 0.55s ease-out 1.2s forwards;
+          background: #0b0b0b;
+          animation: loaderExit 0.65s cubic-bezier(0.76, 0, 0.24, 1) 0.75s forwards;
         }
 
         .loader-content {
           display: flex;
           flex-direction: column;
           align-items: center;
-          animation: contentExit 0.55s ease-out 1.2s forwards;
+          animation: contentExit 0.55s ease-out 0.75s forwards;
         }
 
         .logo-wrap {
-          width: 420px;
-          height: 420px;
+          width: 156px;
+          height: 156px;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: logoEnter 1.4s
+          animation: logoEnter 0.9s
             cubic-bezier(0.22, 1, 0.36, 1)
             forwards;
         }
 
-        .logo-wrap svg {
-          width: 420px;
-          height: 420px;
-          animation: none;
-          transform-origin: center;
-        }
-
         .loading-text {
-          margin-top: 5px;
+          margin-top: 20px;
           color: white;
-          font-size: 12px;
-          font-weight: 300;
-          letter-spacing: 0.5em;
+          font-size: 9px;
+          font-weight: 500;
+          letter-spacing: 0.18em;
           opacity: 0;
-          animation: textEnter 0.45s ease 0.25s forwards;
+          animation: textEnter 0.55s ease 0.18s forwards;
         }
 
         @keyframes logoEnter {
           0% {
             opacity: 0;
-            transform: scale(0.55);
+            transform: scale(0.86);
           }
 
           60% {
             opacity: 1;
-            transform: scale(1.06);
+            transform: scale(1.02);
           }
 
           100% {
             opacity: 1;
             transform: scale(1);
-          }
-        }
-
-        @keyframes logoFloat {
-          0%,
-          100% {
-            transform: scale(1);
-          }
-
-          50% {
-            transform: scale(1.035);
           }
         }
 
@@ -196,18 +153,14 @@ export default function Loader() {
 
         @media (max-width: 640px) {
           .logo-wrap {
-            width: 300px;
-            height: 300px;
-          }
-
-          .logo-wrap svg {
-            width: 300px;
-            height: 300px;
+            width: 128px;
+            height: 128px;
           }
 
           .loading-text {
-            font-size: 10px;
-            letter-spacing: 0.4em;
+            max-width: 280px;
+            text-align: center;
+            line-height: 1.6;
           }
         }
       `}</style>

@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useLayoutEffect, useRef } from "react";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -13,80 +14,71 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
   const heroRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const imageRevealRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const veilRef = useRef<HTMLDivElement>(null);
+  const accentRef = useRef<HTMLSpanElement>(null);
 
-  useLayoutEffect(() => {
+  useGSAP(() => {
     const hero = heroRef.current;
     const frame = frameRef.current;
     const image = imageRef.current;
+    const imageReveal = imageRevealRef.current;
     const title = titleRef.current;
+    const veil = veilRef.current;
+    const accent = accentRef.current;
 
-    if (!hero || !frame || !image || !title) return;
+    if (!hero || !frame || !image || !imageReveal || !title || !veil || !accent) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
+    const lines = title.querySelectorAll<HTMLElement>("[data-hero-line-inner]");
 
-    const ctx = gsap.context(() => {
-      if (reduceMotion) {
-        gsap.set(title, { clearProps: "all", autoAlpha: 1 });
-        return;
+    if (reduceMotion) {
+      gsap.set(veil, { autoAlpha: 0 });
+      gsap.set([frame, image, imageReveal, title, lines, accent], { clearProps: "all" });
+      return;
+    }
+
+    gsap.set(veil, { autoAlpha: 1, scaleY: 1, transformOrigin: "bottom" });
+    gsap.set(lines, { yPercent: 118 });
+    gsap.set(accent, { scaleX: 0, transformOrigin: "left" });
+
+    gsap
+      .timeline({ defaults: { ease: "power4.out" } })
+      .to(veil, { scaleY: 0, duration: 1.25, ease: "power4.inOut" }, 0)
+      .fromTo(imageReveal, { scale: 1.12 }, { scale: 1, duration: 1.8 }, 0.08)
+      .to(lines, { yPercent: 0, duration: 1.15, stagger: 0.12 }, 0.42)
+      .to(accent, { scaleX: 1, duration: 0.9 }, 0.9);
+
+    const media = gsap.matchMedia();
+    media.add(
+      {
+        mobile: "(max-width: 767px)",
+        desktop: "(min-width: 768px)",
+      },
+      (context) => {
+        const mobile = context.conditions?.mobile;
+
+        gsap
+          .timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: hero,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: mobile ? 0.35 : 0.8,
+              invalidateOnRefresh: true,
+            },
+          })
+          .to(frame, { scale: mobile ? 0.965 : 0.935, borderRadius: mobile ? 18 : 28 }, 0)
+          .to(image, { scale: mobile ? 1.09 : 1.13, yPercent: mobile ? 1.5 : 2.5 }, 0)
+          .to(title, { yPercent: mobile ? -6 : -9, autoAlpha: 0.08 }, 0)
+          .to(accent, { scaleX: mobile ? 0.7 : 0.45, autoAlpha: 0.45 }, 0);
       }
+    );
 
-      gsap.set(title, {
-        scale: 1.08,
-        y: 24,
-        transformOrigin: "left bottom",
-        opacity: 1,
-      });
-
-      gsap.to(title, {
-        scale: 1,
-        y: 0,
-        duration: 1.15,
-        delay: 0.1,
-        ease: "power4.out",
-      });
-
-      gsap
-        .timeline({
-          defaults: { ease: "none" },
-          scrollTrigger: {
-            trigger: hero,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: mobile ? 0.35 : 0.7,
-            invalidateOnRefresh: true,
-          },
-        })
-        .to(
-          frame,
-          {
-            scale: mobile ? 0.965 : 0.94,
-            borderRadius: mobile ? 20 : 32,
-          },
-          0
-        )
-        .to(
-          image,
-          {
-            scale: mobile ? 1.075 : 1.105,
-            yPercent: mobile ? 1 : 2,
-          },
-          0
-        )
-        .to(
-          title,
-          {
-            scale: mobile ? 0.99 : 0.97,
-            yPercent: mobile ? -4 : -6,
-            autoAlpha: 0.12,
-          },
-          0
-        );
-    }, hero);
-
-    return () => ctx.revert();
-  }, [locale]);
+    return () => media.revert();
+  }, { scope: heroRef, dependencies: [locale], revertOnUpdate: true });
 
   return (
     <section
@@ -100,19 +92,26 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
           className="absolute inset-0 overflow-hidden bg-neutral-950 will-change-transform"
         >
           <div ref={imageRef} className="absolute inset-0 will-change-transform md:inset-[-2%]">
-            <Image
-              src={imageUrl}
-              alt="Mason & Arc architecture"
-              fill
-              priority
-              unoptimized
-              sizes="100vw"
-              className="object-cover object-center"
-            />
+            <div ref={imageRevealRef} className="absolute inset-0 will-change-transform">
+              <Image
+                src={imageUrl}
+                alt="Mason & Arc architecture"
+                fill
+                priority
+                unoptimized
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </div>
           </div>
 
           <div className="absolute inset-0 bg-black/10" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
+          <div
+            ref={veilRef}
+            aria-hidden="true"
+            className="absolute inset-0 z-10 bg-[var(--mason-black)] opacity-0 will-change-transform"
+          />
         </div>
 
         <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
@@ -120,9 +119,22 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
             ref={titleRef}
             className="origin-bottom-left max-w-[1100px] text-[clamp(42px,6.5vw,96px)] font-medium leading-[0.98] tracking-[-0.025em] will-change-transform"
           >
-            <span className="block whitespace-nowrap">{copy.heroBuild}</span>
-            <span className="block whitespace-nowrap">{copy.heroExperience}</span>
+            <span className="block overflow-hidden pb-[0.08em]">
+              <span data-hero-line-inner className="block whitespace-nowrap will-change-transform">
+                {copy.heroBuild}
+              </span>
+            </span>
+            <span className="block overflow-hidden pb-[0.08em]">
+              <span data-hero-line-inner className="block whitespace-nowrap will-change-transform">
+                {copy.heroExperience}
+              </span>
+            </span>
           </h1>
+          <span
+            ref={accentRef}
+            aria-hidden="true"
+            className="mt-6 block h-[3px] w-20 bg-[var(--mason-blue)] will-change-transform sm:w-24"
+          />
         </div>
       </div>
     </section>
