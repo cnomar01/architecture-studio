@@ -9,6 +9,8 @@ export type WebsiteProjectSection = { id: string; eyebrow: LocalizedText; title:
 export type WebsiteProject = { id: string; slug: string; title: string; location: string; year: string; category: string; description: string; image_url: string; gallery: string[]; translations: Partial<Record<Exclude<WebsiteLocale, "en">, Partial<LocalizedProjectCopy>>>; content_sections: WebsiteProjectSection[]; published: boolean };
 
 const fields = "id,slug,title,location,year,category,description,image_url,gallery,translations,content_sections,published,updated_at";
+const legacyCityEdgeDescription = "City Edge is a 12-storey mixed-use building in Fayoum, Egypt, marking Mason & Arc’s first project in Egypt. The building combines retail, offices, medical clinics, residential units, and a rooftop pool and barbecue area within one mixed-use development.";
+const cityEdgeDescription = "City Edge is a landmark 12-storey mixed-use building in Fayoum City, Egypt, marking Mason & Arc’s first project in the country. It brings retail, offices, medical clinics, residential units, and rooftop amenities together within one integrated development.";
 const fallbackWebsiteProjects: WebsiteProject[] = fallbackProjects.map((project) => ({
   id: String(project.id),
   slug: project.slug,
@@ -38,15 +40,22 @@ function legacySections(row: Record<string, unknown>): WebsiteProjectSection[] {
 
 export function mapWebsiteProject(row: Record<string, unknown>, relationSections?: Record<string, unknown>[]): WebsiteProject {
   const id = String(row.id || ""); const updatedAt = row.updated_at;
+  const slug = String(row.slug || "");
   const sections = relationSections?.length ? relationSections.map((raw) => ({ id: String(raw.id), eyebrow: localized(raw.eyebrow), title: localized(raw.title), body: localized(raw.description), hero_statement: localized(raw.hero_statement), layout: ["gallery", "drawings", "full_bleed"].includes(String(raw.layout)) ? String(raw.layout) as WebsiteProjectSection["layout"] : "editorial", is_visible: raw.is_visible !== false, images: Array.isArray(raw.images) ? (raw.images as Record<string, unknown>[]).map((image) => ({ id: String(image.id), image_url: publicImage(id, String(image.image_url || ""), updatedAt, `kind=section-image&id=${encodeURIComponent(String(image.id))}`), caption: localized(image.caption), alt_text: localized(image.alt_text), layout: ["landscape", "portrait", "drawing", "full_bleed"].includes(String(image.layout)) ? String(image.layout) as WebsiteProjectSectionImage["layout"] : "auto" })) : [] })) : legacySections(row);
   const translations = row.translations && typeof row.translations === "object" && !Array.isArray(row.translations) ? row.translations as WebsiteProject["translations"] : {};
   let cover = typeof row.image_url === "string" ? row.image_url : "";
   // Recover the City Edge cover from the checked-in public asset if an older
   // admin save replaced its original payload with its own public proxy URL.
-  if (String(row.slug || "") === "city-edge" && cover.startsWith("/api/public/website-projects/")) {
+  if (slug === "city-edge" && cover.startsWith("/api/public/website-projects/")) {
     cover = "/images/projects/city-edge/city-edge-exterior-wip.jpeg";
   }
-  return { id, slug: String(row.slug || ""), title: String(row.title || ""), location: String(row.location || ""), year: String(row.year || ""), category: String(row.category || ""), description: String(row.description || ""), image_url: publicImage(id, cover, updatedAt, "kind=cover"), gallery: strings(row.gallery).map((image, index) => publicImage(id, image, updatedAt, `kind=gallery&index=${index}`)), translations, content_sections: sections, published: Boolean(row.published) };
+  const savedDescription = String(row.description || "");
+  const description = slug === "city-edge" && savedDescription === legacyCityEdgeDescription
+    ? cityEdgeDescription
+    : savedDescription;
+  const savedLocation = String(row.location || "");
+  const location = slug === "city-edge" && savedLocation === "Fayoum, Egypt" ? "Fayoum City, Egypt" : savedLocation;
+  return { id, slug, title: String(row.title || ""), location, year: String(row.year || ""), category: String(row.category || ""), description, image_url: publicImage(id, cover, updatedAt, "kind=cover"), gallery: strings(row.gallery).map((image, index) => publicImage(id, image, updatedAt, `kind=gallery&index=${index}`)), translations, content_sections: sections, published: Boolean(row.published) };
 }
 
 async function sectionRows(projectIds: string[]) {
