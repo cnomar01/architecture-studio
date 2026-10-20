@@ -1,5 +1,5 @@
 import { query } from "@/lib/server/db";
-import { projects as fallbackProjects } from "@/lib/data/projects";
+import { cityEdgeSections, projects as fallbackProjects } from "@/lib/data/projects";
 
 export type WebsiteLocale = "en" | "ar" | "it";
 export type LocalizedProjectCopy = { title: string; location: string; category: string; description: string };
@@ -22,7 +22,7 @@ const fallbackWebsiteProjects: WebsiteProject[] = fallbackProjects.map((project)
   image_url: project.image,
   gallery: project.gallery,
   translations: {},
-  content_sections: [],
+  content_sections: project.contentSections,
   published: true,
 }));
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
@@ -41,7 +41,8 @@ function legacySections(row: Record<string, unknown>): WebsiteProjectSection[] {
 export function mapWebsiteProject(row: Record<string, unknown>, relationSections?: Record<string, unknown>[]): WebsiteProject {
   const id = String(row.id || ""); const updatedAt = row.updated_at;
   const slug = String(row.slug || "");
-  const sections = relationSections?.length ? relationSections.map((raw) => ({ id: String(raw.id), eyebrow: localized(raw.eyebrow), title: localized(raw.title), body: localized(raw.description), hero_statement: localized(raw.hero_statement), layout: ["gallery", "drawings", "full_bleed"].includes(String(raw.layout)) ? String(raw.layout) as WebsiteProjectSection["layout"] : "editorial", is_visible: raw.is_visible !== false, images: Array.isArray(raw.images) ? (raw.images as Record<string, unknown>[]).map((image) => ({ id: String(image.id), image_url: publicImage(id, String(image.image_url || ""), updatedAt, `kind=section-image&id=${encodeURIComponent(String(image.id))}`), caption: localized(image.caption), alt_text: localized(image.alt_text), layout: ["landscape", "portrait", "drawing", "full_bleed"].includes(String(image.layout)) ? String(image.layout) as WebsiteProjectSectionImage["layout"] : "auto" })) : [] })) : legacySections(row);
+  const savedSections = relationSections?.length ? relationSections.map((raw) => ({ id: String(raw.id), eyebrow: localized(raw.eyebrow), title: localized(raw.title), body: localized(raw.description), hero_statement: localized(raw.hero_statement), layout: ["gallery", "drawings", "full_bleed"].includes(String(raw.layout)) ? String(raw.layout) as WebsiteProjectSection["layout"] : "editorial", is_visible: raw.is_visible !== false, images: Array.isArray(raw.images) ? (raw.images as Record<string, unknown>[]).map((image) => ({ id: String(image.id), image_url: publicImage(id, String(image.image_url || ""), updatedAt, `kind=section-image&id=${encodeURIComponent(String(image.id))}`), caption: localized(image.caption), alt_text: localized(image.alt_text), layout: ["landscape", "portrait", "drawing", "full_bleed"].includes(String(image.layout)) ? String(image.layout) as WebsiteProjectSectionImage["layout"] : "auto" })) : [] })) : legacySections(row);
+  const sections = savedSections.length || slug !== "city-edge" ? savedSections : cityEdgeSections;
   const translations = row.translations && typeof row.translations === "object" && !Array.isArray(row.translations) ? row.translations as WebsiteProject["translations"] : {};
   let cover = typeof row.image_url === "string" ? row.image_url : "";
   // Recover the City Edge cover from the checked-in public asset if an older
