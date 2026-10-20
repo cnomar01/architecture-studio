@@ -70,7 +70,7 @@ const fallbackProjects: WebsiteProject[] = [{
     },
     {
       id: "scope",
-      eyebrow: { en: "03", ar: "٠٣", it: "03" },
+      eyebrow: emptyLocalizedText,
       title: { en: "Scope", ar: "نطاق العمل", it: "Ambito" },
       body: {
         en: "Architecture\nFaçade\nMEP\nHVAC\nVertical Transportation\nInterior Finishing",
@@ -84,7 +84,7 @@ const fallbackProjects: WebsiteProject[] = [{
     },
     {
       id: "status",
-      eyebrow: { en: "04", ar: "٠٤", it: "04" },
+      eyebrow: emptyLocalizedText,
       title: { en: "Status", ar: "الحالة", it: "Stato" },
       body: { en: "Ongoing\nStarted 2025", ar: "قيد التنفيذ\nبدأ في ٢٠٢٥", it: "In corso\nAvviato nel 2025" },
       hero_statement: emptyLocalizedText,
@@ -94,7 +94,7 @@ const fallbackProjects: WebsiteProject[] = [{
     },
     {
       id: "execution",
-      eyebrow: { en: "05", ar: "٠٥", it: "05" },
+      eyebrow: emptyLocalizedText,
       title: { en: "Execution", ar: "التنفيذ", it: "Esecuzione" },
       body: {
         en: "City Edge is being delivered as a fully coordinated mixed-use development, bringing architectural design, building systems, façade construction, vertical transportation, mechanical and electrical works, and interior finishing together as one integrated process.",
@@ -179,7 +179,7 @@ async function hydrate(rows: Record<string, unknown>[]) { const grouped = await 
 const loadPublishedWebsiteProjects = unstable_cache(async () => {
   const result = await query<Record<string, unknown>>(`SELECT ${publicFields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
   return hydrate(result.rows);
-}, ["published-website-projects-v3"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
+}, ["published-website-projects-v4"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
 
 export async function listPublishedWebsiteProjects() {
   try {
