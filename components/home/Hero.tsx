@@ -8,58 +8,57 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: string }) {
+export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: { imageUrl?: string }) {
   const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const cueRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLSpanElement>(null);
 
   useLayoutEffect(() => {
     const hero = heroRef.current;
     const frame = frameRef.current;
     const image = imageRef.current;
+    const title = titleRef.current;
     const content = contentRef.current;
-    const cue = cueRef.current;
-    const progress = progressRef.current;
 
-    if (!hero || !frame || !image || !content || !cue || !progress) return;
+    if (!hero || !frame || !image || !title || !content) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
-      const introItems = content.querySelectorAll<HTMLElement>("[data-hero-intro]");
-
       if (reduceMotion) {
-        gsap.set([content, cue, introItems], { clearProps: "all", autoAlpha: 1 });
+        gsap.set([title, content], { clearProps: "all", autoAlpha: 1 });
         return;
       }
 
-      gsap.set(content, { autoAlpha: 1 });
-      gsap.set(progress, {
-        scaleX: 0,
-        transformOrigin: locale === "ar" ? "right center" : "left center",
+      gsap.set(title, {
+        scale: 1.28,
+        y: 18,
+        transformOrigin: locale === "ar" ? "right bottom" : "left bottom",
+        opacity: 1,
       });
+      gsap.set(content, { y: 30, opacity: 0 });
 
       gsap
-        .timeline({ defaults: { ease: "power4.out" } })
-        .from(introItems, {
-          y: mobile ? 28 : 46,
-          autoAlpha: 0,
+        .timeline({ delay: 0.1 })
+        .to(title, {
+          scale: 1,
+          y: 0,
           duration: 1.15,
-          stagger: 0.09,
+          ease: "power4.out",
         })
-        .from(
-          cue,
+        .to(
+          content,
           {
-            y: 14,
-            autoAlpha: 0,
-            duration: 0.8,
+            y: 0,
+            opacity: 1,
+            duration: 0.65,
+            ease: "power3.out",
           },
-          "-=0.55"
+          "-=0.35"
         );
 
       gsap
@@ -76,48 +75,46 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
         .to(
           frame,
           {
-            scale: mobile ? 0.955 : 0.925,
-            borderRadius: mobile ? 22 : 36,
+            scale: mobile ? 0.965 : 0.94,
+            borderRadius: mobile ? 20 : 32,
           },
           0
         )
         .to(
           image,
           {
-            scale: mobile ? 1.1 : 1.145,
-            yPercent: mobile ? 1.5 : 3,
+            scale: mobile ? 1.075 : 1.105,
+            yPercent: mobile ? 1 : 2,
           },
           0
         )
         .to(
-          content,
+          title,
           {
-            yPercent: mobile ? -16 : -24,
-            autoAlpha: 0,
+            scale: mobile ? 0.98 : 0.94,
+            yPercent: mobile ? -5 : -8,
+            autoAlpha: 0.16,
           },
           0
         )
-        .to(cue, { y: -18, autoAlpha: 0 }, 0)
-        .to(progress, { scaleX: 1 }, 0);
+        .to(content, { y: mobile ? -12 : -20, autoAlpha: 0 }, 0);
     }, hero);
 
     return () => ctx.revert();
   }, [locale]);
 
-  const scrollLabel = locale === "ar" ? "مرّر" : locale === "it" ? "Scorri" : "Scroll";
-
   return (
     <section
       ref={heroRef}
       data-header-theme="light"
-      className="relative h-[145svh] min-h-[880px] w-full bg-black text-white motion-reduce:h-auto motion-reduce:min-h-0 md:h-[165svh]"
+      className="relative h-[150svh] min-h-[900px] w-full bg-black text-white motion-reduce:h-auto motion-reduce:min-h-0 md:h-[170svh]"
     >
-      <div className="sticky top-0 h-[100svh] min-h-[620px] overflow-hidden motion-reduce:relative">
+      <div className="sticky top-0 h-[100svh] min-h-[680px] overflow-hidden motion-reduce:relative">
         <div
           ref={frameRef}
           className="absolute inset-0 overflow-hidden bg-neutral-950 will-change-transform"
         >
-          <div ref={imageRef} className="absolute inset-[-3%] will-change-transform">
+          <div ref={imageRef} className="absolute inset-0 will-change-transform md:inset-[-2%]">
             <Image
               src={imageUrl}
               alt="Mason & Arc architecture"
@@ -130,46 +127,29 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
           </div>
 
           <div className="absolute inset-0 bg-black/10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
         </div>
 
-        <div
-          ref={contentRef}
-          className={`absolute bottom-[8.5vh] left-6 right-6 z-20 max-w-[980px] opacity-0 will-change-transform sm:left-8 sm:right-8 md:left-12 md:right-12 lg:left-16 lg:right-16 ${
-            locale === "ar" ? "text-right" : ""
-          }`}
-        >
-          <p
-            data-hero-intro
-            className={`${
-              locale === "ar" ? "font-[var(--font-arabic)]" : "font-[var(--font-display)]"
-            } text-[13px] font-medium uppercase tracking-[0.24em] text-white/90 sm:text-[14px] md:text-[15px]`}
-          >
-            {copy.heroDesign}
-          </p>
-
+        <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
           <h1
+            ref={titleRef}
             className={`${
-              locale === "ar" ? "font-[var(--font-arabic)]" : "font-[var(--font-display)]"
-            } mt-5 max-w-[900px] text-[42px] font-normal leading-[0.98] tracking-[-0.035em] sm:text-[58px] md:text-[72px] lg:text-[84px] xl:text-[96px]`}
+              locale === "ar"
+                ? "origin-bottom-right font-[var(--font-arabic)] text-[58px] font-light leading-[.95] sm:text-[88px] md:text-[108px] lg:text-[128px]"
+                : "origin-bottom-left font-[var(--font-display)] text-[48px] font-normal uppercase leading-[0.76] tracking-[-0.025em] sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"
+            } will-change-transform`}
           >
-            <span data-hero-intro className="block">
-              {copy.heroBuild}
-            </span>
-            <span data-hero-intro className="block">
-              {copy.heroExperience}
-            </span>
+            <span className="block">{copy.heroDesign}</span>
+            <span className="block">{copy.heroBuild}</span>
+            <span className="block">{copy.heroExperience}</span>
           </h1>
-        </div>
 
-        <div
-          ref={cueRef}
-          className="absolute bottom-8 right-6 z-20 flex items-center gap-3 text-[9px] uppercase tracking-[0.3em] text-white/60 sm:right-8 md:bottom-10 md:right-12 lg:right-16"
-        >
-          <span>{scrollLabel}</span>
-          <span className="relative block h-px w-14 overflow-hidden bg-white/25">
-            <span ref={progressRef} className="absolute inset-0 block bg-white" />
-          </span>
+          <div ref={contentRef} className="mt-5 max-w-[500px] opacity-0 sm:mt-6 md:mt-7">
+            <div className="mb-3 h-px w-[82px] bg-white" />
+            <p className="max-w-[520px] text-[11px] font-medium leading-[1.5] text-white sm:text-[16px] md:text-[17px]">
+              {copy.heroIntro}
+            </p>
+          </div>
         </div>
       </div>
     </section>

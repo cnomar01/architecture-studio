@@ -1,6 +1,6 @@
 import { query } from "@/lib/server/db";
 
-const fallbackImage = "/images/hero.png";
+const fallbackImage = "/images/hero-florence-sunset.png";
 
 export function isWebsiteImage(value: unknown): value is string {
   return typeof value === "string" && (
