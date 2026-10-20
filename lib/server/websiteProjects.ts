@@ -179,7 +179,7 @@ async function hydrate(rows: Record<string, unknown>[]) { const grouped = await 
 const loadPublishedWebsiteProjects = unstable_cache(async () => {
   const result = await query<Record<string, unknown>>(`SELECT ${publicFields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
   return hydrate(result.rows);
-}, ["published-website-projects-v4"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
+}, ["published-website-projects-v5"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
 
 export async function listPublishedWebsiteProjects() {
   try {
