@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <main>
       <ContactHero />
-      <section className="bg-[#f8f7f4] px-8 pb-28 md:px-12 md:pb-40 lg:px-16">
+      <section className="bg-[var(--mason-off-white)] px-8 pb-28 md:px-12 md:pb-40 lg:px-16">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-10 lg:grid-cols-[0.35fr_1.65fr] lg:gap-x-16">
             <span className="text-[9px] uppercase tracking-[0.35em] text-neutral-400">02 — Inquiry</span>

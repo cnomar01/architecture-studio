@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function StudioPage() {
   return (
-    <main className="bg-[#f8f7f4]">
+    <main className="bg-[var(--mason-off-white)]">
       <StudioHero />
       <Philosophy />
       <Process />

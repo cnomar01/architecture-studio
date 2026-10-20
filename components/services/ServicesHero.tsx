@@ -145,7 +145,7 @@ export default function ServicesHero() {
   }, []);
 
   return (
-    <main className="bg-[#f8f7f4] text-neutral-900">
+    <main className="bg-[var(--mason-off-white)] text-[var(--mason-black)]">
       <section
         ref={heroRef}
         className="relative h-[160svh] min-h-[980px] overflow-clip motion-reduce:h-auto motion-reduce:min-h-0 md:h-[185svh]"
@@ -202,7 +202,7 @@ export default function ServicesHero() {
         </div>
       </section>
 
-      <section ref={servicesRef} className="border-t border-neutral-300 bg-[#f8f7f4]">
+      <section ref={servicesRef} className="border-t border-neutral-300 bg-[var(--mason-off-white)]">
         <Container className="!max-w-none px-5 py-24 sm:px-8 md:px-10 md:py-32 lg:px-14 lg:py-40 xl:px-16">
           <div
             ref={servicesIntroRef}

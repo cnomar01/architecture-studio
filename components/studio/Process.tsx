@@ -63,7 +63,7 @@ export default function Process() {
       className="
         border-t
         border-neutral-300
-        bg-[#f8f7f4]
+        bg-[var(--mason-off-white)]
         text-neutral-900
       "
     >

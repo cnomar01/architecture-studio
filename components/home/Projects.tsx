@@ -52,7 +52,7 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
     <section
       ref={sectionRef}
       className="
-        bg-[#f8f7f4]
+        bg-[var(--mason-off-white)]
         text-neutral-900
       "
     >

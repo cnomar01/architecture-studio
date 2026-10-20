@@ -305,7 +305,7 @@ export default function AboutPage() {
           SERVICES
       ===================================================== */}
 
-      <section className="bg-[#f2f2f0] px-6 py-24 md:px-10 md:py-32">
+      <section className="bg-[var(--mason-off-white)] px-6 py-24 md:px-10 md:py-32">
 
         <div className="mb-20 flex items-end justify-between">
 

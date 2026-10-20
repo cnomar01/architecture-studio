@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Bebas_Neue, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Kufi_Arabic } from "next/font/google";
 
 import "./globals.css";
 
@@ -12,16 +12,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const bebas = Bebas_Neue({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-display",
-  display: "swap",
-});
-
-const notoArabic = Noto_Sans_Arabic({
+const notoArabic = Noto_Kufi_Arabic({
   subsets: ["arabic"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-arabic",
   display: "swap",
 });
@@ -66,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${bebas.variable} ${notoArabic.variable} antialiased`}
+        className={`${inter.variable} ${notoArabic.variable} antialiased`}
       >
         <LocaleProvider><RouteChrome>{children}</RouteChrome></LocaleProvider>
       </body>

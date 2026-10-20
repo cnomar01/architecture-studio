@@ -43,7 +43,7 @@ export default function StudioHero() {
         relative
         min-h-[100svh]
         overflow-hidden
-        bg-[#f8f7f4]
+        bg-[var(--mason-off-white)]
         text-neutral-900
       "
     >

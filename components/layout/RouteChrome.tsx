@@ -18,7 +18,11 @@ export default function RouteChrome({
   }
 
   return (
-    <div dir={direction} lang={locale} className={locale === "ar" ? "font-[var(--font-arabic)]" : ""}>
+    <div
+      dir={direction}
+      lang={locale}
+      className={`brand-site ${locale === "ar" ? "font-[var(--font-arabic)]" : ""}`}
+    >
       <Navbar />
       <main>{children}</main>
       <Footer />

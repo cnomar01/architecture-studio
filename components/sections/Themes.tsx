@@ -15,7 +15,7 @@ const themes = [
 
 export default function Themes() {
   return (
-    <section className="border-t border-neutral-300 bg-[#f8f7f4] text-neutral-900">
+    <section className="border-t border-neutral-300 bg-[var(--mason-off-white)] text-[var(--mason-black)]">
       <Container
         className="
           !max-w-none
