@@ -11,6 +11,8 @@ export function isWebsiteImage(value: unknown): value is string {
 }
 
 export async function getWebsiteHeroImage() {
+  if (!process.env.DATABASE_URL) return fallbackImage;
+
   const result = await query<{ value: { image_url?: unknown }; updated_at: string }>(
     "SELECT value,updated_at FROM website_settings WHERE key='home_hero' LIMIT 1",
   );

@@ -1,4 +1,5 @@
 import { query } from "@/lib/server/db";
+import { projects as fallbackProjects } from "@/lib/data/projects";
 
 export type WebsiteLocale = "en" | "ar" | "it";
 export type LocalizedProjectCopy = { title: string; location: string; category: string; description: string };
@@ -8,6 +9,20 @@ export type WebsiteProjectSection = { id: string; eyebrow: LocalizedText; title:
 export type WebsiteProject = { id: string; slug: string; title: string; location: string; year: string; category: string; description: string; image_url: string; gallery: string[]; translations: Partial<Record<Exclude<WebsiteLocale, "en">, Partial<LocalizedProjectCopy>>>; content_sections: WebsiteProjectSection[]; published: boolean };
 
 const fields = "id,slug,title,location,year,category,description,image_url,gallery,translations,content_sections,published,updated_at";
+const fallbackWebsiteProjects: WebsiteProject[] = fallbackProjects.map((project) => ({
+  id: String(project.id),
+  slug: project.slug,
+  title: project.title,
+  location: project.location,
+  year: project.year,
+  category: "Architecture",
+  description: project.description,
+  image_url: project.image,
+  gallery: project.gallery,
+  translations: {},
+  content_sections: [],
+  published: true,
+}));
 const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
 function localized(value: unknown): LocalizedText { const item = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; return { en: typeof item.en === "string" ? item.en : "", ar: typeof item.ar === "string" ? item.ar : "", it: typeof item.it === "string" ? item.it : "" }; }
 function publicImage(projectId: string, source: string, updatedAt: unknown, params: string) { if (!source.startsWith("data:image/")) return source; const version = new Date(updatedAt as string | number | Date).getTime() || 0; return `/api/public/website-projects/${encodeURIComponent(projectId)}/image?${params}&v=${version}`; }
@@ -40,7 +55,7 @@ async function sectionRows(projectIds: string[]) {
   const grouped = new Map<string, Record<string, unknown>[]>(); for (const row of result.rows) { const key = String(row.project_id); grouped.set(key, [...(grouped.get(key) || []), row]); } return grouped;
 }
 async function hydrate(rows: Record<string, unknown>[]) { const grouped = await sectionRows(rows.map((row) => String(row.id))); return rows.map((row) => mapWebsiteProject(row, grouped.get(String(row.id)))); }
-export async function listPublishedWebsiteProjects() { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`); return hydrate(result.rows); }
-export async function getPublishedWebsiteProject(slug: string) { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE slug=$1 AND published=true LIMIT 1`, [slug]); const projects = await hydrate(result.rows); return projects[0] || null; }
+export async function listPublishedWebsiteProjects() { if (!process.env.DATABASE_URL) return fallbackWebsiteProjects; const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`); return hydrate(result.rows); }
+export async function getPublishedWebsiteProject(slug: string) { if (!process.env.DATABASE_URL) return fallbackWebsiteProjects.find((project) => project.slug === slug) || null; const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE slug=$1 AND published=true LIMIT 1`, [slug]); const projects = await hydrate(result.rows); return projects[0] || null; }
 export async function listAdminWebsiteProjects() { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects ORDER BY updated_at DESC`); return hydrate(result.rows); }
 export async function getAdminWebsiteProject(id: string) { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects WHERE id=$1 LIMIT 1`, [id]); const projects = await hydrate(result.rows); return projects[0] || null; }
