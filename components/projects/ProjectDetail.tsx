@@ -10,7 +10,9 @@ function SectionImages({ images, title, locale, layout }: { images: WebsiteProje
   return <div className={`grid gap-5 lg:col-span-12 ${layout === "gallery" ? "md:grid-cols-3" : "md:grid-cols-2"}`}>{images.map((image, index) => {
     const caption = localizedText(image.caption, locale); const alt = localizedText(image.alt_text, locale) || `${title} — ${index + 1}`;
     const span = image.layout === "full_bleed" || (images.length === 1 && layout !== "gallery") ? "md:col-span-2" : "";
-    const ratio = image.layout === "portrait" ? "aspect-[3/4]" : image.layout === "drawing" ? "aspect-[16/10] bg-white" : "aspect-[4/3]";
+    // Concept boards are typically composed on a near 4:3 sheet. Matching that
+    // canvas keeps the complete drawing visible without oversized side margins.
+    const ratio = image.layout === "portrait" ? "aspect-[3/4]" : image.layout === "drawing" ? "aspect-[4/3] bg-white" : "aspect-[4/3]";
     return <figure key={image.id} className={`${span} min-w-0`}><a href={image.image_url} target="_blank" rel="noopener noreferrer" aria-label={`Open full-size image: ${alt}`} className="block cursor-zoom-in" ><div className={`relative overflow-hidden ${ratio}`}><Image src={image.image_url} alt={alt} fill unoptimized sizes={span ? "100vw" : "(min-width: 768px) 50vw, 100vw"} className={image.layout === "drawing" ? "object-contain" : "object-cover"} /></div></a>{caption && <figcaption className="mt-3 text-[10px] leading-5 tracking-wide opacity-55">{caption}</figcaption>}</figure>;
   })}</div>;
 }
