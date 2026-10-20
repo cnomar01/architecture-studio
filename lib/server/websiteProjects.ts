@@ -52,7 +52,13 @@ const fallbackProjects: WebsiteProject[] = [{
       hero_statement: emptyLocalizedText,
       layout: "editorial",
       is_visible: true,
-      images: [],
+      images: [{
+        id: "city-edge-concept-board",
+        image_url: "/images/projects/city-edge/city-edge-concept-board.jpg",
+        caption: { en: "City Edge — site geometry, yacht inspiration, and façade translation.", ar: "سيتي إيدج — هندسة الموقع، وإلهام اليخوت، وترجمة الواجهة.", it: "City Edge — geometria del sito, ispirazione nautica e traduzione della facciata." },
+        alt_text: { en: "City Edge concept board", ar: "لوحة الفكرة التصميمية لسيتي إيدج", it: "Tavola concettuale di City Edge" },
+        layout: "drawing",
+      }],
     },
     {
       id: "program",
@@ -179,7 +185,7 @@ async function hydrate(rows: Record<string, unknown>[]) { const grouped = await 
 const loadPublishedWebsiteProjects = unstable_cache(async () => {
   const result = await query<Record<string, unknown>>(`SELECT ${publicFields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
   return hydrate(result.rows);
-}, ["published-website-projects-v5"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
+}, ["published-website-projects-v6"], { tags: [websiteProjectsCacheTag], revalidate: 3600 });
 
 export async function listPublishedWebsiteProjects() {
   try {

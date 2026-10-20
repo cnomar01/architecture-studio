@@ -131,11 +131,19 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO website_project_section_images (id, section_id, image_url, caption, alt_text, layout, display_order)
-VALUES (
-  'city-edge-the-work', 'documentation',
-  '/images/projects/city-edge/city-edge-exterior-wip.jpeg',
-  '{"en":"","ar":"","it":""}'::jsonb,
-  '{"en":"City Edge exterior","ar":"واجهة سيتي إيدج","it":"Esterno di City Edge"}'::jsonb,
-  'full_bleed', 0
-)
+VALUES
+  (
+    'city-edge-concept-board', 'concept',
+    '/images/projects/city-edge/city-edge-concept-board.jpg',
+    '{"en":"City Edge — site geometry, yacht inspiration, and façade translation.","ar":"سيتي إيدج — هندسة الموقع، وإلهام اليخوت، وترجمة الواجهة.","it":"City Edge — geometria del sito, ispirazione nautica e traduzione della facciata."}'::jsonb,
+    '{"en":"City Edge concept board","ar":"لوحة الفكرة التصميمية لسيتي إيدج","it":"Tavola concettuale di City Edge"}'::jsonb,
+    'drawing', 0
+  ),
+  (
+    'city-edge-the-work', 'documentation',
+    '/images/projects/city-edge/city-edge-exterior-wip.jpeg',
+    '{"en":"","ar":"","it":""}'::jsonb,
+    '{"en":"City Edge exterior","ar":"واجهة سيتي إيدج","it":"Esterno di City Edge"}'::jsonb,
+    'full_bleed', 0
+  )
 ON CONFLICT (id) DO NOTHING;
