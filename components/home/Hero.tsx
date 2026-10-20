@@ -110,7 +110,7 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
           <div
             ref={veilRef}
             aria-hidden="true"
-            className="absolute inset-0 z-10 bg-[var(--mason-black)] opacity-0 will-change-transform"
+            className="absolute inset-0 z-10 bg-[rgba(11,11,11,0.72)] opacity-0 will-change-transform"
           />
         </div>
 
