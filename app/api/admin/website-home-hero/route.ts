@@ -20,7 +20,7 @@ export async function GET() {
     await requireServerUser(["Owner"]);
     const result = await query<{ value: { image_url?: unknown } }>("SELECT value FROM website_settings WHERE key='home_hero' LIMIT 1");
     const imageUrl = result.rows[0]?.value?.image_url;
-    return NextResponse.json({ image_url: isWebsiteImage(imageUrl) ? imageUrl : "/images/hero.png" }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ image_url: isWebsiteImage(imageUrl) ? imageUrl : "/images/hero-florence-sunset.png" }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) { return failure(error); }
 }
 

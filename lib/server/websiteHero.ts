@@ -1,7 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { query } from "@/lib/server/db";
 
-const fallbackImage = "/images/hero.png";
+const fallbackImage = "/images/hero-florence-sunset.png";
 export const websiteHeroCacheTag = "website-home-hero";
 
 export function isWebsiteImage(value: unknown): value is string {

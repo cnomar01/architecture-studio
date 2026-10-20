@@ -73,6 +73,13 @@ try {
 
   await pool.query(schema);
 
+  const portfolioSeed = await fs.readFile(
+    path.join(process.cwd(), "db/seed-portfolio.sql"),
+    "utf8"
+  );
+
+  await pool.query(portfolioSeed);
+
   for (const [id, code, name] of departments) {
     await pool.query(
       `

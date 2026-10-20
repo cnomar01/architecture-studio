@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: string }) {
+export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: { imageUrl?: string }) {
   const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);

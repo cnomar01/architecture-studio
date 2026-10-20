@@ -103,7 +103,7 @@ export default function WebsiteProjectsPage() {
       const response = await fetch("/api/admin/website-home-hero", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not load the home hero photo.");
-      setHeroImage(data.image_url || "/images/hero.png");
+      setHeroImage(data.image_url || "/images/hero-florence-sunset.png");
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Could not load the home hero photo.");
     } finally { setHeroLoading(false); }
@@ -287,7 +287,7 @@ export default function WebsiteProjectsPage() {
       <section className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.025]">
         <div className="grid gap-5 p-4 sm:p-6 md:grid-cols-[minmax(0,1fr)_300px] md:items-center">
           <div><p className="text-[10px] uppercase tracking-[0.2em] text-white/35">Home page</p><h2 className="mt-2 text-lg font-semibold">Hero photo</h2><p className="mt-2 max-w-xl text-sm leading-6 text-white/50">This is the full-screen image at the top of the public home page. Upload a new image, then save it when the preview looks right.</p><div className="mt-5 flex flex-wrap gap-3"><label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 px-4 py-2.5 text-xs transition hover:bg-white/10"><ImagePlus size={14} /> Choose hero photo<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => void uploadHero(event)} className="hidden" /></label><button type="button" onClick={() => void saveHero()} disabled={heroSaving || heroLoading} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 text-xs font-semibold text-black transition hover:bg-white/85 disabled:opacity-50">{heroSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}{heroSaving ? "Saving…" : "Save hero photo"}</button><Link href="/" target="_blank" className="inline-flex items-center px-2 text-xs text-white/55 hover:text-white">Preview home ↗</Link></div></div>
-          <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-black">{heroLoading ? <div className="grid h-full place-items-center text-xs text-white/35">Loading preview…</div> : <img src={heroImage || "/images/hero.png"} alt="Home hero preview" className="h-full w-full object-cover" />}</div>
+          <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-white/10 bg-black">{heroLoading ? <div className="grid h-full place-items-center text-xs text-white/35">Loading preview…</div> : <img src={heroImage || "/images/hero-florence-sunset.png"} alt="Home hero preview" className="h-full w-full object-cover" />}</div>
         </div>
       </section>
 
