@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Kufi_Arabic } from "next/font/google";
+import { Inter, Bebas_Neue, Noto_Sans_Arabic } from "next/font/google";
 
 import "./globals.css";
 
@@ -12,9 +12,16 @@ const inter = Inter({
   display: "swap",
 });
 
-const notoArabic = Noto_Kufi_Arabic({
+const bebas = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-display",
+  display: "swap",
+});
+
+const notoArabic = Noto_Sans_Arabic({
   subsets: ["arabic"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500", "700"],
   variable: "--font-arabic",
   display: "swap",
 });
@@ -31,13 +38,13 @@ export const metadata: Metadata = {
     siteName: "Mason & Arc",
     title: "Mason & Arc — Architecture · Design · Execution",
     description: "Architecture, design, and execution by Mason & Arc.",
-    images: [{ url: "/api/public/website-home-hero/image?v=20260930", width: 1536, height: 1024, alt: "Mason & Arc — Architecture · Design · Execution" }],
+    images: [{ url: "/images/hero-florence-sunset.png", width: 1672, height: 941, alt: "Mason & Arc — Architecture · Design · Execution" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mason & Arc — Architecture · Design · Execution",
     description: "Architecture, design, and execution by Mason & Arc.",
-    images: ["/api/public/website-home-hero/image?v=20260930"],
+    images: ["/images/hero-florence-sunset.png"],
   },
 
   icons: {
@@ -59,7 +66,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${notoArabic.variable} antialiased`}
+        className={`${inter.variable} ${bebas.variable} ${notoArabic.variable} antialiased`}
       >
         <LocaleProvider><RouteChrome>{children}</RouteChrome></LocaleProvider>
       </body>

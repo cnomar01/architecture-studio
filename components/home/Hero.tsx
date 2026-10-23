@@ -1,142 +1,108 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: { imageUrl?: string }) {
   const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
-  const frameRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-  const imageRevealRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const veilRef = useRef<HTMLDivElement>(null);
-  const accentRef = useRef<HTMLSpanElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
+  useLayoutEffect(() => {
     const hero = heroRef.current;
-    const frame = frameRef.current;
     const image = imageRef.current;
-    const imageReveal = imageRevealRef.current;
     const title = titleRef.current;
-    const veil = veilRef.current;
-    const accent = accentRef.current;
+    const content = contentRef.current;
 
-    if (!hero || !frame || !image || !imageReveal || !title || !veil || !accent) return;
+    if (!hero || !image || !title || !content) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const lines = title.querySelectorAll<HTMLElement>("[data-hero-line-inner]");
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
 
-    if (reduceMotion) {
-      gsap.set(veil, { autoAlpha: 0 });
-      gsap.set([frame, image, imageReveal, title, lines, accent], { clearProps: "all" });
-      return;
-    }
+    const ctx = gsap.context(() => {
+      gsap.set(title, {
+        scale: 1.28,
+        y: 18,
+        transformOrigin: locale === "ar" ? "right bottom" : "left bottom",
+        opacity: 1,
+      });
 
-    gsap.set(veil, { autoAlpha: 1, scaleY: 1, transformOrigin: "bottom" });
-    gsap.set(lines, { yPercent: 118 });
-    gsap.set(accent, { scaleX: 0, transformOrigin: "left" });
+      gsap.set(content, { y: 30, opacity: 0 });
 
-    gsap
-      .timeline({ defaults: { ease: "power4.out" } })
-      .to(veil, { scaleY: 0, duration: 1.25, ease: "power4.inOut" }, 0)
-      .fromTo(imageReveal, { scale: 1.12 }, { scale: 1, duration: 1.8 }, 0.08)
-      .to(lines, { yPercent: 0, duration: 1.15, stagger: 0.12 }, 0.42)
-      .to(accent, { scaleX: 1, duration: 0.9 }, 0.9);
+      const intro = gsap.timeline({ delay: 0.1 });
 
-    const media = gsap.matchMedia();
-    media.add(
-      {
-        mobile: "(max-width: 767px)",
-        desktop: "(min-width: 768px)",
-      },
-      (context) => {
-        const mobile = context.conditions?.mobile;
+      intro.to(title, {
+        scale: 1,
+        y: 0,
+        duration: 1.15,
+        ease: "power4.out",
+      });
 
-        gsap
-          .timeline({
-            defaults: { ease: "none" },
-            scrollTrigger: {
-              trigger: hero,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: mobile ? 0.35 : 0.8,
-              invalidateOnRefresh: true,
-            },
-          })
-          .to(frame, { scale: mobile ? 0.965 : 0.935, borderRadius: mobile ? 18 : 28 }, 0)
-          .to(image, { scale: mobile ? 1.09 : 1.13, yPercent: mobile ? 1.5 : 2.5 }, 0)
-          .to(title, { yPercent: mobile ? -6 : -9, autoAlpha: 0.08 }, 0)
-          .to(accent, { scaleX: mobile ? 0.7 : 0.45, autoAlpha: 0.45 }, 0);
+      intro.to(
+        content,
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.65,
+          ease: "power3.out",
+        },
+        "-=0.35"
+      );
+
+      if (!reduceMotion && !mobile) {
+        gsap.to(image, {
+          scale: 1.035,
+          duration: 10,
+          ease: "none",
+        });
       }
-    );
+    }, hero);
 
-    return () => media.revert();
-  }, { scope: heroRef, dependencies: [locale], revertOnUpdate: true });
+    return () => ctx.revert();
+  }, [locale]);
 
   return (
     <section
       ref={heroRef}
       data-header-theme="light"
-      className="relative h-[150svh] min-h-[900px] w-full bg-black text-white motion-reduce:h-auto motion-reduce:min-h-0 md:h-[170svh]"
+      className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-black text-white"
     >
-      <div className="sticky top-0 h-[100svh] min-h-[680px] overflow-hidden motion-reduce:relative">
-        <div
-          ref={frameRef}
-          className="absolute inset-0 overflow-hidden bg-neutral-950 will-change-transform"
+      <div ref={imageRef} className="absolute inset-0 md:inset-[-2%] md:will-change-transform">
+        <Image
+          src={imageUrl}
+          alt="Mason & Arc architecture"
+          fill
+          priority
+          unoptimized
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
+
+      <div className="absolute inset-0 bg-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
+
+      <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
+        <h1
+          ref={titleRef}
+          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[58px] font-light leading-[.95] sm:text-[88px] md:text-[108px] lg:text-[128px]" : "origin-bottom-left font-[var(--font-display)] text-[48px] font-normal leading-[0.76] tracking-[-0.025em] sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"} will-change-transform`}
         >
-          <div ref={imageRef} className="absolute inset-0 will-change-transform md:inset-[-2%]">
-            <div ref={imageRevealRef} className="absolute inset-0 will-change-transform">
-              <Image
-                src={imageUrl}
-                alt="Mason & Arc architecture"
-                fill
-                priority
-                unoptimized
-                sizes="100vw"
-                className="object-cover object-center"
-              />
-            </div>
-          </div>
+          <span className="block">{copy.heroBuild}</span>
+          <span className="block">{copy.heroExperience}</span>
+        </h1>
 
-          <div className="absolute inset-0 bg-black/10" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
-          <div
-            ref={veilRef}
-            aria-hidden="true"
-            className="absolute inset-0 z-10 bg-[rgba(11,11,11,0.72)] opacity-0 will-change-transform"
-          />
-        </div>
-
-        <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
-          <h1
-            ref={titleRef}
-            className="origin-bottom-left max-w-[1100px] text-[clamp(42px,6.5vw,96px)] font-normal leading-[0.98] tracking-[-0.025em] will-change-transform"
-          >
-            <span className="block overflow-hidden pb-[0.08em]">
-              <span data-hero-line-inner className="block whitespace-nowrap will-change-transform">
-                {copy.heroBuild}
-              </span>
-            </span>
-            <span className="block overflow-hidden pb-[0.08em]">
-              <span data-hero-line-inner className="block whitespace-nowrap will-change-transform">
-                {copy.heroExperience}
-              </span>
-            </span>
-          </h1>
-          <span
-            ref={accentRef}
-            aria-hidden="true"
-            className="mt-6 block h-[3px] w-20 bg-[var(--mason-blue)] will-change-transform sm:w-24"
-          />
+        <div ref={contentRef} className="mt-5 max-w-[500px] opacity-0 sm:mt-6 md:mt-7">
+          <div className="mb-3 h-px w-[82px] bg-white" />
+          <p className="max-w-[520px] text-[11px] font-medium leading-[1.5] text-white sm:text-[16px] md:text-[17px]">
+            {copy.heroIntro}
+          </p>
         </div>
       </div>
+
     </section>
   );
 }

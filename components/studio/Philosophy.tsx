@@ -39,7 +39,7 @@ export default function Philosophy() {
       className="
         border-t
         border-neutral-300
-        bg-[var(--mason-off-white)]
+        bg-[#f8f7f4]
         text-neutral-900
       "
     >

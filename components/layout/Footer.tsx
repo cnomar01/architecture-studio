@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -9,7 +8,7 @@ export default function Footer() {
   const { copy } = useLocale();
   const isContactPage = usePathname() === "/contact";
   return (
-    <footer className="bg-[var(--mason-off-white)] text-[var(--mason-black)]">
+    <footer className="bg-[#f8f7f4] text-neutral-900">
       <div className="px-8 py-16 md:px-12 md:py-20 lg:px-16">
 
         {/* Top */}
@@ -19,19 +18,12 @@ export default function Footer() {
           <div>
             <Link
               href="/"
-              aria-label="Mason & Arc home"
-              className="block w-[140px] sm:w-[156px]"
+              className="text-[24px] font-light tracking-[0.25em]"
             >
-              <Image
-                src="/images/logo-mason-arc.png"
-                alt="Mason & Arc"
-                width={500}
-                height={160}
-                className="h-auto w-full brightness-0"
-              />
+              MASON & ARC
             </Link>
 
-            <p className="mt-8 max-w-[340px] text-[14px] font-normal leading-[1.75] text-black/55">
+            <p className="mt-6 max-w-[340px] text-[14px] font-light leading-[1.8] text-neutral-500">
               {copy.footerTagline}
             </p>
           </div>
@@ -42,7 +34,7 @@ export default function Footer() {
               {copy.navigate}
             </p>
 
-            <div className="flex flex-col gap-4 text-[13px] font-normal">
+            <div className="flex flex-col gap-4 text-[13px] font-light">
               <Link href="/" className="transition-opacity hover:opacity-50">
                 {copy.home}
               </Link>
@@ -83,7 +75,7 @@ export default function Footer() {
               {copy.contact}
             </p>
 
-            <div className="flex flex-col gap-4 text-[13px] font-normal">
+            <div className="flex flex-col gap-4 text-[13px] font-light">
 
               <a
                 href="mailto:Masonandarc@gmail.com"

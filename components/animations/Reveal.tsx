@@ -23,11 +23,6 @@ export default function Reveal({
   useGSAP(() => {
     if (!ref.current) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(ref.current, { clearProps: "all", autoAlpha: 1 });
-      return;
-    }
-
     gsap.from(ref.current, {
       y,
       opacity: 0,
@@ -40,7 +35,7 @@ export default function Reveal({
         once: true,
       },
     });
-  }, { scope: ref });
+  }, []);
 
   return <div ref={ref}>{children}</div>;
 }

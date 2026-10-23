@@ -46,8 +46,8 @@ export default function Navbar() {
               relative
               z-[1000]
               block
-              w-[140px]
-              md:w-[152px]
+              w-[118px]
+              md:w-[128px]
             "
           >
             <Image
@@ -133,7 +133,7 @@ export default function Navbar() {
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`
-                  ${locale === "ar" ? "font-[var(--font-arabic)] text-[48px] font-medium leading-[1.16] tracking-normal sm:text-[58px] md:text-[clamp(60px,8vh,76px)]" : "font-[var(--font-display)] text-[48px] font-medium leading-[0.94] tracking-[-0.025em] sm:text-[60px] md:text-[clamp(64px,9vh,92px)]"}
+                  ${locale === "ar" ? "font-[var(--font-arabic)] text-[48px] font-light leading-[1.08] tracking-[-0.035em] sm:text-[62px] md:text-[clamp(64px,9vh,78px)]" : "font-[var(--font-display)] text-[54px] uppercase leading-[0.8] tracking-[-0.02em] sm:text-[68px] md:text-[clamp(72px,10vh,110px)]"}
                   transition-transform
                   duration-500
                   hover:translate-x-3

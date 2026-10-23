@@ -63,7 +63,7 @@ export default function Timeline() {
   return (
     <section
       ref={sectionRef}
-      className="border-t border-neutral-300 bg-[var(--mason-off-white)] text-[var(--mason-black)]"
+      className="border-t border-neutral-300 bg-[#f8f7f4] text-neutral-900"
     >
       <Container
         className="

@@ -9,7 +9,7 @@ export default function ProjectArchive({ projects, canEdit }: { projects: Websit
   const { locale, copy } = useLocale();
 
   return (
-    <main className="min-h-screen bg-[var(--mason-off-white)] text-[var(--mason-black)]">
+    <main className="min-h-screen bg-[#f8f7f4] text-neutral-900">
       <section className="px-6 pb-16 pt-32 sm:px-8 md:px-12 md:pt-40 lg:px-16 xl:px-20">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>

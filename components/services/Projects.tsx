@@ -11,7 +11,7 @@ import type { WebsiteProject } from "@/lib/server/websiteProjects";
 export default function ServicesProjects({ projects }: { projects: WebsiteProject[] }) {
   const { locale } = useLocale();
   return (
-    <section className="bg-[var(--mason-off-white)] text-[var(--mason-black)]">
+    <section className="bg-[#f8f7f4] text-neutral-900">
       <Container
         className="
           px-6

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -19,48 +18,22 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   const { locale, copy } = useLocale();
   const themes = locale === "ar" ? ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ"] : locale === "it" ? ["Architettura", "Interni", "Sviluppo del progetto", "Realizzazione"] : ["Architecture", "Interiors", "Design Development", "Execution"];
 
-  useGSAP(() => {
+  useEffect(() => {
     if (!sectionRef.current) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const cards = sectionRef.current.querySelectorAll<HTMLElement>(".project-card");
-
-    if (reduceMotion) {
-      cards.forEach((card) => {
-        const frame = card.querySelector<HTMLElement>(".project-frame");
-        const image = card.querySelector<HTMLElement>(".project-image");
-        const copy = card.querySelector<HTMLElement>(".project-copy");
-        gsap.set([frame, image, copy], { clearProps: "all" });
-      });
-      return;
-    }
+    if (reduceMotion || mobile) return;
 
     const ctx = gsap.context(() => {
+      const cards = sectionRef.current!.querySelectorAll(".project-card");
+
       cards.forEach((card) => {
-        const frame = card.querySelector<HTMLElement>(".project-frame");
-        const image = card.querySelector<HTMLElement>(".project-image");
-        const copy = card.querySelector<HTMLElement>(".project-copy");
-        if (!frame || !image || !copy) return;
+        const image = card.querySelector(".project-image");
+        if (!image) return;
 
-        gsap.fromTo(
-          frame,
-          { clipPath: mobile ? "inset(7% 0% 7% 0%)" : "inset(12% 0% 12% 0%)" },
-          {
-            clipPath: "inset(0% 0% 0% 0%)",
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 92%",
-              end: mobile ? "top 52%" : "center 68%",
-              scrub: mobile ? 0.3 : 0.7,
-            },
-          }
-        );
-
-        gsap.fromTo(image, { scale: mobile ? 1.07 : 1.13 }, {
+        gsap.fromTo(image, { scale: 1.08 }, {
           scale: 1,
-          yPercent: mobile ? -1 : 2,
           ease: "none",
           scrollTrigger: {
             trigger: card,
@@ -69,33 +42,17 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
             scrub: 0.6,
           },
         });
-
-        gsap.fromTo(
-          copy,
-          { y: mobile ? 24 : 46, autoAlpha: 0.3 },
-          {
-            y: 0,
-            autoAlpha: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: copy,
-              start: "top 94%",
-              end: "top 72%",
-              scrub: mobile ? 0.25 : 0.55,
-            },
-          }
-        );
       });
     }, sectionRef);
 
     return () => ctx.revert();
-  }, { scope: sectionRef });
+  }, []);
 
   return (
     <section
       ref={sectionRef}
       className="
-        bg-[var(--mason-off-white)]
+        bg-[#f8f7f4]
         text-neutral-900
       "
     >
@@ -270,7 +227,6 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
 
                 <div
                   className="
-                    project-frame
                     relative
                     h-[58vh]
                     min-h-[430px]
@@ -353,7 +309,6 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
 
                 <div
                   className="
-                    project-copy
                     mt-7
                     flex
                     items-end

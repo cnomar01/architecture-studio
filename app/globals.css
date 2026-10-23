@@ -1,15 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --mason-black: #0b0b0b;
-  --mason-off-white: #f4f1ec;
-  --mason-white: #ffffff;
-  --mason-concrete: #b8b8b4;
-  --mason-blue: #4f6b7a;
-  --background: var(--mason-black);
-  --foreground: var(--mason-white);
+  --background: #000;
+  --foreground: #fff;
+
   --font-body: Arial, Helvetica, sans-serif;
-  --font-display: var(--font-body);
+  --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
@@ -48,57 +44,8 @@ img {
 }
 
 ::selection {
-  background: var(--mason-blue);
-  color: var(--mason-white);
-}
-
-/* Mason & Arc Master Brand Book / public identity layer */
-.brand-site {
-  --font-display: var(--font-body);
-  background: var(--mason-off-white);
-  color: var(--mason-black);
-  font-family: var(--font-body);
-}
-
-.brand-site .uppercase:not(:is(h1, h2, h3)) {
-  letter-spacing: 0.18em;
-}
-
-.brand-site .bg-black {
-  background-color: var(--mason-black);
-}
-
-.brand-site .text-black {
-  color: var(--mason-black);
-}
-
-.brand-site .bg-white {
-  background-color: var(--mason-white);
-}
-
-.brand-site .text-white {
-  color: var(--mason-white);
-}
-
-.brand-site[lang="ar"] {
-  font-family: var(--font-arabic);
-}
-
-.brand-site[lang="ar"] :is(h1, h2, h3) {
-  font-family: var(--font-arabic);
-  letter-spacing: normal;
-}
-
-.brand-site[lang="ar"] .uppercase {
-  letter-spacing: normal;
-  text-transform: none;
-}
-
-.mason-line {
-  background: var(--mason-blue);
-  display: block;
-  height: 2px;
-  width: 72px;
+  background: #fff;
+  color: #000;
 }
 
 /* Phase 7 — mobile and accessibility polish */
