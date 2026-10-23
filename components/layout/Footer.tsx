@@ -121,19 +121,19 @@ export default function Footer() {
 
         {/* Copyright: separate left/right alignment with consistent optical weight */}
         <div className="mt-12 flex flex-col items-start gap-3 border-t border-neutral-300 pt-4 text-[11px] font-normal leading-5 tracking-[-0.01em] text-neutral-500 md:mt-14 md:flex-row md:items-center md:justify-between md:gap-6">
-          <div dir="ltr" className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <div dir="ltr" className="inline-flex h-5 flex-nowrap items-center gap-[7px] whitespace-nowrap text-[11px] leading-5">
             <span className="whitespace-nowrap">© 2026</span>
             <Link
               href="/"
               aria-label="Mason & Arc home"
-              className="inline-flex shrink-0 items-center transition-opacity hover:opacity-70"
+              className="inline-flex h-5 shrink-0 items-center transition-opacity hover:opacity-70"
             >
               <Image
                 src="/images/logo-mason-arc.png"
                 alt=""
                 width={500}
                 height={160}
-                className="block h-[14px] w-auto object-contain brightness-0 opacity-[0.53] sm:h-[15px]"
+                className="relative top-px block h-[12px] w-auto shrink-0 object-contain brightness-0 opacity-[0.48]"
               />
             </Link>
             <span className="whitespace-nowrap">{copy.rights}</span>
