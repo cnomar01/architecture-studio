@@ -37,7 +37,7 @@ export default function Navbar() {
           pointer-events-none
         "
       >
-        <div className="flex items-start justify-between px-6 pt-6 md:px-8 md:pt-7">
+        <div className="flex items-start justify-between px-6 pt-6 sm:px-8 md:px-10 md:pt-7 lg:px-16">
           <Link
             href="/"
             aria-label="Mason & Arc"
