@@ -74,11 +74,11 @@ export default function Footer() {
 
           {/* Contact details already appear in the hero on the contact page. */}
           <div hidden={isContactPage}>
-            <p className="mb-6 text-[10px] uppercase tracking-[0.35em] text-neutral-400">
+            <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500">
               {copy.contact}
             </p>
 
-            <div className="flex flex-col gap-4 text-[13px] font-light">
+            <div className="flex flex-col gap-3 text-[14px] font-normal text-neutral-700">
 
               <a
                 href="mailto:Masonandarc@gmail.com"
