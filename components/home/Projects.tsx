@@ -60,13 +60,13 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
         className="
           !max-w-none
           px-5
-          pb-28
+          pb-20
           pt-20
           sm:px-8
           md:px-10
-          md:pb-40
+          md:pb-28
           lg:px-14
-          lg:pb-52
+          lg:pb-32
           xl:px-16
         "
       >
