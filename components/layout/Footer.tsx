@@ -121,8 +121,8 @@ export default function Footer() {
 
         {/* Bottom: primary wordmark and approved brand line */}
         <div className="mt-16 flex flex-col gap-4 border-t border-neutral-300 pt-5 text-neutral-500 md:flex-row md:items-center md:justify-between md:gap-8">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] font-medium uppercase tracking-[0.12em]">
-            <span aria-hidden="true">©</span>
+          <div dir="ltr" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 text-[12px] font-normal leading-5 tracking-[-0.015em] text-neutral-600">
+            <span className="whitespace-nowrap">© 2026</span>
             <Link
               href="/"
               aria-label="Mason & Arc home"
@@ -133,10 +133,10 @@ export default function Footer() {
                 alt=""
                 width={500}
                 height={160}
-                className="h-auto w-[86px] object-contain brightness-0 sm:w-[96px]"
+                className="block h-[20px] w-auto object-contain brightness-0"
               />
             </Link>
-            <span>{copy.rights}</span>
+            <span className="whitespace-nowrap">{copy.rights}</span>
           </div>
 
           <span dir="ltr" className="text-[12px] font-normal normal-case tracking-[-0.01em] text-neutral-600">
