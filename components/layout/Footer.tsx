@@ -11,7 +11,7 @@ export default function Footer() {
   const isContactPage = usePathname() === "/contact";
   return (
     <footer className="bg-[#f8f7f4] text-neutral-900">
-      <div className="px-6 py-12 sm:px-8 md:px-10 md:py-16 lg:px-16">
+      <div className="px-6 pb-6 pt-12 sm:px-8 md:px-10 md:pb-7 md:pt-16 lg:px-16">
 
         {/* Top */}
         <div className={`grid grid-cols-1 gap-x-12 gap-y-12 border-t border-neutral-300 pt-9 md:grid-cols-2 md:gap-y-16 lg:gap-x-16 ${isContactPage ? "lg:grid-cols-[1.5fr_1fr]" : "lg:grid-cols-[1.25fr_0.75fr_1fr]"}`}>
@@ -119,9 +119,12 @@ export default function Footer() {
 
         </div>
 
-        {/* Bottom: primary wordmark and approved brand line */}
-        <div className="mt-16 flex flex-col gap-4 border-t border-neutral-300 pt-5 text-neutral-500 md:flex-row md:items-center md:justify-between md:gap-8">
-          <div dir="ltr" className="flex flex-wrap items-center gap-x-2.5 gap-y-2 text-[12px] font-normal leading-5 tracking-[-0.015em] text-neutral-600">
+        {/* Copyright: one cohesive, centered editorial line */}
+        <div className="mt-12 border-t border-neutral-300 pt-4 md:mt-14">
+          <div
+            dir="ltr"
+            className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 text-center text-[11px] font-normal leading-5 tracking-[-0.01em] text-neutral-500"
+          >
             <span className="whitespace-nowrap">© 2026</span>
             <Link
               href="/"
@@ -133,15 +136,15 @@ export default function Footer() {
                 alt=""
                 width={500}
                 height={160}
-                className="block h-[20px] w-auto object-contain brightness-0"
+                className="block h-4 w-auto object-contain brightness-0 opacity-75"
               />
             </Link>
             <span className="whitespace-nowrap">{copy.rights}</span>
+            <span aria-hidden="true" className="mx-1 hidden text-neutral-300 sm:inline">·</span>
+            <span className="basis-full text-neutral-500 sm:basis-auto">
+              {copy.heroBuild} {copy.heroExperience}
+            </span>
           </div>
-
-          <span dir="ltr" className="text-[12px] font-normal normal-case tracking-[-0.01em] text-neutral-600">
-            {copy.heroBuild} {copy.heroExperience}
-          </span>
         </div>
 
       </div>
