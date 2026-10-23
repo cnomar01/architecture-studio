@@ -92,9 +92,6 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
       <div className="absolute bottom-[72px] left-6 right-6 z-20 sm:bottom-[80px] sm:left-8 sm:right-8 md:bottom-[88px] md:left-10 md:right-10 lg:bottom-[92px] lg:left-16 lg:right-16">
-        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-white/85 sm:mb-6">
-          {copy.disciplines}
-        </p>
         <h1
           ref={titleRef}
           className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] tracking-[-0.02em]" : "origin-bottom-left font-[var(--font-body)] tracking-[-0.052em]"} max-w-[800px] text-[clamp(2.25rem,8.2vw,3.25rem)] font-light leading-[1.045] sm:text-[clamp(3.25rem,4.9vw,4.75rem)] will-change-transform`}
