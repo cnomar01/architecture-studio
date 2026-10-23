@@ -1,6 +1,6 @@
 import { query } from "@/lib/server/db";
 
-const fallbackImage = "/images/hero-florence-sunset.png";
+const fallbackImage = "/images/hero.png";
 
 export function isWebsiteImage(value: unknown): value is string {
   return typeof value === "string" && (
@@ -18,7 +18,7 @@ export async function getWebsiteHeroImage() {
   );
   const row = result.rows[0];
   const image = row?.value?.image_url;
-  if (!isWebsiteImage(image)) return fallbackImage;
+  if (!isWebsiteImage(image) || image === "/images/hero-florence-sunset.png") return fallbackImage;
   if (!image.startsWith("data:image/")) return image;
   const version = new Date(row.updated_at).getTime() || 0;
   return `/api/public/website-home-hero/image?v=${version}`;
