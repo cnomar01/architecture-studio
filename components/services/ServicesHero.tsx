@@ -211,7 +211,7 @@ export default function ServicesHero() {
                 ref={statementRef}
                 className="flex h-full flex-col justify-end pb-10 will-change-transform lg:pb-20"
               >
-                <h1 className="max-w-[850px] text-[clamp(54px,16.4vw,72px)] font-medium leading-[0.88] tracking-[-0.025em] sm:text-[96px] md:text-[116px] lg:text-[132px] xl:text-[148px]">
+                <h1 className="max-w-[850px] text-[clamp(54px,16.4vw,72px)] font-extralight leading-[0.88] tracking-[-0.065em] sm:text-[96px] md:text-[116px] lg:text-[145px] xl:text-[165px]">
                   {["Design.", "Build.", "Experience."].map((line) => (
                     <span key={line} data-services-line className="block overflow-hidden pb-[0.04em]">
                       <span data-services-line-inner className="block will-change-transform">
@@ -300,7 +300,7 @@ export default function ServicesHero() {
                   </span>
 
                   <div>
-                    <h3 className="text-[32px] font-medium leading-[1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-3 sm:text-[40px] md:text-[44px] lg:text-[50px]">
+                    <h3 className="text-[32px] font-extralight leading-[1] tracking-[-0.04em] transition-transform duration-500 group-hover:translate-x-3 sm:text-[40px] md:text-[44px] lg:text-[50px]">
                       {service.title}
                     </h3>
 

@@ -117,7 +117,7 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
         <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
           <h1
             ref={titleRef}
-            className="origin-bottom-left max-w-[1100px] text-[clamp(42px,6.5vw,96px)] font-medium leading-[0.98] tracking-[-0.025em] will-change-transform"
+            className="origin-bottom-left max-w-[1100px] text-[clamp(42px,6.5vw,96px)] font-normal leading-[0.98] tracking-[-0.025em] will-change-transform"
           >
             <span className="block overflow-hidden pb-[0.08em]">
               <span data-hero-line-inner className="block whitespace-nowrap will-change-transform">

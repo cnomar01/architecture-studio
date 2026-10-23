@@ -17,7 +17,7 @@ export default function Manifesto() {
 
         <div className="lg:col-span-8 lg:col-start-4">
           <Reveal>
-            <h2 className="max-w-[1000px] text-[40px] font-medium leading-[1.04] tracking-[-0.025em] sm:text-[52px] md:text-[64px] lg:text-[70px] xl:text-[78px]">
+            <h2 className="max-w-[1000px] text-[40px] font-extralight leading-[1.04] tracking-[-0.03em] sm:text-[52px] md:text-[64px] lg:text-[78px] xl:text-[90px]">
               {copy.philosophyLine1}
               <br />
               {copy.philosophyLine2}
