@@ -100,13 +100,10 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
           <span className="block">{copy.heroExperience}</span>
         </h1>
 
-        <div ref={contentRef} className="mt-6 max-w-[475px] opacity-0 sm:mt-7">
-          <div className="flex items-start gap-4">
-            <span aria-hidden="true" className="mt-[10px] h-px w-8 shrink-0 bg-white/70" />
-            <p className="max-w-[425px] text-[13px] font-normal leading-[1.65] text-white/90 sm:text-[14px] md:text-[15px]">
-              {copy.heroIntro}
-            </p>
-          </div>
+        <div ref={contentRef} className="mt-6 max-w-[740px] opacity-0 sm:mt-7">
+          <p className="text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-white/95 sm:text-[16px] md:text-[17px] lg:text-[18px]">
+            {copy.heroIntro}
+          </p>
         </div>
       </div>
 
