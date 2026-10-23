@@ -24,9 +24,14 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
+      if (reduceMotion) {
+        gsap.set(content, { y: 0, opacity: 1 });
+        return;
+      }
+
       gsap.set(title, {
-        scale: 1.28,
-        y: 18,
+        scale: 1.035,
+        y: 14,
         transformOrigin: locale === "ar" ? "right bottom" : "left bottom",
         opacity: 1,
       });
@@ -86,18 +91,18 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
-      <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
+      <div className="absolute bottom-[80px] left-6 right-6 z-20 sm:bottom-[88px] sm:left-7 sm:right-7 md:bottom-[96px] md:left-8 md:right-8 lg:bottom-[100px] lg:left-10 lg:right-10">
         <h1
           ref={titleRef}
-          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[58px] font-light leading-[.95] sm:text-[88px] md:text-[108px] lg:text-[128px]" : "origin-bottom-left font-[var(--font-display)] text-[48px] font-normal leading-[0.76] tracking-[-0.025em] sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"} will-change-transform`}
+          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[clamp(2.25rem,7.8vw,3rem)] font-light leading-[1.12] tracking-[-0.015em] sm:text-[clamp(3rem,5.25vw,5.5rem)]" : "origin-bottom-left font-[var(--font-display)] text-[clamp(2.25rem,7.8vw,3rem)] font-normal leading-[1.02] tracking-[-0.035em] sm:text-[clamp(3rem,5.25vw,5.5rem)]"} max-w-[980px] will-change-transform`}
         >
           <span className="block">{copy.heroBuild}</span>
           <span className="block">{copy.heroExperience}</span>
         </h1>
 
-        <div ref={contentRef} className="mt-5 max-w-[500px] opacity-0 sm:mt-6 md:mt-7">
-          <div className="mb-3 h-px w-[82px] bg-white" />
-          <p className="max-w-[520px] text-[11px] font-medium leading-[1.5] text-white sm:text-[16px] md:text-[17px]">
+        <div ref={contentRef} className="mt-5 max-w-[460px] opacity-0 sm:mt-6">
+          <div className="mb-3 h-px w-[72px] bg-white/80" />
+          <p className="text-[13px] font-normal leading-[1.55] text-white/95 sm:text-[14px] md:text-[15px]">
             {copy.heroIntro}
           </p>
         </div>
