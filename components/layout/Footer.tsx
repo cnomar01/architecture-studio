@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import SecondaryLogo from "@/components/shared/SecondaryLogo";
 
 export default function Footer() {
   const { copy } = useLocale();
@@ -18,9 +19,10 @@ export default function Footer() {
           <div>
             <Link
               href="/"
-              className="text-[24px] font-light tracking-[0.25em]"
+              aria-label="Mason & Arc"
+              className="block h-10 w-10 transition-opacity hover:opacity-50"
             >
-              MASON & ARC
+              <SecondaryLogo className="h-full w-full text-neutral-900" />
             </Link>
 
             <p className="mt-6 max-w-[340px] text-[14px] font-light leading-[1.8] text-neutral-500">
@@ -118,7 +120,12 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="mt-20 flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
-          <span>© MASON & ARC. {copy.rights}</span>
+          <span className="flex items-center gap-2">
+            <span>©</span>
+            <span className="sr-only">Mason & Arc.</span>
+            <SecondaryLogo className="h-4 w-4 text-neutral-400" />
+            <span>{copy.rights}</span>
+          </span>
 
           <span>{copy.disciplines}</span>
         </div>

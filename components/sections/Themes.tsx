@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
+import SecondaryLogo from "@/components/shared/SecondaryLogo";
 
 const themes = [
   "Architecture",
@@ -154,15 +155,8 @@ export default function Themes() {
               md:mt-36
             "
           >
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.35em]
-                text-neutral-400
-              "
-            >
-              Mason & Arc
+            <span className="text-neutral-400" title="Mason & Arc">
+              <SecondaryLogo className="h-5 w-5" />
             </span>
 
             <span

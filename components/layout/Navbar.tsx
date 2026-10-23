@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import SecondaryLogo from "@/components/shared/SecondaryLogo";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -46,17 +46,15 @@ export default function Navbar() {
               relative
               z-[1000]
               block
-              w-[118px]
-              md:w-[128px]
+              h-10
+              w-10
+              transition-opacity
+              duration-300
+              hover:opacity-65
             "
           >
-            <Image
-              src="/images/logo-mason-arc.png"
-              alt="Mason & Arc"
-              width={500}
-              height={160}
-              priority
-              className={`block h-auto w-full object-contain object-left ${whiteChrome ? "brightness-0 invert" : "brightness-0"}`}
+            <SecondaryLogo
+              className={`block h-full w-full ${whiteChrome ? "text-white" : "text-black"}`}
             />
           </Link>
 
