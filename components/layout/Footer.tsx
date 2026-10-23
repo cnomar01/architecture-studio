@@ -119,32 +119,28 @@ export default function Footer() {
 
         </div>
 
-        {/* Copyright: one cohesive, centered editorial line */}
-        <div className="mt-12 border-t border-neutral-300 pt-4 md:mt-14">
-          <div
-            dir="ltr"
-            className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 text-center text-[11px] font-normal leading-5 tracking-[-0.01em] text-neutral-500"
-          >
+        {/* Copyright: separate left/right alignment with consistent optical weight */}
+        <div className="mt-12 flex flex-col items-start gap-3 border-t border-neutral-300 pt-4 text-[11px] font-normal leading-5 tracking-[-0.01em] text-neutral-500 md:mt-14 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div dir="ltr" className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="whitespace-nowrap">© 2026</span>
             <Link
               href="/"
               aria-label="Mason & Arc home"
-              className="inline-flex shrink-0 items-center transition-opacity hover:opacity-65"
+              className="inline-flex shrink-0 items-center transition-opacity hover:opacity-70"
             >
               <Image
                 src="/images/logo-mason-arc.png"
                 alt=""
                 width={500}
                 height={160}
-                className="block h-4 w-auto object-contain brightness-0 opacity-75"
+                className="block h-[14px] w-auto object-contain brightness-0 opacity-[0.53] sm:h-[15px]"
               />
             </Link>
             <span className="whitespace-nowrap">{copy.rights}</span>
-            <span aria-hidden="true" className="mx-1 hidden text-neutral-300 sm:inline">·</span>
-            <span className="basis-full text-neutral-500 sm:basis-auto">
-              {copy.heroBuild} {copy.heroExperience}
-            </span>
           </div>
+          <span dir="ltr" className="text-neutral-500 md:text-right">
+            {copy.heroBuild} {copy.heroExperience}
+          </span>
         </div>
 
       </div>
