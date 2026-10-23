@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     siteName: "Mason & Arc",
     title: "Mason & Arc — Architecture · Design · Execution",
     description: "Architecture, design, and execution by Mason & Arc.",
-    images: [{ url: "/images/hero-florence-sunset.png", width: 1672, height: 941, alt: "Mason & Arc — Architecture · Design · Execution" }],
+    images: [{ url: "/images/hero.png", alt: "Mason & Arc — Architecture · Design · Execution" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mason & Arc — Architecture · Design · Execution",
     description: "Architecture, design, and execution by Mason & Arc.",
-    images: ["/images/hero-florence-sunset.png"],
+    images: ["/images/hero.png"],
   },
 
   icons: {
