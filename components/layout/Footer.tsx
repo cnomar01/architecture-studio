@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -118,16 +119,29 @@ export default function Footer() {
 
         </div>
 
-        {/* Bottom */}
-        <div className="mt-20 flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
-          <span className="flex items-center gap-2">
-            <span>©</span>
-            <span className="sr-only">Mason & Arc.</span>
-            <SecondaryLogo className="h-4 w-4 text-neutral-400" />
+        {/* Bottom: primary wordmark and approved brand line */}
+        <div className="mt-20 flex flex-col gap-5 border-t border-neutral-300 pt-6 text-neutral-400 md:flex-row md:items-center md:justify-between md:gap-8">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] uppercase tracking-[0.22em]">
+            <span aria-hidden="true">©</span>
+            <Link
+              href="/"
+              aria-label="Mason & Arc home"
+              className="inline-flex shrink-0 items-center opacity-70 transition-opacity hover:opacity-100"
+            >
+              <Image
+                src="/images/logo-mason-arc.png"
+                alt=""
+                width={500}
+                height={160}
+                className="h-auto w-[94px] object-contain brightness-0 sm:w-[108px]"
+              />
+            </Link>
             <span>{copy.rights}</span>
-          </span>
+          </div>
 
-          <span>{copy.disciplines}</span>
+          <span dir="ltr" className="text-[11px] font-normal normal-case tracking-[0.01em] text-neutral-500">
+            {copy.heroBuild} {copy.heroExperience}
+          </span>
         </div>
 
       </div>
