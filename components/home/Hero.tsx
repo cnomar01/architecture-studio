@@ -91,20 +91,25 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
-      <div className="absolute bottom-[80px] left-6 right-6 z-20 sm:bottom-[88px] sm:left-7 sm:right-7 md:bottom-[96px] md:left-8 md:right-8 lg:bottom-[100px] lg:left-10 lg:right-10">
+      <div className="absolute bottom-[72px] left-6 right-6 z-20 sm:bottom-[80px] sm:left-8 sm:right-8 md:bottom-[88px] md:left-10 md:right-10 lg:bottom-[92px] lg:left-16 lg:right-16">
+        <p className="mb-5 text-[10px] font-medium uppercase tracking-[0.22em] text-white/85 sm:mb-6">
+          {copy.disciplines}
+        </p>
         <h1
           ref={titleRef}
-          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[clamp(2.25rem,7.8vw,3rem)] font-light leading-[1.12] tracking-[-0.015em] sm:text-[clamp(3rem,5.25vw,5.5rem)]" : "origin-bottom-left font-[var(--font-display)] text-[clamp(2.25rem,7.8vw,3rem)] font-normal leading-[1.02] tracking-[-0.035em] sm:text-[clamp(3rem,5.25vw,5.5rem)]"} max-w-[980px] will-change-transform`}
+          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] tracking-[-0.02em]" : "origin-bottom-left font-[var(--font-body)] tracking-[-0.052em]"} max-w-[800px] text-[clamp(2.25rem,8.2vw,3.25rem)] font-light leading-[1.045] sm:text-[clamp(3.25rem,4.9vw,4.75rem)] will-change-transform`}
         >
           <span className="block">{copy.heroBuild}</span>
           <span className="block">{copy.heroExperience}</span>
         </h1>
 
-        <div ref={contentRef} className="mt-5 max-w-[460px] opacity-0 sm:mt-6">
-          <div className="mb-3 h-px w-[72px] bg-white/80" />
-          <p className="text-[13px] font-normal leading-[1.55] text-white/95 sm:text-[14px] md:text-[15px]">
-            {copy.heroIntro}
-          </p>
+        <div ref={contentRef} className="mt-6 max-w-[475px] opacity-0 sm:mt-7">
+          <div className="flex items-start gap-4">
+            <span aria-hidden="true" className="mt-[10px] h-px w-8 shrink-0 bg-white/70" />
+            <p className="max-w-[425px] text-[13px] font-normal leading-[1.65] text-white/90 sm:text-[14px] md:text-[15px]">
+              {copy.heroIntro}
+            </p>
+          </div>
         </div>
       </div>
 
