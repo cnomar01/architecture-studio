@@ -21,61 +21,61 @@ export default function GoldenRatio() {
       if (!ratio || !spiral || !guides || !point || !copy) return;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set(guides, { opacity: 0.12, strokeDashoffset: 0 });
+        gsap.set(guides, { opacity: 0.1, strokeDashoffset: 0 });
         gsap.set(spiral, { strokeDashoffset: 0 });
         gsap.set(point, { opacity: 1, scale: 1 });
         gsap.set(copy, { opacity: 1, y: 0 });
         return;
       }
 
-      gsap.set(guides, {
-        opacity: 0,
-        strokeDasharray: 1,
-        strokeDashoffset: 1,
-      });
-      gsap.set(spiral, {
-        strokeDasharray: 1,
-        strokeDashoffset: 1,
-      });
-      gsap.set(point, {
-        opacity: 0,
-        scale: 0,
-        transformOrigin: "center",
-      });
-      gsap.set(copy, { opacity: 0, y: 24 });
-
       gsap
         .timeline({
           scrollTrigger: {
             trigger: ratio,
-            start: "top 82%",
-            end: "bottom 42%",
-            scrub: 1,
+            start: "top 85%",
+            once: true,
           },
         })
-        .to(point, { opacity: 1, scale: 1, duration: 0.12 })
         .to(
           guides,
           {
-            opacity: 0.28,
+            opacity: 0.1,
             strokeDashoffset: 0,
-            duration: 0.7,
-            stagger: 0.045,
-            ease: "power1.inOut",
+            duration: 0.9,
+            stagger: 0.035,
+            ease: "power3.out",
           },
-          0.08,
+          0,
         )
         .to(
           spiral,
           {
             strokeDashoffset: 0,
-            duration: 1.25,
-            ease: "power2.inOut",
+            duration: 1.5,
+            ease: "power4.out",
           },
-          0.42,
+          0,
         )
-        .to(guides, { opacity: 0.1, duration: 0.45 }, 1.3)
-        .to(copy, { opacity: 1, y: 0, duration: 0.45 }, 1.35);
+        .to(
+          copy,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.75,
+            ease: "power3.out",
+          },
+          0.25,
+        )
+        .to(
+          point,
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.45,
+            ease: "power3.out",
+          },
+          1.1,
+        );
     },
     { scope: ratioRef },
   );
@@ -83,24 +83,11 @@ export default function GoldenRatio() {
   return (
     <div
       ref={ratioRef}
-      className="border-b border-neutral-300 px-6 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32 lg:px-16 xl:px-20"
+      className="mx-auto max-w-7xl border-b border-neutral-300 px-6 py-24 sm:px-8 sm:py-28 md:px-12 md:py-32"
     >
-      <div className="flex items-center justify-between gap-6">
-        <span className="text-[8px] uppercase tracking-[0.3em] text-neutral-400">
-          Mason &amp; Arc — Design Principle 01
-        </span>
-
-        <span
-          aria-hidden="true"
-          className="hidden text-[8px] uppercase tracking-[0.3em] text-neutral-400 sm:block"
-        >
-          Proportion / Order / Restraint
-        </span>
-      </div>
-
       <svg
         aria-hidden="true"
-        className="mt-10 h-auto w-full sm:mt-12"
+        className="mx-auto h-auto w-full max-w-[1120px]"
         fill="none"
         viewBox="0 0 1160 758"
         xmlns="http://www.w3.org/2000/svg"
@@ -114,18 +101,29 @@ export default function GoldenRatio() {
             className="home-ratio-guide"
             height="618"
             pathLength="1"
+            style={{ opacity: 0, strokeDasharray: 1, strokeDashoffset: 1 }}
             width="1000"
             x="80"
             y="70"
           />
-          <path className="home-ratio-guide" d="M698 70V688" pathLength="1" />
-          <path className="home-ratio-guide" d="M698 452H1080" pathLength="1" />
-          <path className="home-ratio-guide" d="M844 452V688" pathLength="1" />
-          <path className="home-ratio-guide" d="M698 542H844" pathLength="1" />
-          <path className="home-ratio-guide" d="M788 452V542" pathLength="1" />
-          <path className="home-ratio-guide" d="M788 508H844" pathLength="1" />
-          <path className="home-ratio-guide" d="M810 508V542" pathLength="1" />
-          <path className="home-ratio-guide" d="M788 520H810" pathLength="1" />
+          {[
+            "M698 70V688",
+            "M698 452H1080",
+            "M844 452V688",
+            "M698 542H844",
+            "M788 452V542",
+            "M788 508H844",
+            "M810 508V542",
+            "M788 520H810",
+          ].map((path) => (
+            <path
+              key={path}
+              className="home-ratio-guide"
+              d={path}
+              pathLength="1"
+              style={{ opacity: 0, strokeDasharray: 1, strokeDashoffset: 1 }}
+            />
+          ))}
         </g>
 
         <path
@@ -135,6 +133,7 @@ export default function GoldenRatio() {
           stroke="#4f6b7a"
           strokeLinecap="round"
           strokeWidth="2.25"
+          style={{ strokeDasharray: 1, strokeDashoffset: -1 }}
           vectorEffect="non-scaling-stroke"
         />
 
@@ -144,10 +143,14 @@ export default function GoldenRatio() {
           cy="508"
           fill="#4f6b7a"
           r="4"
+          style={{ opacity: 0, transform: "scale(0.65)", transformOrigin: "center" }}
         />
       </svg>
 
-      <p className="home-ratio-copy ml-auto mt-8 max-w-[920px] text-[34px] font-light leading-[1.02] tracking-[-0.045em] text-neutral-900 sm:text-[48px] md:mt-10 md:text-[66px] lg:text-[78px]">
+      <p
+        className="home-ratio-copy ml-auto mt-8 max-w-[780px] text-[34px] font-light leading-[1.02] tracking-[-0.045em] text-neutral-900 sm:text-[46px] md:mt-10 md:text-[58px] lg:text-[66px]"
+        style={{ opacity: 0, transform: "translateY(40px)" }}
+      >
         Proportion is a principle, not a formula.
       </p>
     </div>
