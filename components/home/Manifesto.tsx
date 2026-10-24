@@ -17,7 +17,7 @@ export default function Manifesto() {
         </p>
 
         <Reveal>
-          <h2 className="max-w-6xl text-5xl font-extralight leading-[1] tracking-[-0.03em] text-neutral-900 md:text-7xl lg:text-[90px]">
+          <h2 className="max-w-6xl text-[40px] font-extralight leading-[1.02] tracking-[-0.03em] text-neutral-900 sm:text-[52px] md:text-7xl md:leading-[1] lg:text-[90px]">
             {copy.philosophyLine1}
             <br />
             {copy.philosophyLine2}
