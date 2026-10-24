@@ -2,12 +2,15 @@
 
 import Reveal from "../animations/Reveal";
 import { useLocale } from "@/components/i18n/LocaleProvider";
+import GoldenRatio from "./GoldenRatio";
 
 export default function Manifesto() {
   const { copy } = useLocale();
   return (
-    <section className="bg-[#f8f7f4] py-40 md:py-56">
-      <div className="mx-auto max-w-7xl px-8 md:px-12">
+    <section className="bg-[#f8f7f4] text-neutral-900">
+      <GoldenRatio />
+
+      <div className="mx-auto max-w-7xl px-8 py-40 md:px-12 md:py-56">
 
         <p className="mb-10 text-xs uppercase tracking-[10px] text-neutral-500">
           {copy.philosophyLabel}
