@@ -50,7 +50,8 @@ export default function GoldenRatio() {
           scrollTrigger: {
             trigger: section,
             start: "top 85%",
-            once: true,
+            end: "bottom 15%",
+            scrub: 0.8,
           },
         })
         .to(
