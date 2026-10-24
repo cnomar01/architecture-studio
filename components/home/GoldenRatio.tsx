@@ -54,6 +54,8 @@ export default function GoldenRatio() {
         return;
       }
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.set(artwork, { opacity: 1, scale: 1, y: 0 });
         gsap.set(frame, { opacity: 0.34, strokeDashoffset: 0 });
@@ -65,88 +67,109 @@ export default function GoldenRatio() {
         return;
       }
 
-      gsap.set(copyLines, { y: "110%" });
+      if (isMobile) {
+        ScrollTrigger.config({ ignoreMobileResize: true });
+      }
 
-      gsap
-        .timeline({
-          scrollTrigger: {
-            trigger: section,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 0.8,
-          },
-        })
-        .to(
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: isMobile ? 0.45 : 0.7,
+          invalidateOnRefresh: false,
+        },
+      });
+
+      timeline
+        .fromTo(
           artwork,
+          {
+            opacity: 0.18,
+            scale: 0.985,
+            y: isMobile ? 20 : 28,
+          },
           {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 1.2,
+            duration: 0.9,
             ease: "power3.out",
           },
           0,
         )
-        .to(
+        .fromTo(
           frame,
+          { opacity: 0.08, strokeDashoffset: 1 },
           {
             opacity: 0.34,
             strokeDashoffset: 0,
-            duration: 1,
+            duration: 0.85,
             ease: "power3.out",
           },
-          0.02,
+          0,
         )
-        .to(
+        .fromTo(
           tiles,
+          { opacity: 0 },
           {
             opacity: 1,
-            duration: 1.15,
+            duration: 0.9,
             stagger: 0.04,
             ease: "power3.out",
           },
-          0.08,
+          0.06,
         )
-        .to(
+        .fromTo(
           guides,
+          { opacity: 0.04, strokeDashoffset: 1 },
           {
             opacity: 0.28,
             strokeDashoffset: 0,
-            duration: 1.15,
+            duration: 0.95,
             stagger: 0.04,
             ease: "power3.out",
           },
-          0.08,
+          0.06,
         )
-        .to(
+        .fromTo(
           spiral,
+          { strokeDashoffset: 1 },
           {
             strokeDashoffset: 0,
-            duration: 2,
-            ease: "power4.out",
+            duration: 1.35,
+            ease: "power3.inOut",
           },
-          0.15,
+          0.12,
         )
-        .to(
+        .fromTo(
           copyLines,
+          { y: "110%" },
           {
             y: 0,
-            duration: 0.95,
-            stagger: 0.1,
+            duration: 0.62,
+            stagger: 0.08,
             ease: "power4.out",
           },
-          0.55,
+          1.15,
         )
-        .to(
+        .fromTo(
           point,
+          { opacity: 0, scale: 0.65 },
           {
             opacity: 1,
             scale: 1,
-            duration: 0.45,
+            duration: 0.35,
             ease: "power3.out",
           },
-          1.7,
+          1.28,
         );
+
+      return () => {
+        if (isMobile) {
+          ScrollTrigger.config({ ignoreMobileResize: false });
+        }
+      };
     },
     { scope: sectionRef },
   );
@@ -154,19 +177,19 @@ export default function GoldenRatio() {
   return (
     <section
       ref={sectionRef}
-      className="relative h-[190svh] min-h-[1330px] bg-[#f8f7f4] text-neutral-900 motion-reduce:h-[100svh] motion-reduce:min-h-[700px]"
+      className="relative h-[165svh] min-h-[1180px] bg-[#f8f7f4] text-neutral-900 sm:h-[175svh] md:h-[180svh] md:min-h-[1260px] motion-reduce:h-[100svh] motion-reduce:min-h-[700px]"
     >
-      <div className="sticky top-0 h-[100svh] min-h-[700px] overflow-hidden border-b border-neutral-300">
+      <div className="sticky top-0 h-[100svh] min-h-[620px] overflow-hidden border-b border-neutral-300 sm:min-h-[680px] md:min-h-[700px]">
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-[10%] flex justify-center md:top-1/2 md:-translate-y-[58%]"
+          className="absolute inset-x-0 top-[8%] flex justify-center md:top-[5svh]"
         >
           <div
             className="home-ratio-artwork flex w-full justify-center"
-            style={{ opacity: 0.45, transform: "translateY(36px) scale(0.975)" }}
+            style={{ opacity: 0.18, transform: "translateY(20px) scale(0.985)" }}
           >
             <svg
-              className="h-auto w-[118%] max-w-none sm:w-[92vw] md:h-[68svh] md:w-auto"
+              className="h-auto w-[112%] max-w-none sm:w-[90vw] md:h-[60svh] md:w-auto"
               fill="none"
               shapeRendering="geometricPrecision"
               viewBox="0 0 1160 758"
@@ -219,7 +242,7 @@ export default function GoldenRatio() {
                 stroke="#4f6b7a"
                 strokeLinecap="round"
                 strokeWidth="2.8"
-                style={{ strokeDasharray: 1, strokeDashoffset: -1 }}
+                style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
                 vectorEffect="non-scaling-stroke"
               />
 
@@ -239,10 +262,10 @@ export default function GoldenRatio() {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-14 z-10 mx-auto max-w-7xl px-6 sm:bottom-16 sm:px-8 md:bottom-20 md:px-12">
+        <div className="absolute inset-x-0 bottom-10 z-10 mx-auto max-w-7xl px-6 sm:bottom-14 sm:px-8 md:bottom-[7svh] md:px-12">
           <p
             aria-label="Proportion is a principle, not a formula."
-            className="max-w-[1000px] text-[38px] font-light leading-[0.92] tracking-[-0.05em] sm:text-[54px] md:text-[72px] lg:text-[88px]"
+            className="max-w-[1000px] text-[34px] font-light leading-[0.95] tracking-[-0.045em] sm:text-[48px] md:text-[68px] md:leading-[0.94] lg:text-[80px] xl:text-[84px]"
           >
             <span aria-hidden="true" className="block overflow-hidden">
               <span
