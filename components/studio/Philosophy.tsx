@@ -418,3 +418,9 @@ export default function Philosophy() {
             >
               02 / 03
             </span>
+          </div>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
