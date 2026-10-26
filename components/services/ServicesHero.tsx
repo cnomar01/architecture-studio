@@ -13,9 +13,9 @@ const serviceCopy: Record<WebsiteLocale, {
   services: { number: string; title: string; description: string }[];
 }> = {
   en: {
-    hero: ["Design.", "Develop.", "Experience."],
-    intro: "We are an architectural design studio first — from the initial idea through design development and a complete, coordinated proposal.",
-    lead: "Architectural design is our core service. When a project needs it, execution can be added as a separate, optional service.",
+    hero: ["Design.", "Build.", "Experience."],
+    intro: "We approach architecture as a complete process — from the first idea and design development to the final built space, when execution is requested.",
+    lead: "From concept to completion, we bring design together with optional execution to create spaces that are considered, precise, and built to last.",
     scroll: "Scroll to explore", label: "01 — Services",
     title: ["Architecture,", "interior design,", "and optional execution."],
     nextLabel: "02 — Projects", next: "Next",

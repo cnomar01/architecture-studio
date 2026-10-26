@@ -43,9 +43,9 @@ export default function ContactHero() {
 
             <Reveal>
               <p className="mt-12 max-w-[560px] text-[15px] font-light leading-[1.9] text-neutral-600 md:text-[17px]">
-                Have a project in mind? Tell us about it. Architectural and
-                interior design are our core services, with execution available
-                as a separate, optional scope when requested.
+                Have a project in mind? Tell us about it. From architecture
+                and interior design to design development and optional execution
+                when requested, we would be glad to hear from you.
               </p>
             </Reveal>
           </div>
