@@ -22,8 +22,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "Optional Execution",
-    text: "When requested, the approved design can move into execution through a separately agreed scope and precise coordination.",
+    title: "Build",
+    text: "Design moves into execution through precise coordination and attention to every element.",
   },
   {
     number: "04",
@@ -216,7 +216,7 @@ export default function Process() {
                 text-neutral-400
               "
             >
-              Listen / Design / Optional Execution / Experience
+              Listen / Design / Build / Experience
             </span>
 
             <span

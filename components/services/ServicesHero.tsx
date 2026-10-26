@@ -4,62 +4,36 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
-import { useLocale } from "@/components/i18n/LocaleProvider";
-import type { WebsiteLocale } from "@/lib/server/websiteProjects";
 
-const serviceCopy: Record<WebsiteLocale, {
-  hero: string[]; intro: string; lead: string; scroll: string; label: string;
-  title: string[]; nextLabel: string; next: string;
-  services: { number: string; title: string; description: string }[];
-}> = {
-  en: {
-    hero: ["Design.", "Build.", "Experience."],
-    intro: "We approach architecture as a complete process — from the first idea and design development to the final built space, when execution is requested.",
-    lead: "From concept to completion, we bring design together with optional execution to create spaces that are considered, precise, and built to last.",
-    scroll: "Scroll to explore", label: "01 — Services",
-    title: ["Architecture,", "interior design,", "and optional execution."],
-    nextLabel: "02 — Projects", next: "Next",
-    services: [
-      { number: "01", title: "Architecture", description: "Architectural concepts and complete design solutions shaped around context, function, and timeless form." },
-      { number: "02", title: "Interior Design", description: "Interior spaces developed through material, proportion, light, and a clear relationship between architecture and experience." },
-      { number: "03", title: "Design Development", description: "From concept to detailed design, we develop every element with precision, clarity, and attention to detail." },
-      { number: "04", title: "Optional Execution", description: "When requested, we can carry the approved design into execution through a separately agreed scope, coordination, and quality control." },
-    ],
+const services = [
+  {
+    number: "01",
+    title: "Architecture",
+    description:
+      "Architectural concepts and complete design solutions shaped around context, function, and timeless form.",
   },
-  ar: {
-    hero: ["نصمّم.", "نطوّر.", "نعيش."],
-    intro: "نحن في الأساس استوديو تصميم معماري، من الفكرة الأولى إلى تطوير التصميم وتقديم مقترح متكامل ومنسق.",
-    lead: "التصميم المعماري هو خدمتنا الأساسية. وعند حاجة المشروع، يمكن إضافة التنفيذ كخدمة منفصلة واختيارية.",
-    scroll: "مرّر للاستكشاف", label: "01 — الخدمات",
-    title: ["عمارة،", "تصميم داخلي،", "وتنفيذ اختياري."],
-    nextLabel: "02 — المشروعات", next: "التالي",
-    services: [
-      { number: "01", title: "العمارة", description: "أفكار وحلول تصميم معماري متكاملة تتشكل وفق السياق والوظيفة وجماليات خالدة." },
-      { number: "02", title: "التصميم الداخلي", description: "فراغات داخلية تتطور من خلال الخامات والنِسب والضوء وعلاقة واضحة بين العمارة وتجربة المكان." },
-      { number: "03", title: "تطوير التصميم", description: "من الفكرة إلى التصميم التفصيلي، نطوّر كل عنصر بدقة ووضوح واهتمام بالتفاصيل." },
-      { number: "04", title: "التنفيذ الاختياري", description: "عند الطلب، يمكننا نقل التصميم المعتمد إلى التنفيذ ضمن نطاق منفصل ومتفق عليه، مع التنسيق وضبط الجودة." },
-    ],
+  {
+    number: "02",
+    title: "Interior Design",
+    description:
+      "Interior spaces developed through material, proportion, light, and a clear relationship between architecture and experience.",
   },
-  it: {
-    hero: ["Progettare.", "Sviluppare.", "Vivere."],
-    intro: "Siamo prima di tutto uno studio di progettazione architettonica, dall’idea iniziale allo sviluppo e a una proposta completa e coordinata.",
-    lead: "La progettazione architettonica è il nostro servizio principale. Quando il progetto lo richiede, l’esecuzione può essere aggiunta come servizio separato e facoltativo.",
-    scroll: "Scorri per esplorare", label: "01 — Servizi",
-    title: ["Architettura,", "interior design,", "ed esecuzione facoltativa."],
-    nextLabel: "02 — Progetti", next: "Avanti",
-    services: [
-      { number: "01", title: "Architettura", description: "Concept e soluzioni architettoniche complete, definite da contesto, funzione e forme senza tempo." },
-      { number: "02", title: "Interior Design", description: "Spazi interni sviluppati attraverso materia, proporzione, luce e una relazione chiara tra architettura ed esperienza." },
-      { number: "03", title: "Sviluppo del progetto", description: "Dal concept al progetto di dettaglio, sviluppiamo ogni elemento con precisione, chiarezza e attenzione." },
-      { number: "04", title: "Esecuzione facoltativa", description: "Su richiesta, possiamo portare il progetto approvato in esecuzione con un incarico separato, coordinamento e controllo qualità." },
-    ],
+  {
+    number: "03",
+    title: "Design Development",
+    description:
+      "From concept to detailed design, we develop every element with precision, clarity, and attention to detail.",
   },
-};
+  {
+    number: "04",
+    title: "Optional Execution",
+    description:
+      "When requested, we carry the approved design into execution through coordinated delivery, quality control, and attention to every built detail.",
+  },
+];
 
 export default function ServicesHero() {
   const servicesRef = useRef<HTMLDivElement>(null);
-  const { locale } = useLocale();
-  const copy = serviceCopy[locale];
 
   useEffect(() => {
     if (!servicesRef.current) return;
@@ -149,7 +123,11 @@ export default function ServicesHero() {
                     xl:text-[165px]
                   "
                 >
-                  {copy.hero.map((line) => <span className="block" key={line}>{line}</span>)}
+                  <span className="block">Design.</span>
+
+                  <span className="block">Build.</span>
+
+                  <span className="block">Experience.</span>
                 </h1>
 
 
@@ -166,7 +144,8 @@ export default function ServicesHero() {
                     lg:mt-14
                   "
                 >
-                  {copy.intro}
+                  We approach architecture as a complete process — from the
+                  first idea and design development to the final built space.
                 </p>
 
               </div>
@@ -201,7 +180,9 @@ export default function ServicesHero() {
                       md:text-[22px]
                     "
                   >
-                    {copy.lead}
+                    From concept to completion, we bring design and execution
+                    together to create spaces that are considered, precise,
+                    and built to last.
                   </p>
 
 
@@ -230,7 +211,7 @@ export default function ServicesHero() {
                         text-neutral-500
                       "
                     >
-                      {copy.scroll}
+                      Scroll to explore
                     </span>
 
                   </div>
@@ -296,7 +277,7 @@ export default function ServicesHero() {
                   text-neutral-400
                 "
               >
-                {copy.label}
+                01 — Services
               </span>
             </div>
 
@@ -313,7 +294,11 @@ export default function ServicesHero() {
                 lg:text-[78px]
               "
             >
-              {copy.title.map((line) => <span className="block" key={line}>{line}</span>)}
+              Architecture,
+              <br />
+              interior,
+              <br />
+              design and execution.
             </h2>
 
           </div>
@@ -325,7 +310,7 @@ export default function ServicesHero() {
 
           <div className="border-t border-neutral-300">
 
-            {copy.services.map((service) => (
+            {services.map((service) => (
 
               <div
                 key={service.number}
@@ -475,7 +460,7 @@ export default function ServicesHero() {
                 text-neutral-400
               "
             >
-              {copy.nextLabel}
+              02 — Experience
             </span>
 
 
@@ -487,7 +472,7 @@ export default function ServicesHero() {
                 text-neutral-400
               "
             >
-              {copy.next}
+              Next
             </span>
 
           </div>

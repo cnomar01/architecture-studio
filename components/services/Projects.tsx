@@ -6,17 +6,10 @@ import Image from "next/image";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
 import { localizedYear, projectCopy, useLocale } from "@/components/i18n/LocaleProvider";
-import type { WebsiteLocale, WebsiteProject } from "@/lib/server/websiteProjects";
-
-const projectsCopy: Record<WebsiteLocale, { label: string; title: string[]; intro: string; all: string }> = {
-  en: { label: "02 — Projects", title: ["Selected", "Projects."], intro: "A selection of spaces shaped through architecture, interiors, design development, and optional execution where requested.", all: "View all projects" },
-  ar: { label: "02 — المشروعات", title: ["مشروعات", "مختارة."], intro: "مجموعة مختارة من المشروعات التي تشكلت من خلال العمارة والتصميم الداخلي وتطوير التصميم، مع تنفيذ اختياري عند الطلب.", all: "عرض كل المشروعات" },
-  it: { label: "02 — Progetti", title: ["Progetti", "selezionati."], intro: "Una selezione di spazi sviluppati attraverso architettura, interni e sviluppo progettuale, con esecuzione facoltativa su richiesta.", all: "Vedi tutti i progetti" },
-};
+import type { WebsiteProject } from "@/lib/server/websiteProjects";
 
 export default function ServicesProjects({ projects }: { projects: WebsiteProject[] }) {
   const { locale } = useLocale();
-  const copy = projectsCopy[locale];
   return (
     <section className="bg-[#f8f7f4] text-neutral-900">
       <Container
@@ -50,7 +43,7 @@ export default function ServicesProjects({ projects }: { projects: WebsiteProjec
                 text-neutral-400
               "
             >
-              {copy.label}
+              02 — Projects
             </p>
           </Reveal>
 
@@ -68,7 +61,9 @@ export default function ServicesProjects({ projects }: { projects: WebsiteProjec
                   lg:text-[125px]
                 "
               >
-                {copy.title.map((line) => <span className="block" key={line}>{line}</span>)}
+                Selected
+                <br />
+                Projects.
               </h2>
 
               <p
@@ -82,7 +77,8 @@ export default function ServicesProjects({ projects }: { projects: WebsiteProjec
                   md:text-[16px]
                 "
               >
-                {copy.intro}
+                A selection of spaces shaped through architecture,
+                interiors, design development, and execution.
               </p>
             </div>
           </Reveal>
@@ -305,7 +301,7 @@ export default function ServicesProjects({ projects }: { projects: WebsiteProjec
                   text-neutral-500
                 "
               >
-                {copy.all}
+                View all projects
               </span>
 
               <span

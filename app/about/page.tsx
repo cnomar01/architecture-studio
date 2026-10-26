@@ -31,7 +31,7 @@ const services = [
 
 export const metadata: Metadata = {
   title: "About | Mason & Arc",
-  description: "About Mason & Arc — an architectural design studio with optional execution support.",
+  description: "About Mason & Arc — architecture, design, and execution.",
   alternates: { canonical: "/about" },
 };
 

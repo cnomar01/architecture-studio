@@ -44,8 +44,8 @@ export default function ContactHero() {
             <Reveal>
               <p className="mt-12 max-w-[560px] text-[15px] font-light leading-[1.9] text-neutral-600 md:text-[17px]">
                 Have a project in mind? Tell us about it. From architecture
-                and interior design to design development and optional execution
-                when requested, we would be glad to hear from you.
+                and interior design to design development and execution,
+                we would be glad to hear from you.
               </p>
             </Reveal>
           </div>
@@ -121,7 +121,7 @@ export default function ContactHero() {
         <Reveal>
           <div className="flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
             <span>Start a conversation</span>
-            <span>Architecture · Design · Optional Execution</span>
+            <span>Architecture · Design · Execution</span>
           </div>
         </Reveal>
 

@@ -3,15 +3,17 @@
 import Link from "next/link";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
-import { useLocale } from "@/components/i18n/LocaleProvider";
+
+const themes = [
+  "Architecture",
+  "Interior Design",
+  "Design Development",
+  "Execution",
+  "Research",
+  "Collaboration",
+];
 
 export default function Themes() {
-  const { locale } = useLocale();
-  const copy = locale === "ar"
-    ? { label: "04 — استكشف", title: ["اكتشف", "المزيد."], themes: ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ الاختياري", "البحث", "التعاون"], end: "05 — النهاية" }
-    : locale === "it"
-      ? { label: "04 — Esplora", title: ["Scopri", "di più."], themes: ["Architettura", "Interior Design", "Sviluppo del progetto", "Esecuzione facoltativa", "Ricerca", "Collaborazione"], end: "05 — Fine" }
-      : { label: "04 — Explore", title: ["Explore", "more."], themes: ["Architecture", "Interior Design", "Design Development", "Optional Execution", "Research", "Collaboration"], end: "05 — End" };
   return (
     <section className="border-t border-neutral-300 bg-[#f8f7f4] text-neutral-900">
       <Container
@@ -47,7 +49,7 @@ export default function Themes() {
                 text-neutral-400
               "
             >
-              {copy.label}
+              04 — Explore
             </span>
           </Reveal>
 
@@ -65,7 +67,9 @@ export default function Themes() {
                 xl:text-[135px]
               "
             >
-              {copy.title.map((line) => <span className="block" key={line}>{line}</span>)}
+              Explore
+              <br />
+              more.
             </h2>
           </Reveal>
         </div>
@@ -73,7 +77,7 @@ export default function Themes() {
         {/* THEMES */}
 
         <div className="mt-24 border-t border-neutral-300 md:mt-36">
-          {copy.themes.map((theme, index) => (
+          {themes.map((theme, index) => (
             <Reveal key={theme}>
               <Link
                 href="/services"
@@ -169,7 +173,7 @@ export default function Themes() {
                 text-neutral-400
               "
             >
-              {copy.end}
+              05 — End
             </span>
           </div>
         </Reveal>

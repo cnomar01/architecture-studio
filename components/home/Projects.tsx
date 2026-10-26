@@ -16,7 +16,7 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { locale, copy } = useLocale();
-  const themes = locale === "ar" ? ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ الاختياري"] : locale === "it" ? ["Architettura", "Interni", "Sviluppo del progetto", "Esecuzione facoltativa"] : ["Architecture", "Interiors", "Design Development", "Optional Execution"];
+  const themes = locale === "ar" ? ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ"] : locale === "it" ? ["Architettura", "Interni", "Sviluppo del progetto", "Realizzazione"] : ["Architecture", "Interiors", "Design Development", "Execution"];
 
   useEffect(() => {
     if (!sectionRef.current) return;

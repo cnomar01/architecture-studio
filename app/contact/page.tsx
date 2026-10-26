@@ -4,7 +4,7 @@ import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact | Mason & Arc",
-  description: "Start a conversation with Mason & Arc about architectural design, interiors, or optional execution support.",
+  description: "Start a conversation with Mason & Arc about architecture, interiors, design development, and execution.",
   alternates: { canonical: "/contact" },
 };
 
