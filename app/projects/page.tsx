@@ -5,7 +5,7 @@ import ProjectArchive from "@/components/projects/ProjectArchive";
 
 export const metadata: Metadata = {
   title: "Projects | Mason & Arc",
-  description: "Selected architectural concepts and design proposals developed by Mason & Arc.",
+  description: "Selected architecture, interiors, and spaces developed by Mason & Arc.",
   alternates: { canonical: "/projects" },
 };
 export const dynamic = "force-dynamic";

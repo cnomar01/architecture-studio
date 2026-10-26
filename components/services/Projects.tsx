@@ -9,9 +9,9 @@ import { localizedYear, projectCopy, useLocale } from "@/components/i18n/LocaleP
 import type { WebsiteLocale, WebsiteProject } from "@/lib/server/websiteProjects";
 
 const projectsCopy: Record<WebsiteLocale, { label: string; title: string[]; intro: string; all: string }> = {
-  en: { label: "02 — Projects", title: ["Selected", "Projects."], intro: "A selection of architectural concepts and proposals developed for projects in Egypt and internationally.", all: "View all projects" },
-  ar: { label: "02 — المشروعات", title: ["مشروعات", "مختارة."], intro: "مجموعة مختارة من الأفكار والمقترحات المعمارية لمشروعات في مصر والأسواق الدولية.", all: "عرض كل المشروعات" },
-  it: { label: "02 — Progetti", title: ["Progetti", "selezionati."], intro: "Una selezione di concept e proposte architettoniche sviluppate per progetti in Egitto e a livello internazionale.", all: "Vedi tutti i progetti" },
+  en: { label: "02 — Projects", title: ["Selected", "Projects."], intro: "A selection of spaces shaped through architecture, interiors, design development, and optional execution where requested.", all: "View all projects" },
+  ar: { label: "02 — المشروعات", title: ["مشروعات", "مختارة."], intro: "مجموعة مختارة من المشروعات التي تشكلت من خلال العمارة والتصميم الداخلي وتطوير التصميم، مع تنفيذ اختياري عند الطلب.", all: "عرض كل المشروعات" },
+  it: { label: "02 — Progetti", title: ["Progetti", "selezionati."], intro: "Una selezione di spazi sviluppati attraverso architettura, interni e sviluppo progettuale, con esecuzione facoltativa su richiesta.", all: "Vedi tutti i progetti" },
 };
 
 export default function ServicesProjects({ projects }: { projects: WebsiteProject[] }) {

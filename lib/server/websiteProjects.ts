@@ -133,7 +133,7 @@ const fallbackProjects: WebsiteProject[] = [{
 }];
 
 function reportPublicDatabaseFallback(operation: string, error: unknown) {
-  console.error(`[public-portfolio] ${operation} failed; serving checked-in fallback content.`, error);
+  console.warn(`[public-portfolio] ${operation} failed; serving checked-in fallback content.`, error);
 }
 
 const fields = "id,slug,title,location,year,category,description,image_url,gallery,translations,content_sections,published,updated_at";

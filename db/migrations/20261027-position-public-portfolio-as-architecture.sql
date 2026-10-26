@@ -1,6 +1,6 @@
--- Align the existing public City Edge entry with the architecture-only website position.
--- This preserves the project name and assets while removing delivery, status, and
--- broad multidisciplinary claims from public CMS content.
+-- Align the existing public City Edge entry with its supported design scope.
+-- This preserves the project name and assets while removing unsupported delivery,
+-- construction-status, and multidisciplinary claims from public CMS content.
 
 UPDATE website_projects
 SET

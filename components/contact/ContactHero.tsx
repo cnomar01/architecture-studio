@@ -43,9 +43,9 @@ export default function ContactHero() {
 
             <Reveal>
               <p className="mt-12 max-w-[560px] text-[15px] font-light leading-[1.9] text-neutral-600 md:text-[17px]">
-                Have an architectural project in mind? Tell us about it. We
-                work with clients in Egypt and internationally, from early
-                concepts through design development and visualization.
+                Have a project in mind? Tell us about it. Architectural and
+                interior design are our core services, with execution available
+                as a separate, optional scope when requested.
               </p>
             </Reveal>
           </div>
@@ -121,7 +121,7 @@ export default function ContactHero() {
         <Reveal>
           <div className="flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
             <span>Start a conversation</span>
-            <span>Architectural Design Studio</span>
+            <span>Architecture · Design · Optional Execution</span>
           </div>
         </Reveal>
 

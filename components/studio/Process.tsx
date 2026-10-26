@@ -22,8 +22,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "Develop",
-    text: "The architectural concept is developed through coordinated drawings, material direction, and precise detailing.",
+    title: "Optional Execution",
+    text: "When requested, the approved design can move into execution through a separately agreed scope and precise coordination.",
   },
   {
     number: "04",
@@ -216,7 +216,7 @@ export default function Process() {
                 text-neutral-400
               "
             >
-              Listen / Design / Develop / Experience
+              Listen / Design / Optional Execution / Experience
             </span>
 
             <span

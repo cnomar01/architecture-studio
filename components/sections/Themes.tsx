@@ -8,10 +8,10 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 export default function Themes() {
   const { locale } = useLocale();
   const copy = locale === "ar"
-    ? { label: "04 — استكشف", title: ["اكتشف", "المزيد."], themes: ["التصميم المعماري", "استراتيجية الفكرة", "تطوير التصميم", "التوثيق الفني", "الإظهار المعماري", "البحث والتحليل"], end: "05 — النهاية" }
+    ? { label: "04 — استكشف", title: ["اكتشف", "المزيد."], themes: ["العمارة", "التصميم الداخلي", "تطوير التصميم", "التنفيذ الاختياري", "البحث", "التعاون"], end: "05 — النهاية" }
     : locale === "it"
-      ? { label: "04 — Esplora", title: ["Scopri", "di più."], themes: ["Progettazione architettonica", "Strategia del concept", "Sviluppo del progetto", "Documentazione tecnica", "Visualizzazione", "Ricerca e analisi"], end: "05 — Fine" }
-      : { label: "04 — Explore", title: ["Explore", "more."], themes: ["Architectural Design", "Concept Strategy", "Design Development", "Technical Documentation", "Visualization", "Research & Analysis"], end: "05 — End" };
+      ? { label: "04 — Esplora", title: ["Scopri", "di più."], themes: ["Architettura", "Interior Design", "Sviluppo del progetto", "Esecuzione facoltativa", "Ricerca", "Collaborazione"], end: "05 — Fine" }
+      : { label: "04 — Explore", title: ["Explore", "more."], themes: ["Architecture", "Interior Design", "Design Development", "Optional Execution", "Research", "Collaboration"], end: "05 — End" };
   return (
     <section className="border-t border-neutral-300 bg-[#f8f7f4] text-neutral-900">
       <Container
