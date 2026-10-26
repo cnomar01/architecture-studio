@@ -49,7 +49,7 @@ export const publicCopy = {
     featuredLabel: "Projects",
     featuredTitle1: "Experience",
     featuredTitle2: "our work.",
-    featuredIntro: "A selection of projects exploring architecture, interiors, material, and the experience of space.",
+    featuredIntro: "A selection of architectural concepts and design proposals for projects in Egypt and internationally.",
     view: "View",
     archive: "Archive",
     exploreAll: "Explore all projects",
@@ -100,7 +100,7 @@ export const publicCopy = {
     featuredLabel: "المشروعات",
     featuredTitle1: "اكتشف",
     featuredTitle2: "أعمالنا.",
-    featuredIntro: "مجموعة مختارة من المشروعات تستكشف العمارة والتصميم الداخلي والخامات وتجربة الفراغ.",
+    featuredIntro: "مجموعة مختارة من الأفكار والمقترحات المعمارية لمشروعات في مصر والأسواق الدولية.",
     view: "عرض",
     archive: "الأرشيف",
     exploreAll: "استكشف كل المشروعات",
@@ -151,7 +151,7 @@ export const publicCopy = {
     featuredLabel: "Progetti",
     featuredTitle1: "Scopri",
     featuredTitle2: "il nostro lavoro.",
-    featuredIntro: "Una selezione di progetti che esplora architettura, interni, materia ed esperienza dello spazio.",
+    featuredIntro: "Una selezione di concept e proposte architettoniche per progetti in Egitto e a livello internazionale.",
     view: "Apri",
     archive: "Archivio",
     exploreAll: "Esplora tutti i progetti",
@@ -228,7 +228,7 @@ export function localizedText(value: LocalizedText, locale: WebsiteLocale) {
 }
 
 export function localizedYear(value: string, locale: WebsiteLocale) {
-  if (locale === "ar") return value.replace(/ongoing/gi, "قيد التنفيذ");
-  if (locale === "it") return value.replace(/ongoing/gi, "In corso");
+  if (locale === "ar") return value.replace(/ongoing/gi, "قيد التنفيذ").replace(/design concept/gi, "مفهوم تصميمي");
+  if (locale === "it") return value.replace(/ongoing/gi, "In corso").replace(/design concept/gi, "Concept progettuale");
   return value;
 }

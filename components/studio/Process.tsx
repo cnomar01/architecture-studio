@@ -22,8 +22,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "Build",
-    text: "Design moves into execution through precise coordination and attention to every element.",
+    title: "Develop",
+    text: "The architectural concept is developed through coordinated drawings, material direction, and precise detailing.",
   },
   {
     number: "04",
@@ -216,7 +216,7 @@ export default function Process() {
                 text-neutral-400
               "
             >
-              Listen / Design / Build / Experience
+              Listen / Design / Develop / Experience
             </span>
 
             <span

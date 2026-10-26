@@ -20,9 +20,9 @@ const fallbackProjects: WebsiteProject[] = [{
   slug: "city-edge",
   title: "City Edge",
   location: "Fayoum, Egypt",
-  year: "2025 — Ongoing",
+  year: "Design concept",
   category: "Architecture",
-  description: "City Edge is a 12-storey mixed-use building in Fayoum, Egypt, marking Mason & Arc’s first project in Egypt. The building combines retail, offices, medical clinics, residential units, and a rooftop pool and barbecue area within one mixed-use development.",
+  description: "City Edge is the name developed by Mason & Arc for this architectural design concept in Fayoum, Egypt. The proposal explores a clear mixed-use composition, a grounded base, and a layered façade identity.",
   image_url: "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
   gallery: ["/images/projects/city-edge/city-edge-exterior-wip.jpeg"],
   translations: {
@@ -30,13 +30,13 @@ const fallbackProjects: WebsiteProject[] = [{
       title: "سيتي إيدج",
       location: "الفيوم، مصر",
       category: "عمارة",
-      description: "سيتي إيدج مبنى متعدد الاستخدامات من 12 طابقًا في الفيوم، وهو أول مشروعات Mason & Arc في مصر. يجمع المشروع بين المحلات التجارية والمكاتب والعيادات الطبية والوحدات السكنية، مع حمام سباحة ومنطقة للشواء على السطح.",
+      description: "سيتي إيدج هو الاسم الذي طوّرته Mason & Arc لهذا المفهوم المعماري في الفيوم، مصر. يستكشف المقترح تكوينًا واضحًا متعدد الاستخدامات، وقاعدة راسخة، وهوية متدرجة للواجهة.",
     },
     it: {
       title: "City Edge",
       location: "Fayoum, Egitto",
       category: "Architettura",
-      description: "City Edge è un edificio polifunzionale di 12 piani a Fayoum, il primo progetto di Mason & Arc in Egitto. Il complesso riunisce spazi commerciali, uffici, cliniche mediche, residenze e una terrazza con piscina e area barbecue.",
+      description: "City Edge è il nome sviluppato da Mason & Arc per questo concept architettonico a Fayoum, in Egitto. La proposta esplora una composizione polifunzionale chiara, un basamento definito e un’identità di facciata stratificata.",
     },
   },
   content_sections: [
@@ -101,11 +101,11 @@ const fallbackProjects: WebsiteProject[] = [{
     {
       id: "execution",
       eyebrow: emptyLocalizedText,
-      title: { en: "Execution", ar: "التنفيذ", it: "Esecuzione" },
+      title: { en: "Design Development", ar: "تطوير التصميم", it: "Sviluppo del progetto" },
       body: {
-        en: "City Edge is being delivered as a fully coordinated mixed-use development, bringing architectural design, building systems, façade construction, vertical transportation, mechanical and electrical works, and interior finishing together as one integrated process.",
-        ar: "يُنفَّذ سيتي إيدج كمشروع متعدد الاستخدامات متكامل التنسيق، يجمع التصميم المعماري وأنظمة المبنى وتنفيذ الواجهات والنقل الرأسي والأعمال الميكانيكية والكهربائية والتشطيبات الداخلية ضمن عملية واحدة متكاملة.",
-        it: "City Edge viene realizzato come sviluppo polifunzionale pienamente coordinato, riunendo progettazione architettonica, sistemi dell’edificio, facciate, trasporto verticale, impianti meccanici ed elettrici e finiture interne in un unico processo integrato.",
+        en: "The architectural concept is developed through coordinated plans, elevations, sections, façade studies, and visualizations that communicate one clear design direction.",
+        ar: "تتطور الفكرة المعمارية من خلال مخططات وواجهات وقطاعات ودراسات للواجهة وإظهارات منسقة تنقل اتجاهًا تصميميًا واحدًا وواضحًا.",
+        it: "Il concept architettonico viene sviluppato attraverso piante, prospetti, sezioni, studi di facciata e visualizzazioni coordinate che comunicano una direzione progettuale chiara.",
       },
       hero_statement: { en: "From\nconcept\nto reality.", ar: "من الفكرة\nإلى الواقع.", it: "Dal concetto\nalla realtà." },
       layout: "editorial",
@@ -153,6 +153,77 @@ const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): 
 function localized(value: unknown): LocalizedText { const item = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; return { en: typeof item.en === "string" ? item.en : "", ar: typeof item.ar === "string" ? item.ar : "", it: typeof item.it === "string" ? item.it : "" }; }
 function publicImage(projectId: string, source: string, updatedAt: unknown, params: string) { if (source !== databaseImageMarker && !source.startsWith("data:image/")) return source; const version = new Date(updatedAt as string | number | Date).getTime() || 0; return `/api/public/website-projects/${encodeURIComponent(projectId)}/image?${params}&v=${version}`; }
 
+export function applyPublicEditorialGuardrails(project: WebsiteProject): WebsiteProject {
+  if (project.slug !== "city-edge") return project;
+
+  const allImages = project.content_sections.flatMap((section) => section.images);
+  const conceptImage = allImages.find((image) => image.id === "city-edge-concept-board");
+  const exteriorImage = allImages.find((image) => image.id === "city-edge-the-work");
+  const cleanDescription = {
+    en: "City Edge is the name developed by Mason & Arc for this architectural design concept in Fayoum, Egypt. The proposal explores a clear mixed-use composition, a grounded base, and a layered façade identity.",
+    ar: "سيتي إيدج هو الاسم الذي طوّرته Mason & Arc لهذا المفهوم المعماري في الفيوم، مصر. يستكشف المقترح تكوينًا واضحًا متعدد الاستخدامات، وقاعدة راسخة، وهوية متدرجة للواجهة.",
+    it: "City Edge è il nome sviluppato da Mason & Arc per questo concept architettonico a Fayoum, in Egitto. La proposta esplora una composizione polifunzionale chiara, un basamento definito e un’identità di facciata stratificata.",
+  };
+  const sections: WebsiteProjectSection[] = [
+    {
+      id: "concept",
+      eyebrow: emptyLocalizedText,
+      title: { en: "Concept", ar: "الفكرة التصميمية", it: "Concept" },
+      body: {
+        en: "The City Edge concept organizes the architectural program as a legible vertical composition. Its massing and façade language are developed as one identity, responding to the site through proportion, rhythm, and layered depth.",
+        ar: "ينظم مفهوم سيتي إيدج البرنامج المعماري في تكوين رأسي واضح. وتتطور الكتل ولغة الواجهات ضمن هوية واحدة تستجيب للموقع من خلال النِسب والإيقاع والعمق المتدرج.",
+        it: "Il concept City Edge organizza il programma architettonico in una composizione verticale leggibile. Volumi e linguaggio di facciata sono sviluppati come un’unica identità, in risposta al sito attraverso proporzione, ritmo e profondità.",
+      },
+      hero_statement: emptyLocalizedText,
+      layout: "editorial",
+      is_visible: true,
+      images: conceptImage ? [{
+        ...conceptImage,
+        caption: { en: "City Edge architectural concept study.", ar: "دراسة الفكرة المعمارية لسيتي إيدج.", it: "Studio del concept architettonico City Edge." },
+        alt_text: { en: "City Edge architectural concept board", ar: "لوحة الفكرة المعمارية لسيتي إيدج", it: "Tavola del concept architettonico City Edge" },
+      }] : [],
+    },
+    {
+      id: "scope",
+      eyebrow: emptyLocalizedText,
+      title: { en: "Design Scope", ar: "نطاق التصميم", it: "Ambito progettuale" },
+      body: {
+        en: "Architectural Concept\nDesign Development\nFaçade Studies\nArchitectural Visualization",
+        ar: "الفكرة المعمارية\nتطوير التصميم\nدراسات الواجهات\nالإظهار المعماري",
+        it: "Concept architettonico\nSviluppo del progetto\nStudi di facciata\nVisualizzazione architettonica",
+      },
+      hero_statement: emptyLocalizedText,
+      layout: "editorial",
+      is_visible: true,
+      images: [],
+    },
+    {
+      id: "documentation",
+      eyebrow: { en: "Design Documentation", ar: "توثيق التصميم", it: "Documentazione di progetto" },
+      title: { en: "The Design.", ar: "التصميم.", it: "Il progetto." },
+      body: emptyLocalizedText,
+      hero_statement: emptyLocalizedText,
+      layout: "full_bleed",
+      is_visible: true,
+      images: exteriorImage ? [exteriorImage] : [],
+    },
+  ];
+
+  return {
+    ...project,
+    title: "City Edge",
+    year: "Design concept",
+    category: "Architecture",
+    description: cleanDescription.en,
+    translations: {
+      ...project.translations,
+      ar: { title: "سيتي إيدج", location: "الفيوم، مصر", category: "عمارة", description: cleanDescription.ar },
+      it: { title: "City Edge", location: "Fayoum, Egitto", category: "Architettura", description: cleanDescription.it },
+    },
+    content_sections: sections,
+  };
+}
+
 function legacySections(row: Record<string, unknown>): WebsiteProjectSection[] {
   const id = String(row.id || ""); const updatedAt = row.updated_at;
   return (Array.isArray(row.content_sections) ? row.content_sections : []).flatMap((item, index) => {
@@ -180,7 +251,7 @@ async function sectionRows(projectIds: string[]) {
   const result = await query<Record<string, unknown>>(`SELECT section.*, COALESCE(jsonb_agg(jsonb_build_object('id', image.id, 'image_url', CASE WHEN image.image_url LIKE 'data:image/%' THEN '${databaseImageMarker}' ELSE image.image_url END, 'caption', image.caption, 'alt_text', image.alt_text, 'layout', image.layout) ORDER BY image.display_order) FILTER (WHERE image.id IS NOT NULL), '[]'::jsonb) AS images FROM website_project_sections section LEFT JOIN website_project_section_images image ON image.section_id=section.id WHERE section.project_id = ANY($1::text[]) GROUP BY section.id ORDER BY section.display_order`, [projectIds]);
   const grouped = new Map<string, Record<string, unknown>[]>(); for (const row of result.rows) { const key = String(row.project_id); grouped.set(key, [...(grouped.get(key) || []), row]); } return grouped;
 }
-async function hydrate(rows: Record<string, unknown>[]) { const grouped = await sectionRows(rows.map((row) => String(row.id))); return rows.map((row) => mapWebsiteProject(row, grouped.get(String(row.id)))); }
+async function hydrate(rows: Record<string, unknown>[]) { const grouped = await sectionRows(rows.map((row) => String(row.id))); return rows.map((row) => applyPublicEditorialGuardrails(mapWebsiteProject(row, grouped.get(String(row.id))))); }
 
 const loadPublishedWebsiteProjects = unstable_cache(async () => {
   const result = await query<Record<string, unknown>>(`SELECT ${publicFields} FROM website_projects WHERE published=true ORDER BY updated_at DESC`);
@@ -192,20 +263,20 @@ export async function listPublishedWebsiteProjects() {
     const projects = await loadPublishedWebsiteProjects();
     // A freshly provisioned database is valid but empty. Keep the checked-in
     // portfolio visible until the studio republishes its CMS projects.
-    return projects.length ? projects : fallbackProjects;
+    return projects.length ? projects : fallbackProjects.map(applyPublicEditorialGuardrails);
   } catch (error) {
     reportPublicDatabaseFallback("listPublishedWebsiteProjects", error);
-    return fallbackProjects;
+    return fallbackProjects.map(applyPublicEditorialGuardrails);
   }
 }
 export async function getPublishedWebsiteProject(slug: string) {
   try {
     const projects = await loadPublishedWebsiteProjects();
     return projects.find((project) => project.slug === slug)
-      || (projects.length ? null : fallbackProjects.find((project) => project.slug === slug) || null);
+      || (projects.length ? null : fallbackProjects.map(applyPublicEditorialGuardrails).find((project) => project.slug === slug) || null);
   } catch (error) {
     reportPublicDatabaseFallback("getPublishedWebsiteProject", error);
-    return fallbackProjects.find((project) => project.slug === slug) || null;
+    return fallbackProjects.map(applyPublicEditorialGuardrails).find((project) => project.slug === slug) || null;
   }
 }
 export async function listAdminWebsiteProjects() { const result = await query<Record<string, unknown>>(`SELECT ${fields} FROM website_projects ORDER BY updated_at DESC`); return hydrate(result.rows); }

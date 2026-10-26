@@ -4,36 +4,62 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { WebsiteLocale } from "@/lib/server/websiteProjects";
 
-const services = [
-  {
-    number: "01",
-    title: "Architecture",
-    description:
-      "Architectural concepts and complete design solutions shaped around context, function, and timeless form.",
+const serviceCopy: Record<WebsiteLocale, {
+  hero: string[]; intro: string; lead: string; scroll: string; label: string;
+  title: string[]; nextLabel: string; next: string;
+  services: { number: string; title: string; description: string }[];
+}> = {
+  en: {
+    hero: ["Think.", "Design.", "Define."],
+    intro: "We focus exclusively on architectural design — from understanding the brief to developing a clear, coordinated proposal.",
+    lead: "For clients in Egypt and internationally, we turn project ambitions into architecture shaped by context, function, proportion, and identity.",
+    scroll: "Scroll to explore", label: "01 — Services",
+    title: ["Architectural", "design at every", "stage."],
+    nextLabel: "02 — Projects", next: "Next",
+    services: [
+      { number: "01", title: "Architectural Design", description: "Complete architectural proposals shaped around the site, the program, the people, and a clear design identity." },
+      { number: "02", title: "Concept & Strategy", description: "Early studies that define priorities, massing, circulation, spatial relationships, and the central architectural idea." },
+      { number: "03", title: "Design Development", description: "Concepts developed into coordinated plans, elevations, sections, material directions, and architectural details." },
+      { number: "04", title: "Visualization", description: "Architectural images, diagrams, and presentations that help clients understand, compare, and refine the proposal." },
+    ],
   },
-  {
-    number: "02",
-    title: "Interior Design",
-    description:
-      "Interior spaces developed through material, proportion, light, and a clear relationship between architecture and experience.",
+  ar: {
+    hero: ["نفكر.", "نصمم.", "نحدد."],
+    intro: "نركز حصريًا على التصميم المعماري، من فهم متطلبات المشروع إلى تطوير مقترح واضح ومنسق.",
+    lead: "نحوّل طموحات العملاء في مصر والأسواق الدولية إلى عمارة يصوغها السياق والوظيفة والنِسب والهوية.",
+    scroll: "مرّر للاستكشاف", label: "01 — الخدمات",
+    title: ["تصميم معماري", "مدروس في", "كل مرحلة."],
+    nextLabel: "02 — المشروعات", next: "التالي",
+    services: [
+      { number: "01", title: "التصميم المعماري", description: "مقترحات معمارية متكاملة تتشكل وفق الموقع والبرنامج والمستخدمين وهوية تصميمية واضحة." },
+      { number: "02", title: "الفكرة والاستراتيجية", description: "دراسات أولية تحدد الأولويات والكتل والحركة والعلاقات الفراغية والفكرة المعمارية الأساسية." },
+      { number: "03", title: "تطوير التصميم", description: "تطوير الفكرة إلى مخططات وواجهات وقطاعات وتوجهات للخامات وتفاصيل معمارية منسقة." },
+      { number: "04", title: "الإظهار المعماري", description: "صور ورسومات توضيحية وعروض تساعد العملاء على فهم المقترح ومقارنته وتطويره." },
+    ],
   },
-  {
-    number: "03",
-    title: "Design Development",
-    description:
-      "From concept to detailed design, we develop every element with precision, clarity, and attention to detail.",
+  it: {
+    hero: ["Pensare.", "Progettare.", "Definire."],
+    intro: "Ci concentriamo esclusivamente sulla progettazione architettonica, dalla comprensione del brief allo sviluppo di una proposta chiara e coordinata.",
+    lead: "Per clienti in Egitto e a livello internazionale, trasformiamo le ambizioni in architettura definita da contesto, funzione, proporzione e identità.",
+    scroll: "Scorri per esplorare", label: "01 — Servizi",
+    title: ["Progettazione", "architettonica in", "ogni fase."],
+    nextLabel: "02 — Progetti", next: "Avanti",
+    services: [
+      { number: "01", title: "Progettazione architettonica", description: "Proposte complete definite dal sito, dal programma, dalle persone e da una chiara identità progettuale." },
+      { number: "02", title: "Concept e strategia", description: "Studi iniziali che definiscono priorità, volumi, percorsi, relazioni spaziali e idea architettonica guida." },
+      { number: "03", title: "Sviluppo del progetto", description: "Concept sviluppati in piante, prospetti, sezioni, indicazioni materiche e dettagli architettonici coordinati." },
+      { number: "04", title: "Visualizzazione", description: "Immagini, diagrammi e presentazioni che aiutano a comprendere, confrontare e perfezionare la proposta." },
+    ],
   },
-  {
-    number: "04",
-    title: "Execution",
-    description:
-      "We carry the design into reality through coordinated execution, quality control, and attention to every built detail.",
-  },
-];
+};
 
 export default function ServicesHero() {
   const servicesRef = useRef<HTMLDivElement>(null);
+  const { locale } = useLocale();
+  const copy = serviceCopy[locale];
 
   useEffect(() => {
     if (!servicesRef.current) return;
@@ -123,11 +149,7 @@ export default function ServicesHero() {
                     xl:text-[165px]
                   "
                 >
-                  <span className="block">Design.</span>
-
-                  <span className="block">Build.</span>
-
-                  <span className="block">Experience.</span>
+                  {copy.hero.map((line) => <span className="block" key={line}>{line}</span>)}
                 </h1>
 
 
@@ -144,8 +166,7 @@ export default function ServicesHero() {
                     lg:mt-14
                   "
                 >
-                  We approach architecture as a complete process — from the
-                  first idea and design development to the final built space.
+                  {copy.intro}
                 </p>
 
               </div>
@@ -180,9 +201,7 @@ export default function ServicesHero() {
                       md:text-[22px]
                     "
                   >
-                    From concept to completion, we bring design and execution
-                    together to create spaces that are considered, precise,
-                    and built to last.
+                    {copy.lead}
                   </p>
 
 
@@ -211,7 +230,7 @@ export default function ServicesHero() {
                         text-neutral-500
                       "
                     >
-                      Scroll to explore
+                      {copy.scroll}
                     </span>
 
                   </div>
@@ -277,7 +296,7 @@ export default function ServicesHero() {
                   text-neutral-400
                 "
               >
-                01 — Services
+                {copy.label}
               </span>
             </div>
 
@@ -294,11 +313,7 @@ export default function ServicesHero() {
                 lg:text-[78px]
               "
             >
-              Architecture,
-              <br />
-              interior,
-              <br />
-              design and execution.
+              {copy.title.map((line) => <span className="block" key={line}>{line}</span>)}
             </h2>
 
           </div>
@@ -310,7 +325,7 @@ export default function ServicesHero() {
 
           <div className="border-t border-neutral-300">
 
-            {services.map((service) => (
+            {copy.services.map((service) => (
 
               <div
                 key={service.number}
@@ -460,7 +475,7 @@ export default function ServicesHero() {
                 text-neutral-400
               "
             >
-              02 — Experience
+              {copy.nextLabel}
             </span>
 
 
@@ -472,7 +487,7 @@ export default function ServicesHero() {
                 text-neutral-400
               "
             >
-              Next
+              {copy.next}
             </span>
 
           </div>

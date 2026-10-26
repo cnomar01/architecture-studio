@@ -28,22 +28,22 @@ const notoArabic = Noto_Sans_Arabic({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.masonandarc.com"),
-  title: { default: "Mason & Arc — Architecture · Design · Execution", template: "%s | Mason & Arc" },
-  description: "Mason & Arc is an architecture, design, and execution studio developing spaces through design, material, and delivery.",
+  title: { default: "Mason & Arc — Architectural Design Studio", template: "%s | Mason & Arc" },
+  description: "Mason & Arc is an architectural design studio for clients in Egypt and internationally.",
   applicationName: "Mason & Arc",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: "/",
     siteName: "Mason & Arc",
-    title: "Mason & Arc — Architecture · Design · Execution",
-    description: "Architecture, design, and execution by Mason & Arc.",
-    images: [{ url: "/images/hero-florence-sunset.png", width: 1672, height: 941, alt: "Mason & Arc — Architecture · Design · Execution" }],
+    title: "Mason & Arc — Architectural Design Studio",
+    description: "Architectural design for clients in Egypt and internationally.",
+    images: [{ url: "/images/hero-florence-sunset.png", width: 1672, height: 941, alt: "Mason & Arc — Architectural Design Studio" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mason & Arc — Architecture · Design · Execution",
-    description: "Architecture, design, and execution by Mason & Arc.",
+    title: "Mason & Arc — Architectural Design Studio",
+    description: "Architectural design for clients in Egypt and internationally.",
     images: ["/images/hero-florence-sunset.png"],
   },
 

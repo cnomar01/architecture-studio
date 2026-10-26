@@ -5,36 +5,43 @@ import gsap from "gsap";
 
 import Reveal from "@/components/animations/Reveal";
 import Container from "@/components/shared/Container";
+import { useLocale } from "@/components/i18n/LocaleProvider";
+import type { WebsiteLocale } from "@/lib/server/websiteProjects";
 
-const timeline = [
-  {
-    year: "2024",
-    title: "The Beginning",
-    description:
-      "Mason & Arc begins with a simple idea: architecture should connect design, material, and the experience of space.",
+const timelineCopy: Record<WebsiteLocale, { label: string; title: string[]; items: { year: string; title: string; description: string }[] }> = {
+  en: {
+    label: "03 — Design Process", title: ["How a project", "takes shape."],
+    items: [
+      { year: "01", title: "Brief", description: "We clarify the project goals, program, users, site conditions, and the decisions the design must resolve." },
+      { year: "02", title: "Concept", description: "Research and early studies become a clear architectural idea, massing strategy, and spatial organization." },
+      { year: "03", title: "Development", description: "The concept is refined through coordinated plans, elevations, sections, materials, and architectural details." },
+      { year: "04", title: "Presentation", description: "Drawings, diagrams, and visualizations communicate the proposal clearly for review and decision-making." },
+    ],
   },
-  {
-    year: "2025",
-    title: "Design & Development",
-    description:
-      "The studio expands its approach across architecture, interiors, and detailed design development.",
+  ar: {
+    label: "03 — عملية التصميم", title: ["كيف يتشكل", "المشروع."],
+    items: [
+      { year: "01", title: "المتطلبات", description: "نحدد أهداف المشروع وبرنامجه ومستخدميه وظروف الموقع والقرارات التي يجب أن يعالجها التصميم." },
+      { year: "02", title: "الفكرة", description: "تتحول الدراسات الأولية إلى فكرة معمارية واضحة واستراتيجية للكتل وتنظيم الفراغات." },
+      { year: "03", title: "التطوير", description: "تُصقل الفكرة من خلال مخططات وواجهات وقطاعات وخامات وتفاصيل معمارية منسقة." },
+      { year: "04", title: "العرض", description: "تنقل الرسومات والمخططات التوضيحية والإظهارات المقترح بوضوح للمراجعة واتخاذ القرار." },
+    ],
   },
-  {
-    year: "2026",
-    title: "Building the Vision",
-    description:
-      "Ideas move from the first sketch into carefully considered built spaces.",
+  it: {
+    label: "03 — Processo progettuale", title: ["Come prende forma", "un progetto."],
+    items: [
+      { year: "01", title: "Brief", description: "Chiariamo obiettivi, programma, utenti, condizioni del sito e decisioni che il progetto deve risolvere." },
+      { year: "02", title: "Concept", description: "Ricerca e studi iniziali diventano un’idea architettonica chiara, una strategia volumetrica e un’organizzazione spaziale." },
+      { year: "03", title: "Sviluppo", description: "Il concept viene affinato attraverso piante, prospetti, sezioni, materiali e dettagli architettonici coordinati." },
+      { year: "04", title: "Presentazione", description: "Disegni, diagrammi e visualizzazioni comunicano la proposta con chiarezza per la revisione e le decisioni." },
+    ],
   },
-  {
-    year: "NOW",
-    title: "Looking Forward",
-    description:
-      "A growing body of work shaped by experimentation, collaboration, and a continuous search for better architecture.",
-  },
-];
+};
 
 export default function Timeline() {
   const sectionRef = useRef<HTMLElement>(null);
+  const { locale } = useLocale();
+  const copy = timelineCopy[locale];
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -98,7 +105,7 @@ export default function Timeline() {
                 text-neutral-400
               "
             >
-              03 — Timeline
+              {copy.label}
             </span>
           </Reveal>
 
@@ -116,9 +123,7 @@ export default function Timeline() {
                 xl:text-[135px]
               "
             >
-              How we
-              <br />
-              got here.
+              {copy.title.map((line) => <span className="block" key={line}>{line}</span>)}
             </h2>
           </Reveal>
         </div>
@@ -126,7 +131,7 @@ export default function Timeline() {
         {/* TIMELINE */}
 
         <div className="mt-32 border-t border-neutral-300 md:mt-48">
-          {timeline.map((item, index) => (
+          {copy.items.map((item, index) => (
             <div
               key={item.year}
               className="

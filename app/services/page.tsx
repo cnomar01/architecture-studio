@@ -7,7 +7,7 @@ import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
 
 export const metadata: Metadata = {
   title: "Services | Mason & Arc",
-  description: "Architecture, interiors, design development, and execution by Mason & Arc.",
+  description: "Architectural design, concept strategy, design development, and visualization by Mason & Arc.",
   alternates: { canonical: "/services" },
 };
 

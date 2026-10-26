@@ -4,12 +4,12 @@ export const projects = [
     slug: "city-edge",
     title: "City Edge",
     location: "Fayoum, Egypt",
-    year: "2025 — Ongoing",
+    year: "Design concept",
 
     image: "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
 
     description:
-      "City Edge is a 12-storey mixed-use building in Fayoum, Egypt, marking Mason & Arc’s first project in Egypt. The building combines retail, offices, medical clinics, residential units, and a rooftop pool and barbecue area within one mixed-use development.",
+      "City Edge is the name developed by Mason & Arc for this architectural design concept in Fayoum, Egypt. The proposal explores a clear mixed-use composition, a grounded base, and a layered façade identity.",
 
     gallery: [
       "/images/projects/city-edge/city-edge-exterior-wip.jpeg",
