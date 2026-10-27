@@ -1,8 +1,6 @@
-import { unstable_cache } from "next/cache";
 import { query } from "@/lib/server/db";
 
-const fallbackImage = "/images/hero-florence-sunset.png";
-export const websiteHeroCacheTag = "website-home-hero";
+const fallbackImage = "/images/hero.png";
 
 export function isWebsiteImage(value: unknown): value is string {
   return typeof value === "string" && (
@@ -12,26 +10,16 @@ export function isWebsiteImage(value: unknown): value is string {
   ) && value.length <= 5_500_000;
 }
 
-const loadWebsiteHeroImage = unstable_cache(async () => {
-  const result = await query<{ image_url: string | null; is_data_image: boolean; updated_at: string }>(
-    `SELECT CASE WHEN value->>'image_url' LIKE 'data:image/%' THEN NULL ELSE value->>'image_url' END AS image_url,
-      value->>'image_url' LIKE 'data:image/%' AS is_data_image,updated_at
-     FROM website_settings WHERE key='home_hero' LIMIT 1`,
+export async function getWebsiteHeroImage() {
+  if (!process.env.DATABASE_URL) return fallbackImage;
+
+  const result = await query<{ value: { image_url?: unknown }; updated_at: string }>(
+    "SELECT value,updated_at FROM website_settings WHERE key='home_hero' LIMIT 1",
   );
   const row = result.rows[0];
-  if (!row) return fallbackImage;
-  if (row.is_data_image) {
-    const version = new Date(row.updated_at).getTime() || 0;
-    return `/api/public/website-home-hero/image?v=${version}`;
-  }
-  return isWebsiteImage(row.image_url) ? row.image_url : fallbackImage;
-}, ["website-home-hero-v2"], { tags: [websiteHeroCacheTag], revalidate: 3600 });
-
-export async function getWebsiteHeroImage() {
-  try {
-    return await loadWebsiteHeroImage();
-  } catch (error) {
-    console.error("[public-home] Hero CMS query failed; serving the checked-in hero image.", error);
-    return fallbackImage;
-  }
+  const image = row?.value?.image_url;
+  if (!isWebsiteImage(image) || image === "/images/hero-florence-sunset.png") return fallbackImage;
+  if (!image.startsWith("data:image/")) return image;
+  const version = new Date(row.updated_at).getTime() || 0;
+  return `/api/public/website-home-hero/image?v=${version}`;
 }

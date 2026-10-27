@@ -5,7 +5,7 @@ import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: { imageUrl?: string }) {
+export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: string }) {
   const { locale, copy } = useLocale();
   const heroRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
@@ -24,9 +24,14 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
+      if (reduceMotion) {
+        gsap.set(content, { y: 0, opacity: 1 });
+        return;
+      }
+
       gsap.set(title, {
-        scale: 1.28,
-        y: 18,
+        scale: 1.035,
+        y: 14,
         transformOrigin: locale === "ar" ? "right bottom" : "left bottom",
         opacity: 1,
       });
@@ -86,19 +91,17 @@ export default function Hero({ imageUrl = "/images/hero-florence-sunset.png" }: 
       <div className="absolute inset-0 bg-black/10" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
-      <div className="absolute bottom-[92px] left-6 right-6 z-20 sm:bottom-[96px] sm:left-7 sm:right-7 md:bottom-[102px] md:left-8 md:right-8 lg:bottom-[105px] lg:left-10 lg:right-10">
+      <div className="absolute bottom-[72px] left-6 right-6 z-20 sm:bottom-[80px] sm:left-8 sm:right-8 md:bottom-[88px] md:left-10 md:right-10 lg:bottom-[92px] lg:left-16 lg:right-16">
         <h1
           ref={titleRef}
-          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] text-[58px] font-light leading-[.95] sm:text-[88px] md:text-[108px] lg:text-[128px]" : "origin-bottom-left font-[var(--font-display)] text-[48px] font-normal uppercase leading-[0.76] tracking-[-0.025em] sm:text-[88px] md:text-[108px] lg:text-[130px] xl:text-[150px] 2xl:text-[170px]"} will-change-transform`}
+          className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] tracking-[-0.02em]" : "origin-bottom-left font-[var(--font-body)] tracking-[-0.052em]"} max-w-[800px] text-[clamp(2.25rem,8.2vw,3.25rem)] font-light leading-[1.045] sm:text-[clamp(3.25rem,4.9vw,4.75rem)] will-change-transform`}
         >
-          <span className="block">{copy.heroDesign}</span>
           <span className="block">{copy.heroBuild}</span>
           <span className="block">{copy.heroExperience}</span>
         </h1>
 
-        <div ref={contentRef} className="mt-5 max-w-[500px] opacity-0 sm:mt-6 md:mt-7">
-          <div className="mb-3 h-px w-[82px] bg-white" />
-          <p className="max-w-[520px] text-[11px] font-medium leading-[1.5] text-white sm:text-[16px] md:text-[17px]">
+        <div ref={contentRef} className="mt-6 max-w-[740px] opacity-0 sm:mt-7">
+          <p className="text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-white/95 sm:text-[16px] md:text-[17px] lg:text-[18px]">
             {copy.heroIntro}
           </p>
         </div>

@@ -1,8 +1,10 @@
+import SecondaryLogo from "@/components/shared/SecondaryLogo";
+
 export default function NotFound() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-black px-6 text-white">
       <div className="max-w-2xl text-center">
-        <p className="mb-5 text-[10px] uppercase tracking-[0.35em] text-white/50">Mason & Arc</p>
+        <SecondaryLogo title="Mason & Arc" className="mx-auto mb-5 h-8 w-8 text-white/50" />
         <p className="text-xs uppercase tracking-[0.3em] text-white/40">404</p>
         <h1 className="mt-4 font-[var(--font-display)] text-5xl uppercase leading-[0.9] sm:text-7xl">Page not found</h1>
         <p className="mx-auto mt-6 max-w-md text-sm leading-7 text-white/60">The page you are looking for does not exist or has moved.</p>

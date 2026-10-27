@@ -1,8 +1,7 @@
-import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { audit, requireServerUser } from "@/lib/server/auth";
 import { query } from "@/lib/server/db";
-import { isWebsiteImage, websiteHeroCacheTag } from "@/lib/server/websiteHero";
+import { isWebsiteImage } from "@/lib/server/websiteHero";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,7 +19,7 @@ export async function GET() {
     await requireServerUser(["Owner"]);
     const result = await query<{ value: { image_url?: unknown } }>("SELECT value FROM website_settings WHERE key='home_hero' LIMIT 1");
     const imageUrl = result.rows[0]?.value?.image_url;
-    return NextResponse.json({ image_url: isWebsiteImage(imageUrl) ? imageUrl : "/images/hero-florence-sunset.png" }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ image_url: isWebsiteImage(imageUrl) ? imageUrl : "/images/hero.png" }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) { return failure(error); }
 }
 
@@ -35,7 +34,6 @@ export async function PATCH(request: Request) {
       [JSON.stringify({ image_url: body.image_url })],
     );
     await audit("website_home_hero.updated", "WebsiteSettings", "home_hero", { actor: user.id });
-    revalidateTag(websiteHeroCacheTag, { expire: 0 });
     return NextResponse.json({ image_url: body.image_url });
   } catch (error) { return failure(error); }
 }

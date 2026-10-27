@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 
 import Container from "@/components/shared/Container";
+import SecondaryLogo from "@/components/shared/SecondaryLogo";
 
 export default function StudioHero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -85,15 +86,8 @@ export default function StudioHero() {
             01 — Studio
           </span>
 
-          <span
-            className="
-              text-[9px]
-              uppercase
-              tracking-[0.35em]
-              text-neutral-400
-            "
-          >
-            Mason & Arc
+          <span className="text-neutral-400" title="Mason & Arc">
+            <SecondaryLogo className="h-5 w-5" />
           </span>
         </div>
 

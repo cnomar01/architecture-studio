@@ -28,6 +28,7 @@ export default function Philosophy() {
           once: true,
         },
       });
+
     }, sectionRef);
 
     return () => ctx.revert();

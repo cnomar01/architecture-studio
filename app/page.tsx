@@ -2,17 +2,17 @@ import Loader from "../components/ui/Loader";
 import Hero from "../components/home/Hero";
 import Manifesto from "../components/home/Manifesto";
 import Projects from "../components/home/Projects";
-import { getWebsiteHeroImage } from "@/lib/server/websiteHero";
+const approvedHeroImage = "https://d2ol7oe51mr4n9.cloudfront.net/user_3HDVjjdApfFlxvKkHr2XjkIPjln/a038160e-176f-4621-996a-29acbc8cbf46.png";
 import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [projects, heroImage] = await Promise.all([listPublishedWebsiteProjects(), getWebsiteHeroImage()]);
+  const projects = await listPublishedWebsiteProjects();
   return (
     <>
       <Loader />
-      <Hero imageUrl={heroImage} />
+      <Hero imageUrl={approvedHeroImage} />
       <Manifesto />
       <Projects projects={projects} />
     </>
