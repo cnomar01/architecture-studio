@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale } from "@/components/i18n/LocaleProvider";
@@ -19,16 +18,9 @@ export default function Footer() {
           <div>
             <Link
               href="/"
-              aria-label="Mason & Arc home"
-              className="block w-[150px] transition-opacity hover:opacity-60"
+              className="text-[24px] font-light tracking-[0.25em]"
             >
-              <Image
-                src="/images/logo-mason-arc.png"
-                alt="Mason & Arc"
-                width={500}
-                height={160}
-                className="h-auto w-full object-contain object-left brightness-0"
-              />
+              MASON & ARC
             </Link>
 
             <p className="mt-6 max-w-[340px] text-[14px] font-light leading-[1.8] text-neutral-500">

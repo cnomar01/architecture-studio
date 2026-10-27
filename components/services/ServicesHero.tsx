@@ -26,9 +26,9 @@ const services = [
   },
   {
     number: "04",
-    title: "Optional Execution",
+    title: "Design & Delivery Advisory",
     description:
-      "When requested, we carry the approved design into execution through coordinated delivery, quality control, and attention to every built detail.",
+      "Where required, we advise on the selection and coordination of specialist delivery partners, helping carry the architectural vision through to realization with clarity and care.",
   },
 ];
 
