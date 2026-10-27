@@ -482,7 +482,7 @@ export default function AboutPage() {
             >
               Let&apos;s
               <br />
-              build.
+              design.
             </h2>
 
           </div>

@@ -31,3 +31,10 @@ test("locked brand lines and languages remain present", () => {
   assert.match(locale, /Built as intended\./);
   assert.match(locale, /const supportedLocales: WebsiteLocale\[\] = \["en", "ar", "it"\]/);
 });
+
+test("public calls to action remain design-first", () => {
+  const about = read("app/about/page.tsx");
+
+  assert.match(about, /design\./i);
+  assert.doesNotMatch(about, /Let(?:&apos;|’)s\s*[\s\S]{0,40}build\./i);
+});
