@@ -21,6 +21,19 @@ test("owner password recovery is delivered to the studio Gmail inbox", () => {
   assert.equal(helper.passwordResetDeliveryAddress("client@example.com"), "client@example.com");
 });
 
+test("owner recovery token uses strict constant-time matching", () => {
+  const previous = process.env.OWNER_RECOVERY_TOKEN;
+  process.env.OWNER_RECOVERY_TOKEN = "a".repeat(64);
+  try {
+    assert.equal(helper.matchesOwnerRecoveryToken("a".repeat(64)), true);
+    assert.equal(helper.matchesOwnerRecoveryToken("b".repeat(64)), false);
+    assert.equal(helper.matchesOwnerRecoveryToken("short"), false);
+  } finally {
+    if (previous === undefined) delete process.env.OWNER_RECOVERY_TOKEN;
+    else process.env.OWNER_RECOVERY_TOKEN = previous;
+  }
+});
+
 test("password recovery integration in an isolated, disposable database schema", { skip: !process.env.DATABASE_URL }, async (t) => {
   const schema = `codex_auth_test_${randomBytes(6).toString("hex")}`;
   assert.match(schema, /^codex_auth_test_[a-f0-9]{12}$/);
@@ -79,10 +92,6 @@ test("password recovery integration in an isolated, disposable database schema",
       assert.notEqual(row.token_hash, token);
       assert.ok(row.expires_at > new Date());
     });
-    await t.test("owner reset is routed to the studio recovery inbox", async () => {
-      await api.requestPasswordReset("owner@masonandarc.com");
-      assert.equal(sent.at(-1).to, "Masonandarc@gmail.com");
-    });
     await t.test("a concurrent reset succeeds once, changes password and invalidates sessions", async () => {
       await pool.query("INSERT INTO sessions VALUES('test-session','test-user')");
       const token = tokenFromMail();
@@ -110,6 +119,24 @@ test("password recovery integration in an isolated, disposable database schema",
       failDelivery = true;
       await assert.rejects(api.requestPasswordReset("test@example.invalid"), /Simulated/);
       assert.equal((await pool.query("SELECT * FROM password_reset_tokens")).rowCount, count);
+    });
+    await t.test("owner reset is routed to the studio recovery inbox", async () => {
+      failDelivery = false;
+      await api.requestPasswordReset("owner@masonandarc.com");
+      assert.equal(sent.at(-1).to, "Masonandarc@gmail.com");
+    });
+    await t.test("owner recovery token resets the password once", async () => {
+      const previous = process.env.OWNER_RECOVERY_TOKEN;
+      process.env.OWNER_RECOVERY_TOKEN = "a".repeat(64);
+      try {
+        assert.equal(await api.recoverOwnerAccount("a".repeat(64), "temporary-owner-password-123"), true);
+        assert.equal(await api.recoverOwnerAccount("a".repeat(64), "another-owner-password-123"), false);
+        const owner = (await pool.query("SELECT * FROM users WHERE id='owner-user'")).rows[0];
+        assert.equal(await bcrypt.compare("temporary-owner-password-123", owner.password_hash), true);
+      } finally {
+        if (previous === undefined) delete process.env.OWNER_RECOVERY_TOKEN;
+        else process.env.OWNER_RECOVERY_TOKEN = previous;
+      }
     });
     await t.test("rate limits are atomic across concurrent requests", async () => {
       const results = await Promise.all(Array.from({ length: 6 }, () => api.allowAuthAttempt("test-key", 3)));
