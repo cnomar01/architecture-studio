@@ -16,6 +16,11 @@ test("password validation rejects short passwords and bcrypt byte truncation", (
   assert.equal(helper.validResetPassword("ع".repeat(37)), false);
 });
 
+test("owner password recovery is delivered to the studio Gmail inbox", () => {
+  assert.equal(helper.passwordResetDeliveryAddress("owner@masonandarc.com"), "Masonandarc@gmail.com");
+  assert.equal(helper.passwordResetDeliveryAddress("client@example.com"), "client@example.com");
+});
+
 test("password recovery integration in an isolated, disposable database schema", { skip: !process.env.DATABASE_URL }, async (t) => {
   const schema = `codex_auth_test_${randomBytes(6).toString("hex")}`;
   assert.match(schema, /^codex_auth_test_[a-f0-9]{12}$/);
@@ -58,6 +63,7 @@ test("password recovery integration in an isolated, disposable database schema",
       sent.push(mail);
     } } });
     await pool.query("INSERT INTO users(id,email,password_hash) VALUES ('test-user','test@example.invalid','old-test-hash')");
+    await pool.query("INSERT INTO users(id,email,password_hash) VALUES ('owner-user','owner@masonandarc.com','owner-test-hash')");
     const tokenFromMail = () => new URLSearchParams(new URL(sent.at(-1).text.match(/https?:\/\/\S+/)[0]).hash.slice(1)).get("token");
     await t.test("unknown email has no token and no delivery", async () => {
       await api.requestPasswordReset("missing@example.invalid");
@@ -72,6 +78,10 @@ test("password recovery integration in an isolated, disposable database schema",
       assert.equal(row.token_hash, hash(token));
       assert.notEqual(row.token_hash, token);
       assert.ok(row.expires_at > new Date());
+    });
+    await t.test("owner reset is routed to the studio recovery inbox", async () => {
+      await api.requestPasswordReset("owner@masonandarc.com");
+      assert.equal(sent.at(-1).to, "Masonandarc@gmail.com");
     });
     await t.test("a concurrent reset succeeds once, changes password and invalidates sessions", async () => {
       await pool.query("INSERT INTO sessions VALUES('test-session','test-user')");
