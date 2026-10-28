@@ -12,7 +12,7 @@ const timelineCopy = {
     label: "03 — Timeline",
     title: ["How we", "got here."],
     items: [
-      { year: "2015", title: "Professional Practice in Italy", description: "The founder begins developing professional experience in Italy, contributing to and supervising the delivery of major projects." },
+      { year: "2015", title: "Professional Practice in Italy", description: "The professional experience behind Mason & Arc begins developing in Italy, including contributions to and supervision of major projects." },
       { year: "2024", title: "A New Chapter in Egypt", description: "Mason & Arc is established in Egypt as a new and independent architectural design studio." },
       { year: "2025", title: "Design & Development", description: "The studio develops its approach across architecture, interiors, and detailed design development." },
       { year: "NOW", title: "Looking Forward", description: "A growing body of work shaped by experimentation, collaboration, and a continuous search for better architecture." },
@@ -22,7 +22,7 @@ const timelineCopy = {
     label: "03 — المسار",
     title: ["كيف", "وصلنا إلى هنا."],
     items: [
-      { year: "2015", title: "خبرة مهنية في إيطاليا", description: "بدأ المؤسس تطوير خبرته المهنية في إيطاليا، مشاركًا في مشروعات كبيرة ومشرفًا على تنفيذها." },
+      { year: "2015", title: "خبرة مهنية في إيطاليا", description: "بدأت الخبرة المهنية التي تستند إليها Mason & Arc في إيطاليا، وشملت المشاركة في مشروعات كبيرة والإشراف على تنفيذها." },
       { year: "2024", title: "فصل جديد في مصر", description: "تأسس Mason & Arc في مصر كاستوديو جديد ومستقل للتصميم المعماري." },
       { year: "2025", title: "التصميم والتطوير", description: "طوّر الاستوديو منهجه عبر العمارة والتصميم الداخلي والتطوير التفصيلي." },
       { year: "الآن", title: "نحو المستقبل", description: "مجموعة متنامية من الأعمال تتشكل بالتجربة والتعاون والبحث المستمر عن عمارة أفضل." },
@@ -32,7 +32,7 @@ const timelineCopy = {
     label: "03 — Percorso",
     title: ["Come siamo", "arrivati fin qui."],
     items: [
-      { year: "2015", title: "Esperienza professionale in Italia", description: "Il fondatore inizia a sviluppare la propria esperienza professionale in Italia, contribuendo e supervisionando la realizzazione di importanti progetti." },
+      { year: "2015", title: "Esperienza professionale in Italia", description: "Inizia a maturare in Italia l’esperienza professionale che oggi informa Mason & Arc, con il contributo e la supervisione di importanti progetti." },
       { year: "2024", title: "Un nuovo capitolo in Egitto", description: "Mason & Arc nasce in Egitto come nuovo studio indipendente di progettazione architettonica." },
       { year: "2025", title: "Progetto e sviluppo", description: "Lo studio sviluppa il proprio approccio tra architettura, interni e sviluppo dettagliato del progetto." },
       { year: "OGGI", title: "Guardare avanti", description: "Un insieme crescente di lavori, guidato da sperimentazione, collaborazione e ricerca continua di un’architettura migliore." },
