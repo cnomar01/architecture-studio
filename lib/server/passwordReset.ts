@@ -6,10 +6,7 @@ import { sendGoogleMail } from "./googleMail";
 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
 
 export function passwordResetDeliveryAddress(accountEmail: string) {
-  const configured = process.env.OWNER_RECOVERY_EMAIL?.trim();
-  if (accountEmail.trim().toLowerCase() !== "owner@masonandarc.com") return accountEmail;
-  if (configured && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(configured)) return configured;
-  return "Masonandarc@gmail.com";
+  return accountEmail;
 }
 
 export async function allowAuthAttempt(key: string, limit: number) {
