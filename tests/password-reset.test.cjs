@@ -16,8 +16,9 @@ test("password validation rejects short passwords and bcrypt byte truncation", (
   assert.equal(helper.validResetPassword("ع".repeat(37)), false);
 });
 
-test("owner password recovery is delivered to the studio Gmail inbox", () => {
-  assert.equal(helper.passwordResetDeliveryAddress("owner@masonandarc.com"), "Masonandarc@gmail.com");
+test("password recovery is delivered to each account's real email", () => {
+  assert.equal(helper.passwordResetDeliveryAddress("Masonandarc@gmail.com"), "Masonandarc@gmail.com");
+  assert.equal(helper.passwordResetDeliveryAddress("omar@example.com"), "omar@example.com");
   assert.equal(helper.passwordResetDeliveryAddress("client@example.com"), "client@example.com");
 });
 
@@ -63,7 +64,7 @@ test("password recovery integration in an isolated, disposable database schema",
       sent.push(mail);
     } } });
     await pool.query("INSERT INTO users(id,email,password_hash) VALUES ('test-user','test@example.invalid','old-test-hash')");
-    await pool.query("INSERT INTO users(id,email,password_hash) VALUES ('owner-user','owner@masonandarc.com','owner-test-hash')");
+    await pool.query("INSERT INTO users(id,email,password_hash) VALUES ('owner-user','Masonandarc@gmail.com','owner-test-hash')");
     const tokenFromMail = () => new URLSearchParams(new URL(sent.at(-1).text.match(/https?:\/\/\S+/)[0]).hash.slice(1)).get("token");
     await t.test("unknown email has no token and no delivery", async () => {
       await api.requestPasswordReset("missing@example.invalid");
@@ -107,9 +108,9 @@ test("password recovery integration in an isolated, disposable database schema",
       await assert.rejects(api.requestPasswordReset("test@example.invalid"), /Simulated/);
       assert.equal((await pool.query("SELECT * FROM password_reset_tokens")).rowCount, count);
     });
-    await t.test("owner reset is routed to the studio recovery inbox", async () => {
+    await t.test("owner reset is delivered to the owner's real email", async () => {
       failDelivery = false;
-      await api.requestPasswordReset("owner@masonandarc.com");
+      await api.requestPasswordReset("Masonandarc@gmail.com");
       assert.equal(sent.at(-1).to, "Masonandarc@gmail.com");
     });
     await t.test("rate limits are atomic across concurrent requests", async () => {
