@@ -1,4 +1,4 @@
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { query, withTransaction } from "./db";
 import { sendGoogleMail } from "./googleMail";
@@ -54,39 +54,6 @@ export async function requestPasswordReset(email: string) {
 
 export function validResetPassword(password: string) {
   return password.length >= 12 && Buffer.byteLength(password, "utf8") <= 72;
-}
-
-export function matchesOwnerRecoveryToken(token: string) {
-  const expected = process.env.OWNER_RECOVERY_TOKEN?.trim() || "";
-  if (!/^[a-f0-9]{64}$/i.test(token) || !/^[a-f0-9]{64}$/i.test(expected)) return false;
-  return timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(expected, "hex"));
-}
-
-export async function recoverOwnerAccount(token: string, password: string) {
-  if (!matchesOwnerRecoveryToken(token) || !validResetPassword(password)) return false;
-  const tokenHash = hash(`owner-recovery:${token}`);
-  const passwordHash = await bcrypt.hash(password, 12);
-  return withTransaction(async (client) => {
-    const owner = await client.query<{ id: string }>(
-      `SELECT id FROM users
-       WHERE role='Owner' AND active=true
-       ORDER BY CASE WHEN lower(email)='owner@masonandarc.com' THEN 0 ELSE 1 END, id
-       LIMIT 1 FOR UPDATE`,
-    );
-    const ownerId = owner.rows[0]?.id;
-    if (!ownerId) return false;
-    const consumed = await client.query(
-      `INSERT INTO password_reset_tokens(token_hash,user_id,expires_at,used_at)
-       VALUES($1,$2,NOW()+INTERVAL '10 minutes',NOW())
-       ON CONFLICT(token_hash) DO NOTHING RETURNING user_id`,
-      [tokenHash, ownerId],
-    );
-    if (!consumed.rows[0]) return false;
-    await client.query("UPDATE users SET password_hash=$1,updated_at=NOW() WHERE id=$2", [passwordHash, ownerId]);
-    await client.query("DELETE FROM sessions WHERE user_id=$1", [ownerId]);
-    await client.query("INSERT INTO audit_logs(actor_user_id,action,entity_type,entity_id) VALUES ($1,'auth.owner_recovery','User',$1)", [ownerId]);
-    return true;
-  });
 }
 
 export async function resetPassword(token: string, password: string) {
