@@ -10,6 +10,7 @@ const contactCopy = {
     intro: "Have a project in mind? Tell us about it. From architecture and interior design to detailed design development and delivery advisory, we would be glad to hear from you.",
     email: "Email",
     egypt: "Egypt",
+    whatsapp: "WhatsApp",
     italy: "Italy",
     instagram: "Instagram",
     start: "Start a conversation",
@@ -20,6 +21,7 @@ const contactCopy = {
     intro: "هل لديك مشروع؟ حدّثنا عنه. من العمارة والتصميم الداخلي إلى التطوير التفصيلي واستشارات التنفيذ عند الحاجة، يسعدنا أن نسمع منك.",
     email: "البريد الإلكتروني",
     egypt: "مصر",
+    whatsapp: "واتساب",
     italy: "إيطاليا",
     instagram: "إنستغرام",
     start: "ابدأ محادثة",
@@ -30,6 +32,7 @@ const contactCopy = {
     intro: "Hai un progetto in mente? Raccontacelo. Dall’architettura e dagli interni allo sviluppo del dettaglio e alla consulenza per la realizzazione, saremo lieti di ascoltarti.",
     email: "Email",
     egypt: "Egitto",
+    whatsapp: "WhatsApp",
     italy: "Italia",
     instagram: "Instagram",
     start: "Inizia una conversazione",
@@ -113,6 +116,22 @@ export default function ContactHero() {
 
                 <span className="text-[13px] font-light">
                   +20 1044007555
+                </span>
+              </a>
+
+              {/* WhatsApp */}
+              <a
+                href="https://wa.me/201044007555"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between gap-6 border-b border-neutral-300 py-7 transition-opacity duration-300 hover:opacity-50"
+              >
+                <span className="text-[10px] uppercase tracking-[0.35em] text-neutral-400">
+                  {copy.whatsapp}
+                </span>
+
+                <span dir="ltr" className="text-[13px] font-light">
+                  +20 10 440 07555 ↗
                 </span>
               </a>
 

@@ -6,7 +6,7 @@ import Themes from "@/components/sections/Themes";
 import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
 
 export const metadata: Metadata = {
-  title: "Services | Mason & Arc",
+  title: "Services",
   description: "Architecture, interiors, detailed design development, and optional delivery advisory by Mason & Arc.",
   alternates: { canonical: "/services" },
 };

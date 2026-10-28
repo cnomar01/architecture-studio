@@ -25,10 +25,20 @@ export async function POST(request: Request) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
 
     const details = [phone && `Phone: ${phone}`, company && `Company: ${company}`, notes && `Inquiry: ${notes}`].filter(Boolean).join("\n");
+    const leadId = randomUUID();
     await query(
       `INSERT INTO leads (id, company, status, contact_name, email, notes) VALUES ($1, $2, $3, $4, $5, $6)`,
-      [randomUUID(), company || "Website Inquiry", "New", name, email, details],
+      [leadId, company || "Website Inquiry", "New", name, email, details],
     );
+
+    try {
+      await query(
+        `INSERT INTO notifications (id, user_id, type, priority, title, body) VALUES ($1, NULL, $2, $3, $4, $5)`,
+        [randomUUID(), "Website Inquiry", "High", `New website inquiry from ${name}`, `${company || "Direct inquiry"} · ${email}`],
+      );
+    } catch (notificationError) {
+      console.error("Lead notification failed", { leadId, notificationError });
+    }
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {

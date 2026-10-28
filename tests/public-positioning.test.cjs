@@ -50,3 +50,26 @@ test("About presents Italy as the founder's experience and Egypt as a new indepe
   assert.match(about, /Execution supervision is available selectively when requested by the client/);
   assert.doesNotMatch(about, /Founded in Italy|first branch in Egypt|350\+/i);
 });
+
+test("About and contact content remain complete in English, Arabic, and Italian", () => {
+  const about = read("app/about/page.tsx");
+  const contact = read("app/contact/ContactForm.tsx");
+
+  assert.match(about, /خبرة مهنية في إيطاليا/);
+  assert.match(about, /Esperienza professionale in Italia/);
+  assert.match(contact, /حدّثنا عن مشروعك/);
+  assert.match(contact, /Raccontaci il tuo progetto/);
+  assert.match(contact, /\/privacy/);
+});
+
+test("services expose the same four design-first disciplines throughout", () => {
+  const themes = read("components/sections/Themes.tsx");
+  assert.doesNotMatch(themes, /\"Research\"|\"Collaboration\"|\"البحث\"|\"التعاون\"/);
+});
+
+test("public metadata relies on the root Mason & Arc title template without duplication", () => {
+  for (const path of ["app/about/layout.tsx", "app/services/page.tsx", "app/projects/page.tsx", "app/contact/page.tsx"]) {
+    const source = read(path);
+    assert.doesNotMatch(source, /title:\s*\"[^\"]*\| Mason & Arc\"/);
+  }
+});
