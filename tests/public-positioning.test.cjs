@@ -41,3 +41,12 @@ test("public calls to action remain design-first", () => {
   assert.match(loader, /FROM CONCEPT TO DETAIL/);
   assert.doesNotMatch(loader, /FROM DRAWING TO REALITY/);
 });
+
+test("About presents Italy as the founder's experience and Egypt as a new independent chapter", () => {
+  const about = read("app/about/page.tsx");
+
+  assert.match(about, /Beginning in 2015/);
+  assert.match(about, /new and independent chapter/);
+  assert.match(about, /Execution supervision is available selectively when requested by the client/);
+  assert.doesNotMatch(about, /Founded in Italy|first branch in Egypt|350\+/i);
+});

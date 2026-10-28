@@ -14,18 +14,13 @@ const services = [
   },
   {
     number: "03",
-    title: "Exterior Design",
-    text: "The spaces between buildings are as important as the buildings themselves. Our exterior design work considers landscape, circulation, planting, outdoor living, lighting, materials, and the relationship between architecture and its surrounding environment.",
+    title: "Design Development",
+    text: "From concept to detailed design, we develop every element with precision, clarity, and careful attention to material, proportion, and constructability.",
   },
   {
     number: "04",
-    title: "Urban Planning",
-    text: "At a larger scale, Mason & Arc works with the relationships between buildings, public spaces, movement, landscape, and the wider city. Urban planning allows individual projects to become part of a larger and more connected environment.",
-  },
-  {
-    number: "05",
-    title: "Research",
-    text: "Research is an important part of the design process. We investigate materials, technologies, spatial strategies, environmental conditions, and emerging ways of living and working in order to develop solutions that are relevant to each project's specific context.",
+    title: "Design & Delivery Advisory",
+    text: "Where required, we advise on the selection and coordination of specialist delivery partners. Execution supervision is available selectively when requested by the client.",
   },
 ];
 
@@ -97,11 +92,11 @@ export default function AboutPage() {
                 md:text-[100px]
               "
             >
-              2001
+              2015
             </div>
 
             <p className="mt-4 text-[9px] uppercase tracking-[0.2em] text-black/50">
-              Founded in Italy
+              Professional practice in Italy
             </p>
           </div>
 
@@ -117,10 +112,9 @@ export default function AboutPage() {
                 lg:text-[42px]
               "
             >
-              Mason & Arc was founded in Italy in 2001, with a commitment to
-              creating architecture and interiors that combine strong design
-              thinking with careful attention to detail, materiality, and the
-              experience of space.
+              Beginning in 2015, the founder of Mason & Arc developed his
+              professional experience in Italy, contributing to and supervising
+              the delivery of major projects across different scales and contexts.
             </p>
 
             <p
@@ -133,10 +127,9 @@ export default function AboutPage() {
                 md:text-[16px]
               "
             >
-              Over the years, the practice has developed a diverse body of
-              work spanning more than 350 projects across interior and exterior
-              environments, developing extensive experience across different
-              scales, contexts, and design challenges.
+              This experience shaped a rigorous understanding of architecture,
+              detailed coordination, material quality, and the relationship
+              between design intent and the completed space.
             </p>
 
           </div>
@@ -145,7 +138,7 @@ export default function AboutPage() {
 
 
       {/* =====================================================
-          350+
+          PROFESSIONAL EXPERIENCE
       ===================================================== */}
 
       <section className="bg-black px-6 py-28 text-white md:px-10 md:py-40">
@@ -164,19 +157,19 @@ export default function AboutPage() {
                 lg:text-[360px]
               "
             >
-              350+
+              ITALY
             </div>
           </div>
 
           <div className="lg:col-span-3 lg:col-start-10">
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/50">
-              Projects
+              From 2015
             </p>
 
             <p className="mt-5 text-[14px] leading-[1.55] text-white/75 md:text-[16px]">
-              More than three hundred and fifty projects across interior and
-              exterior environments have shaped the experience and approach of
-              Mason & Arc.
+              Years of professional practice in Italy, including the supervision
+              of major projects, inform the precision and attention to detail
+              behind the studio today.
             </p>
           </div>
 
@@ -185,7 +178,7 @@ export default function AboutPage() {
 
 
       {/* =====================================================
-          ITALY → EGYPT
+          A NEW CHAPTER IN EGYPT
       ===================================================== */}
 
       <section className="px-6 py-28 md:px-10 md:py-40">
@@ -210,11 +203,9 @@ export default function AboutPage() {
                 lg:text-[170px]
               "
             >
-              Italy
+              A new
               <br />
-              <span className="text-black/25">→</span>
-              <br />
-              Egypt
+              chapter
             </h2>
 
           </div>
@@ -231,14 +222,15 @@ export default function AboutPage() {
                   md:text-[32px]
                 "
               >
-                From our first studio in Italy to our new presence in Egypt.
+                A new, independent architectural design studio based in Egypt.
               </p>
 
               <p className="mt-8 text-[14px] leading-[1.6] text-black/65 md:text-[16px]">
-                Today, Mason & Arc brings this experience to a new chapter with
-                the opening of its first branch in Egypt, extending the practice
-                beyond its Italian origins while maintaining the same design
-                approach, standards, and attention to detail.
+                After returning and settling in Egypt, the founder established
+                Mason & Arc as a new and independent chapter. The studio focuses
+                on architecture, interiors, and detailed design development for
+                projects in Egypt and internationally, with delivery advisory and
+                execution supervision available selectively when requested.
               </p>
 
             </div>
@@ -333,7 +325,7 @@ export default function AboutPage() {
           </div>
 
           <span className="hidden text-[9px] uppercase tracking-[0.2em] text-black/40 md:block">
-            01 — 05
+            01 — 04
           </span>
 
         </div>
