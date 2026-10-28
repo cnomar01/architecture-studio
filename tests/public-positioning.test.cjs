@@ -73,3 +73,20 @@ test("public metadata relies on the root Mason & Arc title template without dupl
     assert.doesNotMatch(source, /title:\s*\"[^\"]*\| Mason & Arc\"/);
   }
 });
+
+test("website inquiries trigger both an internal and asynchronous email alert", () => {
+  const leads = read("app/api/leads/route.ts");
+  assert.match(leads, /INSERT INTO notifications/);
+  assert.match(leads, /after\(async \(\) =>/);
+  assert.match(leads, /sendGoogleMail/);
+  assert.match(leads, /LEADS_NOTIFICATION_EMAIL/);
+});
+
+test("new website projects start with a multilingual architecture case-study template", () => {
+  const editor = read("app/app/admin/website-projects/page.tsx");
+  for (const section of ["Project Overview", "Concept", "Site & Context", "Plans & Sections", "Façade Development", "Spatial Experience", "Materials & Details", "Visualization"]) {
+    assert.match(editor, new RegExp(section.replace(/[&]/g, "\\&")));
+  }
+  assert.match(editor, /Project publishing kit/);
+  assert.match(editor, /Nothing is public until Publish is selected/);
+});

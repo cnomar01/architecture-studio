@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { query } from "@/lib/server/db";
+import { sendGoogleMail } from "@/lib/server/googleMail";
 
 export const runtime = "nodejs";
 
@@ -39,6 +40,31 @@ export async function POST(request: Request) {
     } catch (notificationError) {
       console.error("Lead notification failed", { leadId, notificationError });
     }
+
+    const safeName = name.replace(/[\r\n]+/g, " ");
+    after(async () => {
+      try {
+        await sendGoogleMail({
+          to: process.env.LEADS_NOTIFICATION_EMAIL || "Masonandarc@gmail.com",
+          subject: `New Mason & Arc website inquiry — ${safeName}`,
+          text: [
+            "A new inquiry was submitted through masonandarc.com.",
+            "",
+            `Name: ${name}`,
+            `Email: ${email}`,
+            `Phone: ${phone || "Not provided"}`,
+            `Company: ${company || "Not provided"}`,
+            "",
+            "Project / inquiry:",
+            notes,
+            "",
+            `Lead ID: ${leadId}`,
+          ].join("\n"),
+        });
+      } catch (emailError) {
+        console.error("Lead email notification failed", { leadId, emailError });
+      }
+    });
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {
