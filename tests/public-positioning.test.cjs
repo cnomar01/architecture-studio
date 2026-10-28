@@ -34,7 +34,10 @@ test("locked brand lines and languages remain present", () => {
 
 test("public calls to action remain design-first", () => {
   const about = read("app/about/page.tsx");
+  const loader = read("components/ui/Loader.tsx");
 
   assert.match(about, /design\./i);
   assert.doesNotMatch(about, /Let(?:&apos;|’)s\s*[\s\S]{0,40}build\./i);
+  assert.match(loader, /FROM CONCEPT TO DETAIL/);
+  assert.doesNotMatch(loader, /FROM DRAWING TO REALITY/);
 });

@@ -135,7 +135,7 @@ export default function AboutPage() {
             >
               Over the years, the practice has developed a diverse body of
               work spanning more than 350 projects across interior and exterior
-              environments, building an extensive experience across different
+              environments, developing extensive experience across different
               scales, contexts, and design challenges.
             </p>
 
