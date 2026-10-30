@@ -22,9 +22,7 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
-      if (reduceMotion) {
-        return;
-      }
+      if (reduceMotion) return;
 
       gsap.set(title, {
         scale: 1.035,
@@ -33,16 +31,14 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
         opacity: 1,
       });
 
-      const intro = gsap.timeline({ delay: 0.1 });
-
-      intro.to(title, {
+      gsap.timeline({ delay: 0.1 }).to(title, {
         scale: 1,
         y: 0,
         duration: 1.15,
         ease: "power4.out",
       });
 
-      if (!reduceMotion && !mobile) {
+      if (!mobile) {
         gsap.to(image, {
           scale: 1.035,
           duration: 10,
@@ -60,7 +56,7 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
       data-header-theme="light"
       className="relative h-[100svh] min-h-[680px] w-full overflow-hidden bg-black text-white"
     >
-      <div ref={imageRef} className="absolute inset-0 md:inset-[-2%] md:will-change-transform">
+      <div ref={imageRef} className="hero-image-reveal absolute inset-0 md:inset-[-2%] md:will-change-transform">
         <Image
           src={imageUrl}
           alt="Mason & Arc architecture"
@@ -86,9 +82,19 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
           <span className="block">{copy.heroBuild}</span>
           <span className="block">{copy.heroExperience}</span>
         </h1>
-
       </div>
-
+      <style jsx>{`
+        .hero-image-reveal {
+          animation: masonHeroReveal 0.7s ease-out both;
+        }
+        @keyframes masonHeroReveal {
+          from { filter: blur(7px); opacity: 0.82; }
+          to { filter: blur(0); opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-image-reveal { animation: none; }
+        }
+      `}</style>
     </section>
   );
 }
