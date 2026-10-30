@@ -52,7 +52,7 @@ export default function Disciplines() {
           </p>
           <h2
             id="home-expertise-title"
-            className="text-[clamp(2.9rem,5.7vw,6.25rem)] font-light leading-[1.02] tracking-[-.055em]"
+            className={`text-[clamp(2.65rem,5.7vw,6.25rem)] font-light leading-[1.04] ${locale === "ar" ? "tracking-[-.015em]" : "tracking-[-.055em]"}`}
           >
             {copy.heading}
           </h2>
