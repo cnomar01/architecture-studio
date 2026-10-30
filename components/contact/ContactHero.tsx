@@ -64,14 +64,11 @@ export default function ContactHero() {
             <Reveal>
               <h1
                 className="
-                  max-w-[900px]
-                  text-[72px]
+                  max-w-[820px]
+                  text-[clamp(3.5rem,7vw,6.5rem)]
                   font-extralight
-                  leading-[0.84]
-                  tracking-[-0.06em]
-                  sm:text-[96px]
-                  md:text-[125px]
-                  lg:text-[150px]
+                  leading-[0.9]
+                  tracking-[-0.055em]
                 "
               >
                 {copy.heading[0]}

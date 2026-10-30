@@ -4,7 +4,7 @@ import Link from "next/link";
 import Reveal from "@/components/animations/Reveal";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-const content = {
+export const servicesContent = {
   en: {
     hero: ["Think.", "Connect.", "Make."],
     intro: "The studio brings space, identity, image and digital experience into one working process. The team changes with the brief; the creative direction stays clear.",
@@ -43,15 +43,41 @@ const content = {
   },
 } as const;
 
+export const serviceSlugs = [
+  "architecture-interiors",
+  "branding-creative-direction",
+  "visualization-communication",
+  "digital-experiences",
+] as const;
+
+export type ServiceSlug = (typeof serviceSlugs)[number];
+
 export default function ServicesHero() {
-  const { locale } = useLocale(); const copy = content[locale];
+  const { locale } = useLocale(); const copy = servicesContent[locale];
   return <main className="bg-[#f8f7f4] text-neutral-900">
     <section className="min-h-screen px-6 pb-24 pt-32 sm:px-8 md:px-10 lg:px-16 lg:pt-36"><div className="grid min-h-[calc(100vh-8rem)] gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-20 lg:pb-20"><Reveal><h1 className={`${locale === "ar" ? "text-[clamp(4.4rem,13vw,10rem)]" : "text-[clamp(4.8rem,12vw,10.5rem)]"} font-extralight leading-[.82] tracking-[-.065em]`}>{copy.hero.map((line) => <span key={line} className="block">{line}</span>)}</h1></Reveal><Reveal><div><p className="max-w-2xl text-xl font-light leading-8 text-neutral-600 md:text-2xl md:leading-10">{copy.intro}</p><p className="mt-12 text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.scroll} ↓</p></div></Reveal></div></section>
-    <section className="border-t border-neutral-300 px-6 py-24 sm:px-8 md:px-10 md:py-36 lg:px-16"><div className="grid gap-10 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.label}</p><h2 className="text-[clamp(3.5rem,9vw,8rem)] font-extralight leading-[.86] tracking-[-.055em]">{copy.heading[0]}<br />{copy.heading[1]}</h2></div>
-      <div className="mt-24 border-t border-neutral-300 md:mt-32">{copy.services.map((service, index) => <article id={`discipline-${index + 1}`} key={service.title} className="scroll-mt-20 border-b border-neutral-300 py-16 md:py-24"><div className="grid gap-10 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p><div><Reveal><h3 className={`${locale === "ar" ? "text-[clamp(2.6rem,7vw,5.6rem)]" : "text-[clamp(3.2rem,7vw,6.3rem)]"} max-w-5xl font-extralight leading-[.9] tracking-[-.055em]`}>{service.title}</h3></Reveal><p className="mt-8 max-w-3xl text-lg font-light leading-8 text-neutral-600 md:text-xl md:leading-9">{service.intro}</p><div className="mt-14 grid gap-10 border-t border-neutral-300 pt-10 md:grid-cols-2 xl:grid-cols-3"><div><Label>{copy.fieldLabels.capabilities}</Label><ul className="mt-5 space-y-2 text-sm leading-6 text-neutral-600">{service.capabilities.map((item) => <li key={item}>— {item}</li>)}</ul></div><Info label={copy.fieldLabels.for} text={service.for} /><Info label={copy.fieldLabels.deliverables} text={service.deliverables} /><Info label={copy.fieldLabels.examples} text={service.examples} /><div className="border-l-2 border-[#4F6B7A] pl-5 md:col-span-2"><Label>{copy.fieldLabels.specialist}</Label><p className="mt-5 max-w-3xl text-sm leading-7 text-neutral-600">{service.specialist}</p></div></div><Link href={`/contact?service=discipline-${index + 1}`} className="mt-12 inline-flex rounded-full border border-neutral-400 px-6 py-3 text-[9px] uppercase tracking-[.25em] transition hover:bg-neutral-900 hover:text-white">{copy.fieldLabels.cta} ↗</Link></div></div></article>)}</div>
+    <section className="border-t border-neutral-300 px-6 py-24 sm:px-8 md:px-10 md:py-32 lg:px-16">
+      <div className="mx-auto grid max-w-[1600px] gap-10 lg:grid-cols-[.25fr_1.75fr]">
+        <p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.label}</p>
+        <h2 className="text-[clamp(3.5rem,8vw,7rem)] font-extralight leading-[.88] tracking-[-.055em]">{copy.heading[0]}<br />{copy.heading[1]}</h2>
+      </div>
+      <div className="mx-auto mt-20 max-w-[1600px] border-t border-neutral-300 md:mt-28">
+        {copy.services.map((service, index) => (
+          <Link
+            id={`discipline-${index + 1}`}
+            key={service.title}
+            href={`/services/${serviceSlugs[index]}`}
+            className="group grid scroll-mt-20 gap-7 border-b border-neutral-300 py-12 transition-colors hover:text-[#4F6B7A] md:py-16 lg:grid-cols-[100px_minmax(0,1.25fr)_minmax(260px,.75fr)_40px] lg:items-center lg:gap-10"
+          >
+            <p className="text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p>
+            <Reveal>
+              <h3 className={`${locale === "ar" ? "text-[clamp(2.5rem,5vw,4.5rem)]" : "text-[clamp(2.8rem,5vw,4.8rem)]"} max-w-4xl font-extralight leading-[.94] tracking-[-.05em]`}>{service.title}</h3>
+            </Reveal>
+            <p className="max-w-xl text-sm font-light leading-7 text-neutral-500 md:text-base md:leading-8">{service.intro}</p>
+            <span aria-hidden="true" className="text-2xl transition-transform group-hover:translate-x-1">↗</span>
+          </Link>
+        ))}
+      </div>
     </section>
   </main>;
 }
-
-function Label({ children }: { children: React.ReactNode }) { return <p className="text-[9px] uppercase tracking-[.25em] text-neutral-400">{children}</p>; }
-function Info({ label, text }: { label: string; text: string }) { return <div><Label>{label}</Label><p className="mt-5 text-sm leading-7 text-neutral-600">{text}</p></div>; }

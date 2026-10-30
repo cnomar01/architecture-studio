@@ -153,8 +153,8 @@ export default function Navbar() {
                 {([['en','EN'],['ar','عربي'],['it','IT']] as const).map(([code,label]) => <button key={code} type="button" onClick={() => setLocale(code)} aria-pressed={locale === code} className={`min-h-10 rounded-full border px-4 text-xs transition ${locale === code ? "border-white bg-white text-black" : "border-white/25 text-white hover:border-white/70"}`}>{label}</button>)}
               </div>
             </div>
-            <Link href="/contact" onClick={() => setOpen(false)} className="flex min-h-14 w-full max-w-sm items-center justify-between gap-4 rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm text-white transition-colors hover:bg-white hover:text-black sm:w-auto sm:min-w-72">
-              <span><span className="block text-[9px] uppercase tracking-[0.2em] opacity-50">{copy.startProject}</span><span className="mt-1 block font-medium">{copy.getInTouch}</span></span><span aria-hidden="true">↗</span>
+            <Link href="/app/login" onClick={() => setOpen(false)} className="flex min-h-14 w-full max-w-sm items-center justify-between gap-4 rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm text-white transition-colors hover:bg-white hover:text-black sm:w-auto sm:min-w-72">
+              <span><span className="block text-[9px] uppercase tracking-[0.2em] opacity-50">{copy.osPortal}</span><span className="mt-1 block font-medium">{copy.workspace}</span></span><span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>

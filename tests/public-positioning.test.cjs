@@ -97,24 +97,39 @@ test("service categories expose the same four practices throughout", () => {
 test("services page stays focused and avoids repeating the About timeline", () => {
   const servicesPage = read("app/services/page.tsx");
   const servicesHero = read("components/services/ServicesHero.tsx");
+  const serviceDetail = read("components/services/ServiceDetail.tsx");
+  const servicePage = read("app/services/[slug]/page.tsx");
+  const sitemap = read("app/sitemap.ts");
 
   assert.doesNotMatch(servicesPage, /<Timeline|<Themes/);
   assert.doesNotMatch(servicesPage, /ServicesProjects|listPublishedWebsiteProjects/);
   assert.equal(existsSync(path.join(__dirname, "..", "components/services/Projects.tsx")), false);
   assert.match(servicesHero, /The studio brings space, identity, image and digital experience/);
   assert.doesNotMatch(servicesHero, /Mason & Arc brings space/);
+  assert.doesNotMatch(servicesHero, /copy\.fieldLabels\.examples/);
+  assert.match(servicesHero, /href=\{`\/services\/\$\{serviceSlugs\[index\]\}`\}/);
+  assert.match(serviceDetail, /service\.capabilities/);
+  assert.match(serviceDetail, /service\.deliverables/);
+  assert.match(servicePage, /generateStaticParams/);
+  assert.match(sitemap, /services\/\$\{slug\}/);
   assert.match(servicesHero, /Think\./);
   assert.match(servicesHero, /Connect\./);
   assert.match(servicesHero, /Make\./);
 });
 
-test("public menu prioritizes project enquiries over workspace login", () => {
+test("contact hero keeps an editorial scale without overwhelming the details", () => {
+  const contactHero = read("components/contact/ContactHero.tsx");
+  assert.match(contactHero, /text-\[clamp\(3\.5rem,7vw,6\.5rem\)\]/);
+  assert.doesNotMatch(contactHero, /lg:text-\[150px\]/);
+});
+
+test("public menu restores the Mason & Arc OS portal", () => {
   const navbar = read("components/layout/Navbar.tsx");
   const hero = read("components/home/Hero.tsx");
 
-  assert.doesNotMatch(navbar, /href="\/app\/login"/);
-  assert.match(navbar, /copy\.startProject/);
-  assert.match(navbar, /copy\.getInTouch/);
+  assert.match(navbar, /href="\/app\/login"/);
+  assert.match(navbar, /copy\.osPortal/);
+  assert.match(navbar, /copy\.workspace/);
   assert.match(hero, /copy\.heroStudioLabel/);
   assert.doesNotMatch(hero, /copy\.heroIntro/);
 });
