@@ -1,6 +1,6 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { readFileSync } = require("node:fs");
+const { existsSync, readFileSync } = require("node:fs");
 const path = require("node:path");
 
 const read = (file) => readFileSync(path.join(__dirname, "..", file), "utf8");
@@ -138,22 +138,37 @@ test("homepage tells the multidisciplinary story without changing the locked her
   assert.match(home, /<Hero imageUrl=\{approvedHeroImage\}/);
   assert.match(home, /<Disciplines/);
   assert.match(home, /<Projects projects=\{projects\}/);
-  assert.match(home, /<StudioPerspective articles=\{journal\}/);
+  assert.match(home, /<StudioPerspective \/>/);
   assert.match(disciplines, /Four practices/);
   assert.match(perspective, /Integrated Design Approach/);
   assert.match(perspective, /Tell us what you’re working on/);
 });
 
-test("journal content stays draft-first and only published articles reach the public site", () => {
-  const migration = read("db/migrations/20261030-website-journal.sql");
-  const journal = read("lib/server/websiteJournal.ts");
-  const api = read("app/api/admin/journal/route.ts");
-  const home = read("components/home/StudioPerspective.tsx");
-  assert.match(migration, /published BOOLEAN NOT NULL DEFAULT FALSE/);
-  assert.match(journal, /published=true AND published_at IS NOT NULL AND published_at<=NOW\(\)/);
-  assert.match(api, /requireServerUser\(\["Owner"\]\)/);
-  assert.match(api, /website_journal\.created/);
-  assert.match(home, /articles\.length > 0/);
+test("the empty Journal feature is fully removed from public and admin surfaces", () => {
+  const footer = read("components/layout/Footer.tsx");
+  const sitemap = read("app/sitemap.ts");
+  const schema = read("db/schema.sql");
+  assert.doesNotMatch(footer, /\/journal|copy\.journal/);
+  assert.doesNotMatch(sitemap, /journal/i);
+  assert.doesNotMatch(schema, /website_journal_articles/);
+  assert.equal(existsSync(path.join(__dirname, "..", "app/journal/page.tsx")), false);
+  assert.equal(existsSync(path.join(__dirname, "..", "app/app/admin/journal/page.tsx")), false);
+});
+
+test("portfolio copy is honest about the current published archive and avoids duplicate service lists", () => {
+  const locale = read("components/i18n/LocaleProvider.tsx");
+  const servicesProjects = read("components/services/Projects.tsx");
+  const homeProjects = read("components/home/Projects.tsx");
+  assert.doesNotMatch(locale, /completed and approved/i);
+  assert.doesNotMatch(servicesProjects, /completed and approved/i);
+  assert.doesNotMatch(homeProjects, /experienceMore|workWays|themes\.map/);
+});
+
+test("About uses the same restrained typography and multidisciplinary closing language", () => {
+  const about = read("app/about/page.tsx");
+  assert.doesNotMatch(about, /font-\[var\(--font-display\)\]/);
+  assert.match(about, /closingTitle: \["Work with"/);
+  assert.doesNotMatch(about, /closingTitle: \["Places with"/);
 });
 
 test("new website projects start with a multilingual architecture case-study template", () => {

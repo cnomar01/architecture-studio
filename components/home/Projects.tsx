@@ -16,11 +16,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { locale, copy } = useLocale();
-  const themes = locale === "ar"
-    ? ["العمارة والتصميم الداخلي", "الهوية والتوجيه الإبداعي", "التصور والتواصل", "التجارب الرقمية"]
-    : locale === "it"
-      ? ["Architettura & Interni", "Branding & Direzione Creativa", "Visualizzazione & Comunicazione", "Esperienze Digitali"]
-      : ["Architecture & Interiors", "Branding & Creative Direction", "Visualization & Communication", "Digital Experiences"];
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -425,121 +420,6 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
           </div>
         </Reveal>
 
-        {/* =====================================================
-            EXPERIENCE MORE
-        ====================================================== */}
-
-        <div className="pt-28 md:pt-40">
-          <Reveal>
-            <div
-              className="
-                grid
-                grid-cols-1
-                gap-10
-                lg:grid-cols-[0.35fr_1.65fr]
-                lg:gap-x-12
-              "
-            >
-              <span
-                className="
-                  text-[9px]
-                  uppercase
-                  tracking-[0.35em]
-                  text-neutral-400
-                "
-              >
-                {copy.experienceMore}
-              </span>
-
-              <h3
-                className="
-                  max-w-[1000px]
-                  text-[48px]
-                  font-light
-                  leading-[0.86]
-                  tracking-[-0.05em]
-                  sm:text-[65px]
-                  md:text-[82px]
-                  lg:text-[105px]
-                "
-              >
-                {copy.workWays1}
-                <br />
-                {copy.workWays2}
-                <br />
-                {copy.workWays3}
-              </h3>
-            </div>
-          </Reveal>
-
-          {/* THEMES */}
-
-          <div
-            className="
-              mt-20
-              border-t
-              border-neutral-300
-              md:mt-28
-            "
-          >
-            {themes.map((theme, index) => (
-              <Link
-                key={theme}
-                href="/services"
-                className="
-                  group
-                  flex
-                  items-center
-                  justify-between
-                  border-b
-                  border-neutral-300
-                  py-7
-                  md:py-10
-                "
-              >
-                <div className="flex items-center gap-6">
-                  <span
-                    className="
-                      text-[8px]
-                      tracking-[0.25em]
-                      text-neutral-400
-                    "
-                  >
-                    0{index + 1}
-                  </span>
-
-                  <span
-                    className="
-                      text-[30px]
-                      font-light
-                      leading-none
-                      tracking-[-0.04em]
-                      transition-transform
-                      duration-500
-                      group-hover:translate-x-3
-                      sm:text-[42px]
-                      md:text-[54px]
-                    "
-                  >
-                    {theme}
-                  </span>
-                </div>
-
-                <span
-                  className="
-                    text-lg
-                    text-neutral-400
-                    transition-transform
-                    duration-500
-                    group-hover:translate-x-2
-                  "
-                >
-                  ↗
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
       </Container>
     </section>
   );

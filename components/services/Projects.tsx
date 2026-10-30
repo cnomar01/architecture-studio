@@ -12,19 +12,19 @@ const servicesProjectsCopy = {
   en: {
     label: "02 — Projects",
     title: ["Selected", "Projects."],
-    intro: "Completed and approved work. New projects will be added across disciplines as they are released.",
+    intro: "Published work, with new projects added across disciplines as they are ready to share.",
     viewAll: "View all projects",
   },
   ar: {
     label: "02 — المشروعات",
     title: ["مشروعات", "مختارة."],
-    intro: "أعمال مكتملة ومعتمدة، مع إضافة مشروعات جديدة عبر التخصصات عند جاهزيتها للنشر.",
+    intro: "أعمال منشورة، مع إضافة مشروعات جديدة عبر التخصصات عندما تصبح جاهزة للمشاركة.",
     viewAll: "عرض كل المشروعات",
   },
   it: {
     label: "02 — Progetti",
     title: ["Progetti", "selezionati."],
-    intro: "Lavori completati e approvati. Nuovi progetti verranno aggiunti nelle diverse discipline al momento della pubblicazione.",
+    intro: "Lavori pubblicati, con nuovi progetti aggiunti nelle diverse discipline quando sono pronti per essere condivisi.",
     viewAll: "Tutti i progetti",
   },
 } as const;

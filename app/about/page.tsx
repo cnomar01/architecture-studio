@@ -22,8 +22,8 @@ const aboutCopy = {
     approachBody: "Every project is considered as one connected expression. From the earliest concept to the final physical or digital touchpoint, decisions are made with clarity, consistency, and purpose so that every part belongs to the same story.",
     servicesLabel: "What we do",
     servicesTitle: "Services",
-    closingTitle: ["Places with", "character.", "Purpose.", "Lasting value."],
-    closingBody: "Our ambition is not simply to create spaces, brands, or digital experiences, but to shape complete expressions with character, purpose, and lasting value — where every touchpoint feels connected and intentional.",
+    closingTitle: ["Work with", "character.", "Purpose.", "Lasting value."],
+    closingBody: "Our ambition is to shape spaces, identities, images, and digital experiences with character, purpose, and lasting value — where every touchpoint feels connected and intentional.",
     ctaLabel: "Start a project",
     ctaTitle: ["Let's", "design."],
     ctaLink: "Get in touch",
@@ -52,8 +52,8 @@ const aboutCopy = {
     approachBody: "نتعامل مع كل مشروع كتعبير واحد مترابط. من الفكرة الأولى إلى آخر نقطة تواصل مادية أو رقمية، تُتخذ القرارات بوضوح واتساق وهدف، ليبقى كل جزء ضمن الحكاية نفسها.",
     servicesLabel: "ما نقدمه",
     servicesTitle: "الخدمات",
-    closingTitle: ["أماكن ذات", "شخصية.", "وهدف.", "وقيمة تدوم."],
-    closingBody: "طموحنا ليس مجرد صنع مساحات أو هويات أو تجارب رقمية، بل صياغة تعبير متكامل ذي شخصية وهدف وقيمة تدوم، حيث تبدو كل نقطة تواصل مترابطة ومقصودة.",
+    closingTitle: ["عمل ذو", "شخصية.", "وهدف.", "وقيمة تدوم."],
+    closingBody: "طموحنا هو صياغة مساحات وهويات وصور وتجارب رقمية ذات شخصية وهدف وقيمة تدوم، حيث تبدو كل نقطة تواصل مترابطة ومقصودة.",
     ctaLabel: "ابدأ مشروعًا",
     ctaTitle: ["لنصمّم", "معًا."],
     ctaLink: "تواصل معنا",
@@ -82,8 +82,8 @@ const aboutCopy = {
     approachBody: "Ogni progetto viene considerato come un’unica espressione connessa. Dal primo concept all’ultimo punto di contatto fisico o digitale, le decisioni sono guidate da chiarezza, coerenza e intenzione, perché ogni parte appartenga alla stessa storia.",
     servicesLabel: "Cosa facciamo",
     servicesTitle: "Servizi",
-    closingTitle: ["Luoghi con", "carattere.", "Scopo.", "Valore duraturo."],
-    closingBody: "La nostra ambizione non è semplicemente creare spazi, brand o esperienze digitali, ma dare forma a espressioni complete, con carattere, scopo e valore duraturo, dove ogni punto di contatto è connesso e intenzionale.",
+    closingTitle: ["Un lavoro con", "carattere.", "Scopo.", "Valore duraturo."],
+    closingBody: "La nostra ambizione è dare forma a spazi, identità, immagini ed esperienze digitali con carattere, scopo e valore duraturo, dove ogni punto di contatto è connesso e intenzionale.",
     ctaLabel: "Inizia un progetto",
     ctaTitle: ["Progettiamo", "insieme."],
     ctaLink: "Contattaci",
@@ -125,16 +125,15 @@ export default function AboutPage() {
             <h1
               className="
                 max-w-[1200px]
-                font-[var(--font-display)]
+                font-extralight
                 text-[48px]
-                uppercase
-                leading-[0.82]
-                tracking-[-0.025em]
+                leading-[0.86]
+                tracking-[-0.055em]
 
-                sm:text-[60px]
+                sm:text-[64px]
                 md:text-[120px]
-                lg:text-[150px]
-                xl:text-[175px]
+                lg:text-[145px]
+                xl:text-[160px]
               "
             >
               {copy.hero[0]}
@@ -159,7 +158,7 @@ export default function AboutPage() {
           <div className="lg:col-span-3">
             <div
               className="
-                font-[var(--font-display)]
+                font-extralight
                 text-[60px]
                 leading-none
                 tracking-[-0.03em]
@@ -217,7 +216,7 @@ export default function AboutPage() {
           <div className="lg:col-span-8">
             <div
               className="
-                font-[var(--font-display)]
+                font-extralight
                 text-[120px]
                 leading-[0.7]
                 tracking-[-0.04em]
@@ -260,11 +259,10 @@ export default function AboutPage() {
 
             <h2
               className="
-                font-[var(--font-display)]
+                font-extralight
                 text-[58px]
-                uppercase
-                leading-[0.78]
-                tracking-[-0.025em]
+                leading-[0.86]
+                tracking-[-0.055em]
 
                 sm:text-[76px]
                 md:text-[130px]
@@ -366,11 +364,10 @@ export default function AboutPage() {
             <h2
               className="
                 mt-5
-                font-[var(--font-display)]
+                font-extralight
                 text-[56px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.025em]
+                leading-[0.86]
+                tracking-[-0.055em]
 
                 sm:text-[72px]
                 md:text-[120px]
@@ -416,11 +413,10 @@ export default function AboutPage() {
               <div className="md:col-span-4">
                 <h3
                   className="
-                    font-[var(--font-display)]
+                    font-extralight
                     text-[42px]
-                    uppercase
-                    leading-[0.8]
-                    tracking-[-0.02em]
+                    leading-[0.95]
+                    tracking-[-0.045em]
 
                     sm:text-[48px]
                     md:text-[64px]
@@ -464,11 +460,10 @@ export default function AboutPage() {
 
             <h2
               className="
-                font-[var(--font-display)]
+                font-extralight
                 text-[48px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.025em]
+                leading-[0.86]
+                tracking-[-0.055em]
 
                 sm:text-[64px]
                 md:text-[120px]
@@ -515,11 +510,10 @@ export default function AboutPage() {
             <h2
               className="
                 mt-5
-                font-[var(--font-display)]
+                font-extralight
                 text-[56px]
-                uppercase
-                leading-[0.8]
-                tracking-[-0.025em]
+                leading-[0.86]
+                tracking-[-0.055em]
 
                 sm:text-[72px]
                 md:text-[110px]

@@ -70,10 +70,6 @@ export default function Footer() {
                 {copy.contact}
               </Link>
 
-              <Link href="/journal" className="transition-opacity hover:opacity-50">
-                {copy.journal}
-              </Link>
-
               <Link href="/app/login" className="mt-2 text-neutral-500 transition-opacity hover:opacity-50">
                 {copy.clientPortal} ↗
               </Link>
