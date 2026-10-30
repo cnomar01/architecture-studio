@@ -1,41 +1,55 @@
 "use client";
 
-import Reveal from "../animations/Reveal";
+import Reveal from "@/components/animations/Reveal";
 import { useLocale } from "@/components/i18n/LocaleProvider";
-import GoldenRatio from "./GoldenRatio";
+
+const content = {
+  en: {
+    label: "01 — Perspective",
+    first: "One idea.",
+    second: "Many expressions.",
+    description: "Space, identity, image and digital — brought together by a clear point of view.",
+  },
+  ar: {
+    label: "01 — رؤيتنا",
+    first: "فكرة واحدة.",
+    second: "بتعبيرات متعددة.",
+    description: "نربط المكان والهوية والصورة والتجربة الرقمية برؤية تصميمية واضحة.",
+  },
+  it: {
+    label: "01 — Visione",
+    first: "Un’idea.",
+    second: "Molte espressioni.",
+    description: "Spazio, identità, immagine e digitale, riuniti da una visione chiara.",
+  },
+} as const;
 
 export default function Manifesto() {
-  const { copy } = useLocale();
+  const { locale } = useLocale();
+  const copy = content[locale];
+
   return (
-    <section className="bg-[#f8f7f4] text-neutral-900">
-      <GoldenRatio />
-
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:px-8 sm:py-32 md:px-12 md:py-56">
-
-        <p className="mb-8 text-[10px] uppercase tracking-[7px] text-neutral-500 sm:mb-10 sm:text-xs sm:tracking-[10px]">
-          {copy.philosophyLabel}
-        </p>
-
-        <Reveal>
-          <h2 className="max-w-6xl text-[32px] font-extralight leading-[1.04] tracking-[-0.03em] text-neutral-900 sm:text-[44px] md:text-7xl md:leading-[1] lg:text-[90px]">
-            {copy.philosophyLine1}
-            <br />
-            {copy.philosophyLine2}
-            <br />
-            {copy.philosophyLine3}
-            <br />
-            {copy.philosophyLine4}
-          </h2>
-        </Reveal>
-
-        <Reveal delay={0.2}>
-          <div className="mt-12 max-w-xl sm:mt-16 md:mt-20">
-            <p className="text-base leading-7 text-neutral-600 sm:text-lg sm:leading-8">
-              {copy.philosophyIntro}
+    <section aria-labelledby="home-perspective-title" className="bg-[#f8f7f4] text-neutral-900">
+      <div className="mx-auto max-w-[1600px] px-6 pb-24 pt-24 sm:px-8 sm:pb-32 sm:pt-32 md:px-10 lg:px-16 lg:pb-40 lg:pt-40">
+        <div className="grid gap-9 border-t border-neutral-300 pt-6 md:gap-12 lg:grid-cols-[.35fr_1.65fr] lg:gap-12">
+          <p className="pt-1 text-[10px] font-medium uppercase tracking-[.28em] text-[#4F6B7A]">
+            {copy.label}
+          </p>
+          <div className="min-w-0">
+            <Reveal y={24}>
+              <h2
+                id="home-perspective-title"
+                className="max-w-[1100px] text-[clamp(2.8rem,6vw,6.5rem)] font-light leading-[1.02] tracking-[-.055em]"
+              >
+                <span className="block">{copy.first}</span>
+                <span className="block">{copy.second}</span>
+              </h2>
+            </Reveal>
+            <p className="mt-8 max-w-[490px] text-[15px] font-light leading-[1.75] text-neutral-600 sm:mt-10 sm:text-base">
+              {copy.description}
             </p>
           </div>
-        </Reveal>
-
+        </div>
       </div>
     </section>
   );
