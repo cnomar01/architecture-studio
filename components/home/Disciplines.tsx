@@ -55,7 +55,7 @@ export default function Disciplines() {
           </p>
           <h2
             id="home-expertise-title"
-            className={`font-light leading-[1.02] ${locale === "ar" ? "text-[clamp(2.6rem,6vw,6rem)] tracking-[-.02em]" : "text-[clamp(3.35rem,7vw,7.25rem)] tracking-[-.065em]"}`}
+            className={`font-light leading-[1.02] ${locale === "ar" ? "text-[clamp(2.3rem,6vw,6rem)] tracking-[-.02em]" : "text-[clamp(2.4rem,7vw,7.25rem)] tracking-[-.065em]"}`}
           >
             {copy.heading}
           </h2>
