@@ -99,6 +99,8 @@ test("services page stays focused and avoids repeating the About timeline", () =
   const servicesHero = read("components/services/ServicesHero.tsx");
 
   assert.doesNotMatch(servicesPage, /<Timeline|<Themes/);
+  assert.doesNotMatch(servicesPage, /ServicesProjects|listPublishedWebsiteProjects/);
+  assert.equal(existsSync(path.join(__dirname, "..", "components/services/Projects.tsx")), false);
   assert.match(servicesHero, /Think\./);
   assert.match(servicesHero, /Connect\./);
   assert.match(servicesHero, /Make\./);
@@ -157,11 +159,17 @@ test("the empty Journal feature is fully removed from public and admin surfaces"
 
 test("portfolio copy is honest about the current published archive and avoids duplicate service lists", () => {
   const locale = read("components/i18n/LocaleProvider.tsx");
-  const servicesProjects = read("components/services/Projects.tsx");
   const homeProjects = read("components/home/Projects.tsx");
   assert.doesNotMatch(locale, /completed and approved/i);
-  assert.doesNotMatch(servicesProjects, /completed and approved/i);
   assert.doesNotMatch(homeProjects, /experienceMore|workWays|themes\.map/);
+});
+
+test("homepage point of view uses original multidisciplinary language", () => {
+  const locale = read("components/i18n/LocaleProvider.tsx");
+  assert.match(locale, /Our Point of View/);
+  assert.match(locale, /One clear idea/);
+  assert.match(locale, /space, identity, image and digital experience/);
+  assert.doesNotMatch(locale, /Studio Philosophy|lasting relevance/);
 });
 
 test("About uses the same restrained typography and multidisciplinary closing language", () => {

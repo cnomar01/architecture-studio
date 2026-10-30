@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import ServicesHero from "@/components/services/ServicesHero";
-import ServicesProjects from "@/components/services/Projects";
-import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -9,14 +7,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/services" },
 };
 
-export const dynamic = "force-dynamic";
-
-export default async function ServicesPage() {
-  const projects = await listPublishedWebsiteProjects();
+export default function ServicesPage() {
   return (
     <main>
       <ServicesHero />
-      <ServicesProjects projects={projects} />
     </main>
   );
 }
