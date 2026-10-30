@@ -1,4 +1,3 @@
-import Loader from "../components/ui/Loader";
 import Hero from "../components/home/Hero";
 import Manifesto from "../components/home/Manifesto";
 import Projects from "../components/home/Projects";
@@ -13,7 +12,6 @@ export default async function Home() {
   const projects = await listPublishedWebsiteProjects();
   return (
     <>
-      <Loader />
       <Hero imageUrl={approvedHeroImage} />
       <Manifesto />
       <Disciplines />
