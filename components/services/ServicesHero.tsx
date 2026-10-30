@@ -7,7 +7,7 @@ import { useLocale } from "@/components/i18n/LocaleProvider";
 const content = {
   en: {
     hero: ["Think.", "Connect.", "Make."],
-    intro: "Mason & Arc brings space, identity, image and digital experience into one working process. The team changes with the brief; the creative direction stays clear.",
+    intro: "The studio brings space, identity, image and digital experience into one working process. The team changes with the brief; the creative direction stays clear.",
     scroll: "Explore the practices", label: "01 — Services", heading: ["Four practices.", "Built to work together."],
     fieldLabels: { capabilities: "Capabilities", for: "Who it is for", deliverables: "Typical deliverables", examples: "Where it can lead", specialist: "Specialist offering", cta: "Start a conversation" },
     services: [
@@ -19,7 +19,7 @@ const content = {
   },
   ar: {
     hero: ["نفكّر.", "نربط.", "نصنع."],
-    intro: "يجمع Mason & Arc المكان والهوية والصورة والتجربة الرقمية داخل عملية عمل واحدة. يتغير الفريق حسب المشروع، بينما يظل الاتجاه الإبداعي واضحًا.",
+    intro: "يجمع الاستوديو المكان والهوية والصورة والتجربة الرقمية داخل عملية عمل واحدة. يتغير الفريق حسب المشروع، بينما يظل الاتجاه الإبداعي واضحًا.",
     scroll: "استكشف الممارسات", label: "01 — الخدمات", heading: ["أربع ممارسات.", "مصممة لتعمل معًا."],
     fieldLabels: { capabilities: "القدرات", for: "لمن هذه الخدمة", deliverables: "المخرجات المعتادة", examples: "ما الذي يمكن أن تصنعه", specialist: "خدمة متخصصة", cta: "ابدأ محادثة" },
     services: [
@@ -31,7 +31,7 @@ const content = {
   },
   it: {
     hero: ["Pensare.", "Connettere.", "Creare."],
-    intro: "Mason & Arc riunisce spazio, identità, immagine ed esperienza digitale in un unico processo di lavoro. Il team cambia con il brief; la direzione creativa resta chiara.",
+    intro: "Lo studio riunisce spazio, identità, immagine ed esperienza digitale in un unico processo di lavoro. Il team cambia con il brief; la direzione creativa resta chiara.",
     scroll: "Esplora le pratiche", label: "01 — Servizi", heading: ["Quattro pratiche.", "Pensate per lavorare insieme."],
     fieldLabels: { capabilities: "Competenze", for: "Per chi", deliverables: "Deliverable tipici", examples: "Dove può portare", specialist: "Offerta specialistica", cta: "Inizia una conversazione" },
     services: [

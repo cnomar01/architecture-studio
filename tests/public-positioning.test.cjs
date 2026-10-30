@@ -101,6 +101,8 @@ test("services page stays focused and avoids repeating the About timeline", () =
   assert.doesNotMatch(servicesPage, /<Timeline|<Themes/);
   assert.doesNotMatch(servicesPage, /ServicesProjects|listPublishedWebsiteProjects/);
   assert.equal(existsSync(path.join(__dirname, "..", "components/services/Projects.tsx")), false);
+  assert.match(servicesHero, /The studio brings space, identity, image and digital experience/);
+  assert.doesNotMatch(servicesHero, /Mason & Arc brings space/);
   assert.match(servicesHero, /Think\./);
   assert.match(servicesHero, /Connect\./);
   assert.match(servicesHero, /Make\./);
