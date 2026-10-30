@@ -59,7 +59,7 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
       <div ref={imageRef} className="hero-image-reveal absolute inset-0 md:inset-[-2%] md:will-change-transform">
         <Image
           src={imageUrl}
-          alt="Mason & Arc architecture"
+          alt="Mason & Arc studio featured work"
           fill
           priority
           unoptimized
