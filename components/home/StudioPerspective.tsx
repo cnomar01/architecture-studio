@@ -35,7 +35,7 @@ export default function StudioPerspective() {
         <div>
           <h2
             id="home-contact-title"
-            className={`max-w-[1100px] font-light leading-[1.03] ${locale === "ar" ? "text-[clamp(3rem,6vw,6.5rem)] tracking-[-.02em]" : "text-[clamp(3rem,6.1vw,7rem)] tracking-[-.055em]"}`}
+            className={`max-w-[1100px] font-light leading-[1.03] ${locale === "ar" ? "text-[clamp(2.4rem,6vw,6.5rem)] tracking-[-.02em]" : "text-[clamp(2.4rem,6.1vw,7rem)] tracking-[-.055em]"}`}
           >
             <span className="block">{copy.first}</span>
             <span className="block">{copy.second}</span>
