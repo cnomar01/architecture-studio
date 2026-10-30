@@ -194,6 +194,8 @@ test("About uses the same restrained typography and multidisciplinary closing la
   assert.doesNotMatch(about, /font-\[var\(--font-display\)\]/);
   assert.match(about, /closingTitle: \["Work with"/);
   assert.doesNotMatch(about, /closingTitle: \["Places with"/);
+  assert.doesNotMatch(about, /servicesLabel|servicesTitle|copy\.services/);
+  assert.doesNotMatch(about, /What we do|Cosa facciamo|ما نقدمه/);
 });
 
 test("new website projects start with a multilingual architecture case-study template", () => {

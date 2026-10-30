@@ -20,19 +20,11 @@ const aboutCopy = {
     approachLabel: "Our Approach",
     approachLead: "Our approach begins by defining the central idea that connects space, identity, image, and experience.",
     approachBody: "Every project is considered as one connected expression. From the earliest concept to the final physical or digital touchpoint, decisions are made with clarity, consistency, and purpose so that every part belongs to the same story.",
-    servicesLabel: "What we do",
-    servicesTitle: "Services",
     closingTitle: ["Work with", "character.", "Purpose.", "Lasting value."],
     closingBody: "Our ambition is to shape spaces, identities, images, and digital experiences with character, purpose, and lasting value — where every touchpoint feels connected and intentional.",
     ctaLabel: "Start a project",
     ctaTitle: ["Let's", "design."],
     ctaLink: "Get in touch",
-    services: [
-      ["Architecture & Interiors", "Places developed as complete spatial experiences, from context and proportion to material, light and detail."],
-      ["Branding & Creative Direction", "Identity systems and creative direction that give a project a clear voice and recognisable character."],
-      ["Visualization & Communication", "Images, motion and presentation systems that make ideas clear and compelling."],
-      ["Digital Experiences", "Websites and digital touchpoints designed and developed as a natural extension of the brand."],
-    ],
   },
   ar: {
     eyebrow: "عن الاستوديو",
@@ -50,19 +42,11 @@ const aboutCopy = {
     approachLabel: "منهجنا",
     approachLead: "يبدأ منهجنا بتحديد الفكرة المركزية التي تربط المساحة والهوية والصورة والتجربة.",
     approachBody: "نتعامل مع كل مشروع كتعبير واحد مترابط. من الفكرة الأولى إلى آخر نقطة تواصل مادية أو رقمية، تُتخذ القرارات بوضوح واتساق وهدف، ليبقى كل جزء ضمن الحكاية نفسها.",
-    servicesLabel: "ما نقدمه",
-    servicesTitle: "الخدمات",
     closingTitle: ["عمل ذو", "شخصية.", "وهدف.", "وقيمة تدوم."],
     closingBody: "طموحنا هو صياغة مساحات وهويات وصور وتجارب رقمية ذات شخصية وهدف وقيمة تدوم، حيث تبدو كل نقطة تواصل مترابطة ومقصودة.",
     ctaLabel: "ابدأ مشروعًا",
     ctaTitle: ["لنصمّم", "معًا."],
     ctaLink: "تواصل معنا",
-    services: [
-      ["العمارة والتصميم الداخلي", "أماكن تتطور كتجارب مكانية متكاملة، من السياق والنِسب إلى الخامات والضوء والتفاصيل."],
-      ["الهوية والتوجيه الإبداعي", "أنظمة هوية وتوجيه إبداعي يمنحان المشروع صوتًا واضحًا وشخصية يسهل تمييزها."],
-      ["التصور والتواصل", "صور وحركة وأنظمة عرض تجعل الأفكار واضحة ومؤثرة."],
-      ["التجارب الرقمية", "مواقع ونقاط تواصل رقمية تُصمم وتُطوّر كامتداد طبيعي للهوية."],
-    ],
   },
   it: {
     eyebrow: "Studio",
@@ -80,30 +64,17 @@ const aboutCopy = {
     approachLabel: "Il nostro approccio",
     approachLead: "Il nostro approccio parte dall’idea centrale che connette spazio, identità, immagine ed esperienza.",
     approachBody: "Ogni progetto viene considerato come un’unica espressione connessa. Dal primo concept all’ultimo punto di contatto fisico o digitale, le decisioni sono guidate da chiarezza, coerenza e intenzione, perché ogni parte appartenga alla stessa storia.",
-    servicesLabel: "Cosa facciamo",
-    servicesTitle: "Servizi",
     closingTitle: ["Un lavoro con", "carattere.", "Scopo.", "Valore duraturo."],
     closingBody: "La nostra ambizione è dare forma a spazi, identità, immagini ed esperienze digitali con carattere, scopo e valore duraturo, dove ogni punto di contatto è connesso e intenzionale.",
     ctaLabel: "Inizia un progetto",
     ctaTitle: ["Progettiamo", "insieme."],
     ctaLink: "Contattaci",
-    services: [
-      ["Architettura & Interni", "Luoghi sviluppati come esperienze spaziali complete, dal contesto e dalle proporzioni fino a materia, luce e dettaglio."],
-      ["Branding & Direzione Creativa", "Sistemi d’identità e direzione creativa che danno al progetto una voce chiara e un carattere riconoscibile."],
-      ["Visualizzazione & Comunicazione", "Immagini, motion e sistemi di presentazione che rendono le idee chiare e coinvolgenti."],
-      ["Esperienze Digitali", "Siti e touchpoint digitali progettati e sviluppati come naturale estensione del brand."],
-    ],
   },
 } as const;
 
 export default function AboutPage() {
   const { locale } = useLocale();
   const copy = aboutCopy[locale];
-  const services = copy.services.map(([title, text], index) => ({
-    number: String(index + 1).padStart(2, "0"),
-    title,
-    text,
-  }));
 
   return (
     <main className="bg-white text-black">
@@ -344,106 +315,6 @@ export default function AboutPage() {
             </p>
 
           </div>
-        </div>
-      </section>
-
-
-      {/* =====================================================
-          SERVICES
-      ===================================================== */}
-
-      <section className="bg-[#f2f2f0] px-6 py-24 md:px-10 md:py-32">
-
-        <div className="mb-20 flex items-end justify-between">
-
-          <div>
-            <p className="text-[9px] uppercase tracking-[0.25em] text-black/45">
-              {copy.servicesLabel}
-            </p>
-
-            <h2
-              className="
-                mt-5
-                font-extralight
-                text-[56px]
-                leading-[0.86]
-                tracking-[-0.055em]
-
-                sm:text-[72px]
-                md:text-[120px]
-                lg:text-[150px]
-              "
-            >
-              {copy.servicesTitle}
-            </h2>
-          </div>
-
-          <span className="hidden text-[9px] uppercase tracking-[0.2em] text-black/40 md:block">
-            01 — 04
-          </span>
-
-        </div>
-
-
-        <div className="border-t border-black/20">
-
-          {services.map((service) => (
-            <div
-              key={service.number}
-              className="
-                grid
-                grid-cols-1
-                gap-8
-                border-b
-                border-black/20
-                py-10
-
-                md:grid-cols-12
-                md:gap-10
-                md:py-14
-              "
-            >
-
-              <div className="md:col-span-1">
-                <span className="text-[9px] tracking-[0.2em] text-black/40">
-                  {service.number}
-                </span>
-              </div>
-
-              <div className="md:col-span-4">
-                <h3
-                  className="
-                    font-extralight
-                    text-[42px]
-                    leading-[0.95]
-                    tracking-[-0.045em]
-
-                    sm:text-[48px]
-                    md:text-[64px]
-                    lg:text-[78px]
-                  "
-                >
-                  {service.title}
-                </h3>
-              </div>
-
-              <div className="md:col-span-5 md:col-start-8">
-                <p
-                  className="
-                    max-w-[560px]
-                    text-[14px]
-                    leading-[1.65]
-                    text-black/65
-                    md:text-[16px]
-                  "
-                >
-                  {service.text}
-                </p>
-              </div>
-
-            </div>
-          ))}
-
         </div>
       </section>
 

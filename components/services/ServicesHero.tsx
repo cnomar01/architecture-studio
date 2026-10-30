@@ -55,7 +55,21 @@ export type ServiceSlug = (typeof serviceSlugs)[number];
 export default function ServicesHero() {
   const { locale } = useLocale(); const copy = servicesContent[locale];
   return <main className="bg-[#f8f7f4] text-neutral-900">
-    <section className="min-h-screen px-6 pb-24 pt-32 sm:px-8 md:px-10 lg:px-16 lg:pt-36"><div className="grid min-h-[calc(100vh-8rem)] gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-20 lg:pb-20"><Reveal><h1 className={`${locale === "ar" ? "text-[clamp(4.4rem,13vw,10rem)]" : "text-[clamp(4.8rem,12vw,10.5rem)]"} font-extralight leading-[.82] tracking-[-.065em]`}>{copy.hero.map((line) => <span key={line} className="block">{line}</span>)}</h1></Reveal><Reveal><div><p className="max-w-2xl text-xl font-light leading-8 text-neutral-600 md:text-2xl md:leading-10">{copy.intro}</p><p className="mt-12 text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.scroll} ↓</p></div></Reveal></div></section>
+    <section className="px-6 pb-20 pt-36 sm:px-8 md:px-10 md:pb-24 md:pt-40 lg:px-16 lg:pb-28 lg:pt-44">
+      <div className="grid gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-20">
+        <Reveal>
+          <h1 className={`${locale === "ar" ? "text-[clamp(4.4rem,13vw,10rem)]" : "text-[clamp(4.8rem,12vw,10.5rem)]"} font-extralight leading-[.82] tracking-[-.065em]`}>
+            {copy.hero.map((line) => <span key={line} className="block">{line}</span>)}
+          </h1>
+        </Reveal>
+        <Reveal>
+          <div>
+            <p className="max-w-2xl text-xl font-light leading-8 text-neutral-600 md:text-2xl md:leading-10">{copy.intro}</p>
+            <p className="mt-12 text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.scroll} ↓</p>
+          </div>
+        </Reveal>
+      </div>
+    </section>
     <section className="border-t border-neutral-300 px-6 py-24 sm:px-8 md:px-10 md:py-32 lg:px-16">
       <div className="mx-auto grid max-w-[1600px] gap-10 lg:grid-cols-[.25fr_1.75fr]">
         <p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.label}</p>
