@@ -17,10 +17,10 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const { locale, copy } = useLocale();
   const themes = locale === "ar"
-    ? ["العمارة", "التصميم الداخلي", "تطوير التصميم", "استشارات التنفيذ"]
+    ? ["العمارة والتصميم الداخلي", "الهوية والتوجيه الإبداعي", "التصور والتواصل", "التجارب الرقمية"]
     : locale === "it"
-      ? ["Architettura", "Interni", "Sviluppo del progetto", "Consulenza alla realizzazione"]
-      : ["Architecture", "Interiors", "Design Development", "Delivery Advisory"];
+      ? ["Architettura & Interni", "Branding & Direzione Creativa", "Visualizzazione & Comunicazione", "Esperienze Digitali"]
+      : ["Architecture & Interiors", "Branding & Creative Direction", "Visualization & Communication", "Digital Experiences"];
 
   useEffect(() => {
     if (!sectionRef.current) return;

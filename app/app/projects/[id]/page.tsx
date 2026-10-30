@@ -143,7 +143,7 @@ export default function ClientProjectPage() {
         </section>
 
         <footer className="mt-16 border-t border-white/10 py-8 text-xs text-white/25">
-          Mason & Arc · Architecture from concept to reality.
+          Mason & Arc · Designed as one. Built as intended.
         </footer>
       </div>
     </main>

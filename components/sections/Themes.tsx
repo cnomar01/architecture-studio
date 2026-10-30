@@ -10,19 +10,19 @@ const themesCopy = {
   en: {
     label: "04 — Explore",
     title: ["Explore", "more."],
-    themes: ["Architecture", "Interior Design", "Design Development", "Delivery Advisory"],
+    themes: ["Architecture & Interiors", "Branding & Creative Direction", "Visualization & Communication", "Digital Experiences"],
     end: "05 — End",
   },
   ar: {
     label: "04 — استكشف",
     title: ["استكشف", "المزيد."],
-    themes: ["العمارة", "التصميم الداخلي", "تطوير التصميم", "استشارات التنفيذ"],
+    themes: ["العمارة والتصميم الداخلي", "الهوية والتوجيه الإبداعي", "التصور والتواصل", "التجارب الرقمية"],
     end: "05 — النهاية",
   },
   it: {
     label: "04 — Esplora",
     title: ["Scopri", "di più."],
-    themes: ["Architettura", "Interior Design", "Sviluppo del progetto", "Consulenza alla realizzazione"],
+    themes: ["Architettura & Interni", "Branding & Direzione Creativa", "Visualizzazione & Comunicazione", "Esperienze Digitali"],
     end: "05 — Fine",
   },
 } as const;

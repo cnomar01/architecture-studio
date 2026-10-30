@@ -12,19 +12,19 @@ const servicesProjectsCopy = {
   en: {
     label: "02 — Projects",
     title: ["Selected", "Projects."],
-    intro: "A selection of spaces shaped through architecture, interiors, and detailed design.",
+    intro: "Completed and approved work. New projects will be added across disciplines as they are released.",
     viewAll: "View all projects",
   },
   ar: {
     label: "02 — المشروعات",
     title: ["مشروعات", "مختارة."],
-    intro: "مجموعة مختارة من الفراغات التي صاغتها العمارة والتصميم الداخلي والتطوير التفصيلي.",
+    intro: "أعمال مكتملة ومعتمدة، مع إضافة مشروعات جديدة عبر التخصصات عند جاهزيتها للنشر.",
     viewAll: "عرض كل المشروعات",
   },
   it: {
     label: "02 — Progetti",
     title: ["Progetti", "selezionati."],
-    intro: "Una selezione di spazi definiti attraverso architettura, interni e sviluppo del dettaglio.",
+    intro: "Lavori completati e approvati. Nuovi progetti verranno aggiunti nelle diverse discipline al momento della pubblicazione.",
     viewAll: "Tutti i progetti",
   },
 } as const;

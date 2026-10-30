@@ -4,15 +4,16 @@ import ContactForm from "./ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Start a conversation with Mason & Arc about architecture, interiors, detailed design development, and optional delivery advisory.",
+  description: "Tell Mason & Arc what you’re working on across space, identity, image or digital experience.",
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ service?: string }> }) {
+  const { service } = await searchParams;
   return (
     <main>
       <ContactHero />
-      <ContactForm />
+      <ContactForm initialService={service} />
     </main>
   );
 }

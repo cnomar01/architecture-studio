@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
-import { projects } from "@/lib/data/projects";
+import { listPublishedWebsiteProjects } from "@/lib/server/websiteProjects";
+import { listPublishedJournalArticles } from "@/lib/server/websiteJournal";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.masonandarc.com";
+  const [projects, journal] = await Promise.all([listPublishedWebsiteProjects(), listPublishedJournalArticles()]);
 
   return [
     {
@@ -46,6 +48,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...(journal.length ? [{ url: `${baseUrl}/journal`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 }] : []),
+    ...journal.map((article) => ({
+      url: `${baseUrl}/journal/${article.slug}`,
+      lastModified: new Date(article.updated_at),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
   ];
 }

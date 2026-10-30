@@ -1,506 +1,57 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
+import Link from "next/link";
 import Reveal from "@/components/animations/Reveal";
-import Container from "@/components/shared/Container";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
-const servicesPageCopy = {
+const content = {
   en: {
-    hero: ["Design.", "Develop.", "Realize."],
-    introPrimary: "We approach architecture as a complete design process — from the first idea through detailed development and coordination.",
-    introSecondary: "From concept to detailed design, we shape each project with clarity and precision. Where required, we support delivery through carefully selected specialist partners.",
-    scroll: "Scroll to explore",
-    sectionLabel: "01 — Services",
-    heading: ["Architecture,", "interiors,", "design and advisory."],
-    experience: "02 — Experience",
-    next: "Next",
+    hero: ["Think.", "Connect.", "Make."],
+    intro: "Mason & Arc brings space, identity, image and digital experience into one working process. The team changes with the brief; the creative direction stays clear.",
+    scroll: "Explore the practices", label: "01 — Services", heading: ["Four practices.", "Built to work together."],
+    fieldLabels: { capabilities: "Capabilities", for: "Who it is for", deliverables: "Typical deliverables", examples: "Where it can lead", specialist: "Specialist offering", cta: "Start a conversation" },
     services: [
-      { number: "01", title: "Architecture", description: "Architectural concepts and complete design solutions shaped around context, function, and timeless form." },
-      { number: "02", title: "Interior Design", description: "Interior spaces developed through material, proportion, light, and a clear relationship between architecture and experience." },
-      { number: "03", title: "Design Development", description: "From concept to detailed design, we develop every element with precision, clarity, and attention to detail." },
-      { number: "04", title: "Design & Delivery Advisory", description: "Where required, we advise on the selection and coordination of specialist delivery partners, helping carry the architectural vision through to realization with clarity and care." },
+      { title: "Architecture & Interiors", intro: "We shape places around how they should feel, work and endure. Architecture and interiors develop together, with material, light, movement and detail considered from the start.", capabilities: ["Architecture", "Interior design", "Spatial strategy", "Concept design", "Design development", "Material and furniture direction", "Execution documentation", "Delivery guidance and coordination"], for: "Developers, private clients, hospitality, workplace, retail and cultural projects.", deliverables: "Brief and spatial strategy, concept packages, plans and sections, material direction, detailed design, coordinated documentation and review support.", examples: "New buildings, renovations, residential interiors, hospitality environments, sales spaces and multi-site spatial standards.", specialist: "Design Systems for Developers — repeatable spatial principles, material families and project tools that protect quality across teams and sites." },
+      { title: "Branding & Creative Direction", intro: "We give projects a point of view people can recognise. Strategy, language and visual identity are developed as a useful system—not a collection of isolated graphics.", capabilities: ["Brand strategy", "Positioning", "Naming", "Verbal direction", "Visual identity", "Art direction", "Campaign direction", "Brand guidelines"], for: "New ventures, real-estate developments, places, hospitality brands and established organisations entering a new chapter.", deliverables: "Positioning, naming routes, identity concepts, logo systems, typography and colour rules, art direction, templates and practical guidelines.", examples: "Place brands, development identities, hospitality concepts, corporate refreshes, launches and brand families.", specialist: "Signature Design Language — a distinctive visual and verbal grammar that can guide every touchpoint without becoming rigid." },
+      { title: "Visualization & Communication", intro: "We make complex ideas easy to see and easier to understand. Still imagery, motion and editorial presentation are shaped around the story the project needs to tell.", capabilities: ["Architectural visualization", "Creative image direction", "Motion and film direction", "Presentation systems", "Pitch and competition material", "Campaign imagery", "Diagrams and visual narratives", "Editorial layouts"], for: "Architects, developers, brands and teams preparing a launch, approval, pitch or public story.", deliverables: "Image sets, film or motion direction, storyboards, presentation decks, diagrams, campaign assets and coordinated visual systems.", examples: "Planning and sales narratives, investor presentations, design competitions, launch campaigns and project films.", specialist: "Motion & Architectural Storytelling — sequence, pace and image direction that help an audience experience an unbuilt idea." },
+      { title: "Digital Experiences", intro: "We design and develop digital experiences that feel like the brand and work for the people using them. Structure, interface, content and build are considered as one piece of work.", capabilities: ["Digital strategy", "UX and content structure", "Web design", "Web development", "Responsive systems", "Interaction and motion", "Digital brand systems", "Social content direction"], for: "Studios, developments, hospitality brands, cultural projects and organisations that need a clear digital home.", deliverables: "Sitemaps, wireframes, interface systems, responsive websites, development, CMS setup, launch support and digital templates.", examples: "Portfolio sites, launch sites, place platforms, campaign pages, content systems and social toolkits.", specialist: "Brand Experience Design — connecting physical and digital touchpoints so the same identity is felt before, during and after the visit." },
     ],
   },
   ar: {
-    hero: ["تصميم.", "تطوير.", "تحقيق."],
-    introPrimary: "نتعامل مع العمارة كعملية تصميم متكاملة — من الفكرة الأولى إلى التطوير التفصيلي والتنسيق.",
-    introSecondary: "من الفكرة إلى التصميم التفصيلي، نطوّر كل مشروع بوضوح ودقة. وعند الحاجة، ندعم مرحلة التنفيذ من خلال شركاء متخصصين يتم اختيارهم بعناية.",
-    scroll: "مرّر للاستكشاف",
-    sectionLabel: "01 — الخدمات",
-    heading: ["العمارة،", "والتصميم الداخلي،", "والتطوير والاستشارات."],
-    experience: "02 — الخبرة",
-    next: "التالي",
+    hero: ["نفكّر.", "نربط.", "نصنع."],
+    intro: "يجمع Mason & Arc المكان والهوية والصورة والتجربة الرقمية داخل عملية عمل واحدة. يتغير الفريق حسب المشروع، بينما يظل الاتجاه الإبداعي واضحًا.",
+    scroll: "استكشف الممارسات", label: "01 — الخدمات", heading: ["أربع ممارسات.", "مصممة لتعمل معًا."],
+    fieldLabels: { capabilities: "القدرات", for: "لمن هذه الخدمة", deliverables: "المخرجات المعتادة", examples: "ما الذي يمكن أن تصنعه", specialist: "خدمة متخصصة", cta: "ابدأ محادثة" },
     services: [
-      { number: "01", title: "العمارة", description: "أفكار معمارية وحلول تصميم متكاملة تتشكل وفقًا للسياق والوظيفة والشكل الخالد." },
-      { number: "02", title: "التصميم الداخلي", description: "فراغات داخلية تتطور من خلال الخامات والنِسب والضوء والعلاقة الواضحة بين العمارة وتجربة المكان." },
-      { number: "03", title: "تطوير التصميم", description: "من الفكرة إلى التصميم التفصيلي، نطوّر كل عنصر بدقة ووضوح واهتمام بالتفاصيل." },
-      { number: "04", title: "استشارات التصميم ودعم التنفيذ", description: "عند الحاجة، نقدم المشورة في اختيار وتنسيق شركاء تنفيذ متخصصين، للمساعدة في تحقيق الرؤية المعمارية بوضوح وعناية." },
+      { title: "العمارة والتصميم الداخلي", intro: "نصوغ الأماكن حول الإحساس المطلوب منها وطريقة عملها وقدرتها على الاستمرار. تتطور العمارة والداخلية معًا، مع دراسة الخامات والضوء والحركة والتفاصيل من البداية.", capabilities: ["العمارة", "التصميم الداخلي", "الاستراتيجية المكانية", "التصميم المفاهيمي", "تطوير التصميم", "توجيه الخامات والأثاث", "وثائق التنفيذ", "دعم التنفيذ والتنسيق"], for: "المطورون والعملاء الأفراد ومشروعات الضيافة والعمل والتجزئة والثقافة.", deliverables: "البرنامج والاستراتيجية المكانية، حزم المفهوم، المساقط والقطاعات، توجيه الخامات، التصميم التفصيلي، الوثائق المنسقة ودعم المراجعة.", examples: "المباني الجديدة والتجديدات والداخلية السكنية والضيافة ومساحات البيع والمعايير المكانية متعددة المواقع.", specialist: "أنظمة تصميم للمطورين — مبادئ مكانية وعائلات خامات وأدوات مشروع قابلة للتكرار وتحمي الجودة عبر الفرق والمواقع." },
+      { title: "الهوية والتوجيه الإبداعي", intro: "نمنح المشروع وجهة نظر يسهل تمييزها. تتطور الاستراتيجية واللغة والهوية البصرية كنظام عملي، لا كمجموعة عناصر منفصلة.", capabilities: ["استراتيجية العلامة", "التموضع", "التسمية", "التوجيه اللفظي", "الهوية البصرية", "التوجيه الفني", "توجيه الحملات", "إرشادات العلامة"], for: "المشروعات الجديدة والتطوير العقاري والأماكن والضيافة والمؤسسات التي تبدأ فصلًا جديدًا.", deliverables: "التموضع، مسارات التسمية، مفاهيم الهوية، أنظمة الشعار، قواعد الخط واللون، التوجيه الفني، القوالب والإرشادات العملية.", examples: "هويات الأماكن والتطويرات والضيافة وتحديث المؤسسات والإطلاقات وعائلات العلامات.", specialist: "لغة تصميم مميزة — قواعد بصرية ولفظية خاصة تقود كل نقطة تواصل من دون أن تتحول إلى نظام جامد." },
+      { title: "التصور والتواصل", intro: "نجعل الأفكار المعقدة سهلة الرؤية والفهم. تُصاغ الصور والحركة والعروض التحريرية حول القصة التي يحتاج المشروع إلى روايتها.", capabilities: ["التصور المعماري", "التوجيه الإبداعي للصورة", "توجيه الحركة والفيلم", "أنظمة العرض", "مواد العروض والمسابقات", "صور الحملات", "المخططات والسرد البصري", "التصميم التحريري"], for: "المعماريون والمطورون والعلامات والفرق التي تستعد لإطلاق أو اعتماد أو عرض أو قصة عامة.", deliverables: "مجموعات صور، توجيه فيلم أو حركة، لوحات سرد، عروض تقديمية، مخططات، أصول حملات وأنظمة بصرية منسقة.", examples: "سرد التخطيط والمبيعات، عروض المستثمرين، المسابقات، حملات الإطلاق وأفلام المشروعات.", specialist: "الحركة والسرد المعماري — تسلسل وإيقاع وتوجيه للصورة يساعد الجمهور على تجربة فكرة لم تُبنَ بعد." },
+      { title: "التجارب الرقمية", intro: "نصمم ونطوّر تجارب رقمية تشبه العلامة وتخدم مستخدميها. نتعامل مع البنية والواجهة والمحتوى والبرمجة كعمل واحد.", capabilities: ["الاستراتيجية الرقمية", "تجربة المستخدم وبنية المحتوى", "تصميم المواقع", "تطوير المواقع", "الأنظمة المتجاوبة", "التفاعل والحركة", "أنظمة العلامة الرقمية", "توجيه المحتوى الاجتماعي"], for: "الاستوديوهات والتطويرات والعلامات الفندقية والمشروعات الثقافية والمؤسسات التي تحتاج إلى حضور رقمي واضح.", deliverables: "خرائط المواقع، النماذج الأولية، أنظمة الواجهة، مواقع متجاوبة، التطوير، إعداد إدارة المحتوى، دعم الإطلاق والقوالب الرقمية.", examples: "مواقع الأعمال والإطلاقات ومنصات الأماكن وصفحات الحملات وأنظمة المحتوى وأدوات التواصل الاجتماعي.", specialist: "تصميم تجربة العلامة — ربط النقاط المادية والرقمية ليُحسّ بالهوية نفسها قبل الزيارة وأثناءها وبعدها." },
     ],
   },
   it: {
-    hero: ["Progettare.", "Sviluppare.", "Realizzare."],
-    introPrimary: "Affrontiamo l’architettura come un processo progettuale completo — dalla prima idea allo sviluppo del dettaglio e al coordinamento.",
-    introSecondary: "Dal concept al progetto dettagliato, sviluppiamo ogni intervento con chiarezza e precisione. Quando richiesto, supportiamo la realizzazione attraverso partner specialistici selezionati con cura.",
-    scroll: "Scorri per esplorare",
-    sectionLabel: "01 — Servizi",
-    heading: ["Architettura,", "interni,", "progetto e consulenza."],
-    experience: "02 — Esperienza",
-    next: "Avanti",
+    hero: ["Pensare.", "Connettere.", "Creare."],
+    intro: "Mason & Arc riunisce spazio, identità, immagine ed esperienza digitale in un unico processo di lavoro. Il team cambia con il brief; la direzione creativa resta chiara.",
+    scroll: "Esplora le pratiche", label: "01 — Servizi", heading: ["Quattro pratiche.", "Pensate per lavorare insieme."],
+    fieldLabels: { capabilities: "Competenze", for: "Per chi", deliverables: "Deliverable tipici", examples: "Dove può portare", specialist: "Offerta specialistica", cta: "Inizia una conversazione" },
     services: [
-      { number: "01", title: "Architettura", description: "Concept architettonici e soluzioni progettuali complete, definite dal contesto, dalla funzione e da forme senza tempo." },
-      { number: "02", title: "Interior Design", description: "Spazi interni sviluppati attraverso materia, proporzione, luce e una relazione chiara tra architettura ed esperienza." },
-      { number: "03", title: "Sviluppo del progetto", description: "Dal concept al progetto dettagliato, sviluppiamo ogni elemento con precisione, chiarezza e attenzione al dettaglio." },
-      { number: "04", title: "Consulenza al progetto e alla realizzazione", description: "Quando richiesto, affianchiamo il cliente nella selezione e nel coordinamento di partner specialistici, preservando con chiarezza e cura la visione architettonica." },
+      { title: "Architettura & Interni", intro: "Diamo forma ai luoghi attorno a come devono essere vissuti, funzionare e durare. Architettura e interni crescono insieme, considerando materia, luce, movimento e dettaglio fin dall’inizio.", capabilities: ["Architettura", "Interior design", "Strategia spaziale", "Concept design", "Sviluppo del progetto", "Direzione materiali e arredi", "Documentazione esecutiva", "Supporto e coordinamento"], for: "Developer, clienti privati, hospitality, workplace, retail e progetti culturali.", deliverables: "Brief e strategia spaziale, concept, piante e sezioni, direzione materica, progetto di dettaglio, documentazione coordinata e supporto alla revisione.", examples: "Nuovi edifici, ristrutturazioni, interni residenziali, hospitality, spazi vendita e standard per più sedi.", specialist: "Design Systems for Developers — principi spaziali, famiglie di materiali e strumenti replicabili che proteggono la qualità tra team e luoghi diversi." },
+      { title: "Branding & Direzione Creativa", intro: "Diamo ai progetti un punto di vista riconoscibile. Strategia, linguaggio e identità visiva diventano un sistema utile, non una collezione di elementi isolati.", capabilities: ["Strategia di brand", "Posizionamento", "Naming", "Direzione verbale", "Identità visiva", "Art direction", "Direzione campagne", "Linee guida"], for: "Nuove iniziative, sviluppi immobiliari, luoghi, brand hospitality e organizzazioni che iniziano un nuovo capitolo.", deliverables: "Posizionamento, percorsi di naming, concept d’identità, sistemi di logo, regole tipografiche e cromatiche, art direction, template e linee guida pratiche.", examples: "Place brand, identità immobiliari, concept hospitality, rebranding, lanci e famiglie di brand.", specialist: "Signature Design Language — una grammatica visiva e verbale distintiva che guida ogni touchpoint senza diventare rigida." },
+      { title: "Visualizzazione & Comunicazione", intro: "Rendiamo le idee complesse più facili da vedere e capire. Immagini, motion e presentazioni editoriali sono costruiti attorno alla storia che il progetto deve raccontare.", capabilities: ["Visualizzazione architettonica", "Direzione creativa dell’immagine", "Direzione motion e film", "Sistemi di presentazione", "Pitch e concorsi", "Immagini di campagna", "Diagrammi e narrazioni visive", "Layout editoriali"], for: "Architetti, developer, brand e team che preparano un lancio, un’approvazione, un pitch o un racconto pubblico.", deliverables: "Serie di immagini, direzione film o motion, storyboard, deck, diagrammi, asset di campagna e sistemi visivi coordinati.", examples: "Narrazioni commerciali e urbanistiche, presentazioni per investitori, concorsi, campagne di lancio e film di progetto.", specialist: "Motion & Architectural Storytelling — sequenza, ritmo e direzione dell’immagine per far vivere al pubblico un’idea non ancora costruita." },
+      { title: "Esperienze Digitali", intro: "Progettiamo e sviluppiamo esperienze digitali che riflettono il brand e funzionano per chi le usa. Struttura, interfaccia, contenuti e sviluppo sono un unico lavoro.", capabilities: ["Strategia digitale", "UX e struttura dei contenuti", "Web design", "Sviluppo web", "Sistemi responsive", "Interazione e motion", "Sistemi digitali di brand", "Direzione contenuti social"], for: "Studi, sviluppi immobiliari, brand hospitality, progetti culturali e organizzazioni che hanno bisogno di una casa digitale chiara.", deliverables: "Sitemap, wireframe, sistemi di interfaccia, siti responsive, sviluppo, CMS, supporto al lancio e template digitali.", examples: "Portfolio, siti di lancio, piattaforme per luoghi, pagine di campagna, sistemi di contenuto e toolkit social.", specialist: "Brand Experience Design — connettere i touchpoint fisici e digitali affinché la stessa identità si senta prima, durante e dopo la visita." },
     ],
   },
 } as const;
 
 export default function ServicesHero() {
-  const servicesRef = useRef<HTMLDivElement>(null);
-  const { locale } = useLocale();
-  const pageCopy = servicesPageCopy[locale];
-
-  useEffect(() => {
-    if (!servicesRef.current) return;
-
-    const rows =
-      servicesRef.current.querySelectorAll<HTMLElement>(".service-row");
-
-    const ctx = gsap.context(() => {
-      gsap.from(rows, {
-        y: 70,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.12,
-        ease: "power4.out",
-        scrollTrigger: {
-          trigger: servicesRef.current,
-          start: "top 78%",
-          once: true,
-        },
-      });
-    }, servicesRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <main className="bg-[#f8f7f4] text-neutral-900">
-
-      {/* =====================================================
-          HERO
-      ====================================================== */}
-
-      <section className="relative min-h-screen">
-
-        <Container
-          className="
-            !max-w-none
-            px-5
-            pb-24
-            pt-32
-            sm:px-8
-            md:px-10
-            lg:px-14
-            lg:pt-36
-            xl:px-16
-          "
-        >
-
-          <div
-            className="
-              grid
-              min-h-[calc(100vh-8rem)]
-              grid-cols-1
-              lg:grid-cols-[1.05fr_0.95fr]
-              lg:gap-x-16
-              xl:grid-cols-[1.1fr_0.9fr]
-              xl:gap-x-24
-            "
-          >
-
-            {/* =================================================
-                LEFT — TITLE
-            ================================================== */}
-
-            <Reveal>
-              <div
-                className="
-                  flex
-                  h-full
-                  flex-col
-                  justify-end
-                  pb-10
-                  lg:pb-20
-                "
-              >
-
-                <h1
-                  className="
-                    max-w-[850px]
-                    text-[72px]
-                    font-extralight
-                    leading-[0.82]
-                    tracking-[-0.065em]
-                    sm:text-[100px]
-                    md:text-[125px]
-                    lg:text-[145px]
-                    xl:text-[165px]
-                  "
-                >
-                  {pageCopy.hero.map((line) => (
-                    <span key={line} className="block">{line}</span>
-                  ))}
-                </h1>
-
-
-                <p
-                  className="
-                    mt-12
-                    max-w-[560px]
-                    text-[14px]
-                    font-light
-                    leading-[1.85]
-                    text-neutral-600
-                    sm:text-[15px]
-                    md:text-[16px]
-                    lg:mt-14
-                  "
-                >
-                  {pageCopy.introPrimary}
-                </p>
-
-              </div>
-            </Reveal>
-
-
-            {/* =================================================
-                RIGHT — INTRO
-            ================================================== */}
-
-            <div
-              className="
-                flex
-                items-end
-                pb-10
-                lg:pb-20
-              "
-            >
-
-              <Reveal>
-                <div className="max-w-[720px]">
-
-                  <p
-                    className="
-                      max-w-[680px]
-                      text-[18px]
-                      font-light
-                      leading-[1.6]
-                      tracking-[-0.01em]
-                      text-neutral-600
-                      sm:text-[20px]
-                      md:text-[22px]
-                    "
-                  >
-                    {pageCopy.introSecondary}
-                  </p>
-
-
-                  <div className="mt-12 flex items-center gap-4">
-
-                    <span
-                      className="
-                        flex
-                        h-9
-                        w-5
-                        items-start
-                        justify-center
-                        rounded-full
-                        border
-                        border-neutral-400
-                      "
-                    >
-                      <span className="mt-2 h-2 w-px bg-neutral-800" />
-                    </span>
-
-                    <span
-                      className="
-                        text-[9px]
-                        uppercase
-                        tracking-[0.35em]
-                        text-neutral-500
-                      "
-                    >
-                      {pageCopy.scroll}
-                    </span>
-
-                  </div>
-
-                </div>
-              </Reveal>
-
-            </div>
-
-          </div>
-
-        </Container>
-
-      </section>
-
-
-      {/* =====================================================
-          SERVICES
-      ====================================================== */}
-
-      <section
-        ref={servicesRef}
-        className="
-          border-t
-          border-neutral-300
-          bg-[#f8f7f4]
-        "
-      >
-
-        <Container
-          className="
-            !max-w-none
-            px-5
-            py-24
-            sm:px-8
-            md:px-10
-            md:py-32
-            lg:px-14
-            lg:py-40
-            xl:px-16
-          "
-        >
-
-          {/* SECTION INTRO */}
-
-          <div
-            className="
-              mb-20
-              grid
-              grid-cols-1
-              gap-10
-              lg:grid-cols-[0.7fr_1.3fr]
-              lg:gap-x-20
-            "
-          >
-
-            <div>
-              <span
-                className="
-                  text-[9px]
-                  uppercase
-                  tracking-[0.35em]
-                  text-neutral-400
-                "
-              >
-                {pageCopy.sectionLabel}
-              </span>
-            </div>
-
-
-            <h2
-              className="
-                max-w-[900px]
-                text-[42px]
-                font-extralight
-                leading-[0.95]
-                tracking-[-0.045em]
-                sm:text-[55px]
-                md:text-[68px]
-                lg:text-[78px]
-              "
-            >
-              {pageCopy.heading.map((line) => (
-                <span key={line} className="block">{line}</span>
-              ))}
-            </h2>
-
-          </div>
-
-
-          {/* =================================================
-              SERVICE LIST
-          ================================================== */}
-
-          <div className="border-t border-neutral-300">
-
-            {pageCopy.services.map((service) => (
-
-              <div
-                key={service.number}
-                className="
-                  service-row
-                  group
-                  border-b
-                  border-neutral-300
-                  py-8
-                  sm:py-10
-                  md:py-12
-                  lg:py-14
-                "
-              >
-
-                <div
-                  className="
-                    grid
-                    grid-cols-[35px_1fr]
-                    gap-x-5
-                    md:grid-cols-[55px_0.8fr_1.2fr_30px]
-                    md:gap-x-8
-                    lg:gap-x-12
-                  "
-                >
-
-                  {/* NUMBER */}
-
-                  <span
-                    className="
-                      pt-2
-                      text-[8px]
-                      tracking-[0.25em]
-                      text-neutral-400
-                    "
-                  >
-                    {service.number}
-                  </span>
-
-
-                  {/* TITLE */}
-
-                  <h3
-                    className="
-                      text-[32px]
-                      font-extralight
-                      leading-[0.95]
-                      tracking-[-0.04em]
-                      transition-transform
-                      duration-500
-                      group-hover:translate-x-3
-                      sm:text-[40px]
-                      md:text-[44px]
-                      lg:text-[50px]
-                    "
-                  >
-                    {service.title}
-                  </h3>
-
-
-                  {/* DESCRIPTION */}
-
-                  <p
-                    className="
-                      col-start-2
-                      mt-5
-                      max-w-[650px]
-                      text-[13px]
-                      font-light
-                      leading-[1.8]
-                      text-neutral-500
-                      md:col-start-3
-                      md:mt-0
-                      md:text-[14px]
-                      lg:text-[15px]
-                    "
-                  >
-                    {service.description}
-                  </p>
-
-
-                  {/* ARROW */}
-
-                  <span
-                    className="
-                      hidden
-                      pt-1
-                      text-[16px]
-                      font-light
-                      text-neutral-400
-                      transition-transform
-                      duration-500
-                      group-hover:translate-x-2
-                      md:block
-                    "
-                  >
-                    ↗
-                  </span>
-
-                </div>
-
-              </div>
-
-            ))}
-
-          </div>
-
-        </Container>
-
-      </section>
-
-
-      {/* =====================================================
-          NEXT SECTION MARKER
-      ====================================================== */}
-
-      <section className="border-t border-neutral-300">
-
-        <Container
-          className="
-            !max-w-none
-            px-5
-            py-24
-            sm:px-8
-            md:px-10
-            md:py-32
-            lg:px-14
-            lg:py-40
-            xl:px-16
-          "
-        >
-
-          <div
-            className="
-              flex
-              items-end
-              justify-between
-              gap-10
-            "
-          >
-
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.35em]
-                text-neutral-400
-              "
-            >
-              {pageCopy.experience}
-            </span>
-
-
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.35em]
-                text-neutral-400
-              "
-            >
-              {pageCopy.next}
-            </span>
-
-          </div>
-
-        </Container>
-
-      </section>
-
-    </main>
-  );
+  const { locale } = useLocale(); const copy = content[locale];
+  return <main className="bg-[#f8f7f4] text-neutral-900">
+    <section className="min-h-screen px-6 pb-24 pt-32 sm:px-8 md:px-10 lg:px-16 lg:pt-36"><div className="grid min-h-[calc(100vh-8rem)] gap-16 lg:grid-cols-[1.05fr_.95fr] lg:items-end lg:gap-20 lg:pb-20"><Reveal><h1 className={`${locale === "ar" ? "text-[clamp(4.4rem,13vw,10rem)]" : "text-[clamp(4.8rem,12vw,10.5rem)]"} font-extralight leading-[.82] tracking-[-.065em]`}>{copy.hero.map((line) => <span key={line} className="block">{line}</span>)}</h1></Reveal><Reveal><div><p className="max-w-2xl text-xl font-light leading-8 text-neutral-600 md:text-2xl md:leading-10">{copy.intro}</p><p className="mt-12 text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.scroll} ↓</p></div></Reveal></div></section>
+    <section className="border-t border-neutral-300 px-6 py-24 sm:px-8 md:px-10 md:py-36 lg:px-16"><div className="grid gap-10 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.label}</p><h2 className="text-[clamp(3.5rem,9vw,8rem)] font-extralight leading-[.86] tracking-[-.055em]">{copy.heading[0]}<br />{copy.heading[1]}</h2></div>
+      <div className="mt-24 border-t border-neutral-300 md:mt-32">{copy.services.map((service, index) => <article id={`discipline-${index + 1}`} key={service.title} className="scroll-mt-20 border-b border-neutral-300 py-16 md:py-24"><div className="grid gap-10 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p><div><Reveal><h3 className={`${locale === "ar" ? "text-[clamp(2.6rem,7vw,5.6rem)]" : "text-[clamp(3.2rem,7vw,6.3rem)]"} max-w-5xl font-extralight leading-[.9] tracking-[-.055em]`}>{service.title}</h3></Reveal><p className="mt-8 max-w-3xl text-lg font-light leading-8 text-neutral-600 md:text-xl md:leading-9">{service.intro}</p><div className="mt-14 grid gap-10 border-t border-neutral-300 pt-10 md:grid-cols-2 xl:grid-cols-3"><div><Label>{copy.fieldLabels.capabilities}</Label><ul className="mt-5 space-y-2 text-sm leading-6 text-neutral-600">{service.capabilities.map((item) => <li key={item}>— {item}</li>)}</ul></div><Info label={copy.fieldLabels.for} text={service.for} /><Info label={copy.fieldLabels.deliverables} text={service.deliverables} /><Info label={copy.fieldLabels.examples} text={service.examples} /><div className="border-l-2 border-[#4F6B7A] pl-5 md:col-span-2"><Label>{copy.fieldLabels.specialist}</Label><p className="mt-5 max-w-3xl text-sm leading-7 text-neutral-600">{service.specialist}</p></div></div><Link href={`/contact?service=discipline-${index + 1}`} className="mt-12 inline-flex rounded-full border border-neutral-400 px-6 py-3 text-[9px] uppercase tracking-[.25em] transition hover:bg-neutral-900 hover:text-white">{copy.fieldLabels.cta} ↗</Link></div></div></article>)}</div>
+    </section>
+  </main>;
 }
+
+function Label({ children }: { children: React.ReactNode }) { return <p className="text-[9px] uppercase tracking-[.25em] text-neutral-400">{children}</p>; }
+function Info({ label, text }: { label: string; text: string }) { return <div><Label>{label}</Label><p className="mt-5 text-sm leading-7 text-neutral-600">{text}</p></div>; }

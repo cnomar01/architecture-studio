@@ -28,22 +28,22 @@ const notoArabic = Noto_Sans_Arabic({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.masonandarc.com"),
-  title: { default: "Mason & Arc — Architecture Studio", template: "%s | Mason & Arc" },
-  description: "Mason & Arc is an architectural design studio specializing in architecture, interiors, and detailed design development, with delivery advisory available where required.",
+  title: { default: "Mason & Arc — Multidisciplinary Design Studio", template: "%s | Mason & Arc" },
+  description: "Mason & Arc is a multidisciplinary design studio working across Architecture & Interiors, Branding & Creative Direction, Visualization & Communication, and Digital Experiences.",
   applicationName: "Mason & Arc",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: "/",
     siteName: "Mason & Arc",
-    title: "Mason & Arc — Architecture Studio",
-    description: "Architecture, interiors, and detailed design development by Mason & Arc.",
-    images: [{ url: "/images/hero.png", alt: "Mason & Arc — Architecture Studio" }],
+    title: "Mason & Arc — Multidisciplinary Design Studio",
+    description: "Architecture & Interiors, Branding & Creative Direction, Visualization & Communication, and Digital Experiences by Mason & Arc.",
+    images: [{ url: "/images/hero.png", alt: "Mason & Arc — Multidisciplinary Design Studio" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mason & Arc — Architecture Studio",
-    description: "Architecture, interiors, and detailed design development by Mason & Arc.",
+    title: "Mason & Arc — Multidisciplinary Design Studio",
+    description: "Architecture & Interiors, Branding & Creative Direction, Visualization & Communication, and Digital Experiences by Mason & Arc.",
     images: ["/images/hero.png"],
   },
 

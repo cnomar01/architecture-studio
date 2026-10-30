@@ -10,22 +10,19 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
   const heroRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const hero = heroRef.current;
     const image = imageRef.current;
     const title = titleRef.current;
-    const content = contentRef.current;
 
-    if (!hero || !image || !title || !content) return;
+    if (!hero || !image || !title) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const mobile = window.matchMedia("(max-width: 767px)").matches;
 
     const ctx = gsap.context(() => {
       if (reduceMotion) {
-        gsap.set(content, { y: 0, opacity: 1 });
         return;
       }
 
@@ -36,8 +33,6 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
         opacity: 1,
       });
 
-      gsap.set(content, { y: 30, opacity: 0 });
-
       const intro = gsap.timeline({ delay: 0.1 });
 
       intro.to(title, {
@@ -46,17 +41,6 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
         duration: 1.15,
         ease: "power4.out",
       });
-
-      intro.to(
-        content,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.65,
-          ease: "power3.out",
-        },
-        "-=0.35"
-      );
 
       if (!reduceMotion && !mobile) {
         gsap.to(image, {
@@ -92,6 +76,9 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-black/5" />
 
       <div className="absolute bottom-[72px] left-6 right-6 z-20 sm:bottom-[80px] sm:left-8 sm:right-8 md:bottom-[88px] md:left-10 md:right-10 lg:bottom-[92px] lg:left-16 lg:right-16">
+        <p className="mb-5 text-[9px] uppercase tracking-[0.28em] text-white/75 sm:text-[10px]">
+          {copy.heroStudioLabel}
+        </p>
         <h1
           ref={titleRef}
           className={`${locale === "ar" ? "origin-bottom-right font-[var(--font-arabic)] tracking-[-0.02em]" : "origin-bottom-left font-[var(--font-body)] tracking-[-0.052em]"} max-w-[800px] text-[clamp(2.25rem,8.2vw,3.25rem)] font-light leading-[1.045] sm:text-[clamp(3.25rem,4.9vw,4.75rem)] will-change-transform`}
@@ -100,11 +87,6 @@ export default function Hero({ imageUrl = "/images/hero.png" }: { imageUrl?: str
           <span className="block">{copy.heroExperience}</span>
         </h1>
 
-        <div ref={contentRef} className="mt-6 max-w-[740px] opacity-0 sm:mt-7">
-          <p className="text-[15px] font-normal leading-[1.55] tracking-[-0.01em] text-white/95 sm:text-[16px] md:text-[17px] lg:text-[18px]">
-            {copy.heroIntro}
-          </p>
-        </div>
       </div>
 
     </section>

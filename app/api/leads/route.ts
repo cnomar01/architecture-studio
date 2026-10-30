@@ -5,7 +5,7 @@ import { sendGoogleMail } from "@/lib/server/googleMail";
 
 export const runtime = "nodejs";
 
-const MAX = { name: 120, email: 254, phone: 60, company: 160, notes: 5000 };
+const MAX = { name: 120, email: 254, phone: 60, company: 160, service: 120, notes: 5000 };
 
 function clean(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -20,12 +20,13 @@ export async function POST(request: Request) {
     const email = clean(body.email, MAX.email).toLowerCase();
     const phone = clean(body.phone, MAX.phone);
     const company = clean(body.company, MAX.company);
+    const service = clean(body.service, MAX.service);
     const notes = clean(body.notes, MAX.notes);
 
     if (!name || !email || !notes) return NextResponse.json({ error: "Name, email and inquiry are required." }, { status: 400 });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
 
-    const details = [phone && `Phone: ${phone}`, company && `Company: ${company}`, notes && `Inquiry: ${notes}`].filter(Boolean).join("\n");
+    const details = [phone && `Phone: ${phone}`, company && `Company: ${company}`, service && `Service: ${service}`, notes && `Inquiry: ${notes}`].filter(Boolean).join("\n");
     const leadId = randomUUID();
     await query(
       `INSERT INTO leads (id, company, status, contact_name, email, notes) VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
             `Email: ${email}`,
             `Phone: ${phone || "Not provided"}`,
             `Company: ${company || "Not provided"}`,
+            `Service: ${service || "Not specified"}`,
             "",
             "Project / inquiry:",
             notes,

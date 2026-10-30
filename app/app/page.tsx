@@ -100,7 +100,7 @@ function ClientPortal() {
       </section>
 
       <footer className="border-t border-white/10 px-6 py-6 md:px-10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between text-[9px] uppercase tracking-[0.2em] text-white/20"><span>Mason & Arc</span><span>Architecture from concept to reality.</span></div>
+        <div className="mx-auto flex max-w-7xl items-center justify-between text-[9px] uppercase tracking-[0.2em] text-white/20"><span>Mason & Arc</span><span>Designed as one. Built as intended.</span></div>
       </footer>
     </main>
   );

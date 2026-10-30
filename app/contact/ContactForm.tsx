@@ -12,6 +12,15 @@ const formCopy = {
     email: "Email",
     phone: "Phone",
     company: "Company",
+    service: "What can we help with?",
+    serviceOptions: [
+      ["multidisciplinary", "A multidisciplinary project"],
+      ["discipline-1", "Architecture & Interiors"],
+      ["discipline-2", "Branding & Creative Direction"],
+      ["discipline-3", "Visualization & Communication"],
+      ["discipline-4", "Digital Experiences"],
+      ["developer-systems", "Design Systems for Developers"],
+    ],
     inquiry: "Project / Inquiry",
     placeholder: "Tell us briefly about your project, scope, location, or what you need.",
     sending: "Sending…",
@@ -28,6 +37,15 @@ const formCopy = {
     email: "البريد الإلكتروني",
     phone: "رقم الهاتف",
     company: "الشركة",
+    service: "كيف يمكننا مساعدتك؟",
+    serviceOptions: [
+      ["multidisciplinary", "مشروع متعدد التخصصات"],
+      ["discipline-1", "العمارة والتصميم الداخلي"],
+      ["discipline-2", "الهوية والتوجيه الإبداعي"],
+      ["discipline-3", "التصور والتواصل"],
+      ["discipline-4", "التجارب الرقمية"],
+      ["developer-systems", "أنظمة تصميم للمطورين"],
+    ],
     inquiry: "المشروع / الاستفسار",
     placeholder: "اكتب لنا نبذة عن المشروع أو نطاقه أو موقعه أو ما تحتاجه.",
     sending: "جارٍ الإرسال…",
@@ -44,6 +62,15 @@ const formCopy = {
     email: "Email",
     phone: "Telefono",
     company: "Società",
+    service: "Come possiamo aiutarti?",
+    serviceOptions: [
+      ["multidisciplinary", "Un progetto multidisciplinare"],
+      ["discipline-1", "Architettura & Interni"],
+      ["discipline-2", "Branding & Direzione Creativa"],
+      ["discipline-3", "Visualizzazione & Comunicazione"],
+      ["discipline-4", "Esperienze Digitali"],
+      ["developer-systems", "Design system per developer"],
+    ],
     inquiry: "Progetto / Richiesta",
     placeholder: "Descrivi brevemente il progetto, l’ambito, il luogo o ciò di cui hai bisogno.",
     sending: "Invio…",
@@ -55,11 +82,12 @@ const formCopy = {
   },
 } as const;
 
-export default function ContactForm() {
+export default function ContactForm({ initialService }: { initialService?: string }) {
   const { locale } = useLocale();
   const copy = formCopy[locale];
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [service, setService] = useState(() => copy.serviceOptions.some(([value]) => value === initialService) ? initialService! : "multidisciplinary");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -102,6 +130,12 @@ export default function ContactForm() {
                 <Field name="phone" label={copy.phone} type="tel" />
                 <Field name="company" label={copy.company} />
               </div>
+              <label className="mt-8 block">
+                <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-500">{copy.service}</span>
+                <select name="service" value={service} onChange={(event) => setService(event.target.value)} className="mt-3 w-full border-b border-neutral-300 bg-transparent px-0 py-3 text-sm font-light text-neutral-900 outline-none focus:border-neutral-900">
+                  {copy.serviceOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
               <label className="mt-8 block">
                 <span className="text-[9px] uppercase tracking-[0.3em] text-neutral-500">{copy.inquiry}</span>
                 <textarea name="notes" required rows={5} className="mt-3 w-full resize-y border-b border-neutral-300 bg-transparent px-0 py-3 text-sm font-light text-neutral-900 outline-none placeholder:text-neutral-500 focus:border-neutral-900" placeholder={copy.placeholder} />

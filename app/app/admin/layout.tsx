@@ -27,6 +27,7 @@ const navigation = [
   { label: "Overview", href: "/app/admin" },
   { label: "Projects", href: "/app/admin/projects" },
   { label: "Website Content", href: "/app/admin/website-projects" },
+  { label: "Website Journal", href: "/app/admin/journal" },
   { label: "Clients", href: "/app/admin/clients" },
   { label: "Team", href: "/app/admin/team" },
   { label: "Intelligence", href: "/app/admin/intelligence" },
