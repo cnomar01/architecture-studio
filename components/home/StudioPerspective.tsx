@@ -48,7 +48,7 @@ export default function StudioPerspective() {
           <div className="min-w-0">
             <h2
               id="home-contact-title"
-              className={`max-w-[1100px] font-light leading-[1.02] ${locale === "ar" ? "text-[clamp(2.8rem,6.5vw,7rem)] tracking-[-.015em]" : "text-[clamp(3.4rem,7.5vw,9rem)] tracking-[-.065em]"}`}
+              className={`max-w-[1100px] font-light leading-[1.02] ${locale === "ar" ? "text-[clamp(2.3rem,6.5vw,7rem)] tracking-[-.015em]" : "text-[clamp(2.4rem,7.5vw,9rem)] tracking-[-.065em]"}`}
             >
               <span className="block">{copy.first}</span>
               <span className="block">{copy.second}</span>
