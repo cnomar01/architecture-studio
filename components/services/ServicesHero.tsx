@@ -73,7 +73,7 @@ export default function ServicesHero() {
     <section className="border-t border-neutral-300 px-6 py-24 sm:px-8 md:px-10 md:py-32 lg:px-16">
       <div className="mx-auto grid max-w-[1600px] gap-10 lg:grid-cols-[.25fr_1.75fr]">
         <p className="text-[9px] uppercase tracking-[.35em] text-neutral-400">{copy.label}</p>
-        <h2 className="text-[clamp(3.5rem,8vw,7rem)] font-extralight leading-[.88] tracking-[-.055em]">{copy.heading[0]}<br />{copy.heading[1]}</h2>
+        <h2 className="text-[clamp(2.75rem,5.2vw,5.25rem)] font-extralight leading-[1.02] tracking-[-.045em]">{copy.heading[0]}<br />{copy.heading[1]}</h2>
       </div>
       <div className="mx-auto mt-20 max-w-[1600px] border-t border-neutral-300 md:mt-28">
         {copy.services.map((service, index) => (
@@ -81,13 +81,13 @@ export default function ServicesHero() {
             id={`discipline-${index + 1}`}
             key={service.title}
             href={`/services/${serviceSlugs[index]}`}
-            className="group grid scroll-mt-20 grid-cols-[40px_minmax(0,1fr)_24px] items-center gap-4 border-b border-neutral-300 py-12 transition-colors hover:text-[#4F6B7A] md:grid-cols-[100px_minmax(0,1fr)_40px] md:gap-10 md:py-16"
+            className="group grid scroll-mt-20 grid-cols-[40px_minmax(0,1fr)_24px] items-start gap-4 border-b border-neutral-300 py-10 transition-colors hover:text-[#4F6B7A] md:grid-cols-[100px_minmax(0,1fr)_40px] md:gap-10 md:py-14"
           >
-            <p className="text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p>
+            <p className="pt-2 text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p>
             <Reveal>
-              <h3 className={`${locale === "ar" ? "text-[clamp(2.5rem,5vw,4.5rem)]" : "text-[clamp(2.8rem,5vw,4.8rem)]"} max-w-4xl font-extralight leading-[.94] tracking-[-.05em]`}>{service.title}</h3>
+              <h3 className={`${locale === "ar" ? "text-[clamp(2.5rem,5vw,4.5rem)]" : "text-[clamp(2.1rem,3.75vw,3.625rem)]"} min-w-0 font-extralight leading-[1.04] tracking-[-.045em]`}>{service.title}</h3>
             </Reveal>
-            <span aria-hidden="true" className="text-right text-2xl transition-transform group-hover:translate-x-1">↗</span>
+            <span aria-hidden="true" className="pt-1 text-right text-2xl transition-transform group-hover:translate-x-1">↗</span>
           </Link>
         ))}
       </div>
