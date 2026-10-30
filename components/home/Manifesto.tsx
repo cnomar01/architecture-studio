@@ -49,7 +49,7 @@ export default function Manifesto() {
             <Reveal y={20}>
               <h2
                 id="home-perspective-title"
-                className={`font-light leading-[1.035] ${locale === "ar" ? "text-[clamp(2.5rem,6.5vw,7rem)] tracking-[-.018em]" : "text-[clamp(3.2rem,6.5vw,7.65rem)] tracking-[-.065em]"}`}
+                className={`font-light leading-[1.035] ${locale === "ar" ? "text-[clamp(2.25rem,6.5vw,7rem)] tracking-[-.018em]" : "text-[clamp(2.15rem,6.5vw,7.65rem)] tracking-[-.065em]"}`}
               >
                 <span className="block">{copy.first}</span>
                 <span className={`block ${locale === "ar" ? "lg:ms-[3%]" : locale === "it" ? "" : "lg:ms-[5%]"}`}>
