@@ -22,8 +22,9 @@ const aboutCopy = {
     approachBody: "Every project is considered as one connected expression. From the earliest concept to the final physical or digital touchpoint, decisions are made with clarity, consistency, and purpose so that every part belongs to the same story.",
     closingTitle: ["Work with", "character.", "Purpose.", "Lasting value."],
     closingBody: "Our ambition is to shape spaces, identities, images, and digital experiences with character, purpose, and lasting value — where every touchpoint feels connected and intentional.",
-    ctaLabel: "Next — Contact",
-    ctaLink: "Start a conversation.",
+    ctaLabel: "Start a project",
+    ctaTitle: ["Let's", "create."],
+    ctaLink: "Get in touch",
   },
   ar: {
     eyebrow: "عن الاستوديو",
@@ -43,8 +44,9 @@ const aboutCopy = {
     approachBody: "نتعامل مع كل مشروع كتعبير واحد مترابط. من الفكرة الأولى إلى آخر نقطة تواصل مادية أو رقمية، تُتخذ القرارات بوضوح واتساق وهدف، ليبقى كل جزء ضمن الحكاية نفسها.",
     closingTitle: ["عمل ذو", "شخصية.", "وهدف.", "وقيمة تدوم."],
     closingBody: "طموحنا هو صياغة مساحات وهويات وصور وتجارب رقمية ذات شخصية وهدف وقيمة تدوم، حيث تبدو كل نقطة تواصل مترابطة ومقصودة.",
-    ctaLabel: "التالي — تواصل معنا",
-    ctaLink: "لنبدأ الحديث.",
+    ctaLabel: "ابدأ مشروعًا",
+    ctaTitle: ["لنبدع", "معًا."],
+    ctaLink: "تواصل معنا",
   },
   it: {
     eyebrow: "Studio",
@@ -64,8 +66,9 @@ const aboutCopy = {
     approachBody: "Ogni progetto viene considerato come un’unica espressione connessa. Dal primo concept all’ultimo punto di contatto fisico o digitale, le decisioni sono guidate da chiarezza, coerenza e intenzione, perché ogni parte appartenga alla stessa storia.",
     closingTitle: ["Un lavoro con", "carattere.", "Scopo.", "Valore duraturo."],
     closingBody: "La nostra ambizione è dare forma a spazi, identità, immagini ed esperienze digitali con carattere, scopo e valore duraturo, dove ogni punto di contatto è connesso e intenzionale.",
-    ctaLabel: "Il prossimo passo — Contatti",
-    ctaLink: "Parliamone.",
+    ctaLabel: "Inizia un progetto",
+    ctaTitle: ["Creiamo", "insieme."],
+    ctaLink: "Contattaci",
   },
 } as const;
 
@@ -362,30 +365,60 @@ export default function AboutPage() {
 
 
       {/* =====================================================
-          CONTACT CTA — a single editorial invitation
+          CONTACT CTA
       ===================================================== */}
 
-      <section className="bg-[#f8f7f4] px-6 pb-28 pt-24 text-[#191c1d] sm:px-8 sm:pb-32 sm:pt-28 md:px-10 lg:pb-40 lg:pt-36 lg:px-16">
-        <div className="mx-auto max-w-[1740px] border-t border-[#c9cdca] pt-6">
-          <div className="grid gap-12 lg:grid-cols-[minmax(160px,1fr)_minmax(0,3.5fr)] lg:gap-10">
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#4F6B7A]">
+      <section className="px-6 py-24 md:px-10 md:py-32">
+
+        <div className="flex flex-col gap-10 border-t border-black/20 pt-8 md:flex-row md:items-end md:justify-between">
+
+          <div>
+
+            <p className="text-[9px] uppercase tracking-[0.25em] text-black/45">
               {copy.ctaLabel}
             </p>
-            <Link
-              href="/contact"
-              className="group grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-5 border-b border-[#b8bfba] pb-6 transition-colors duration-300 hover:border-[#4F6B7A] sm:gap-10 sm:pb-8"
+
+            <h2
+              className="
+                mt-5
+                font-extralight
+                text-[56px]
+                leading-[0.86]
+                tracking-[-0.055em]
+
+                sm:text-[72px]
+                md:text-[110px]
+                lg:text-[140px]
+              "
             >
-              <span className={`min-w-0 font-light leading-[1.06] ${locale === "ar" ? "text-[clamp(2.2rem,5.4vw,6.5rem)] tracking-[-.012em]" : "text-[clamp(2.3rem,5.6vw,6.5rem)] tracking-[-.055em]"}`}>
-                {copy.ctaLink}
-              </span>
-              <span
-                aria-hidden="true"
-                className="pb-1 text-[clamp(2rem,4vw,4.5rem)] font-extralight leading-none text-[#4F6B7A] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
-              >
-                ↗
-              </span>
-            </Link>
+              {copy.ctaTitle[0]}
+              <br />
+              {copy.ctaTitle[1]}
+            </h2>
+
           </div>
+
+          <Link
+            href="/contact"
+            className="
+              inline-flex
+              items-center
+              gap-4
+              border-b
+              border-black
+              pb-2
+              text-[10px]
+              uppercase
+              tracking-[0.2em]
+              transition-opacity
+              duration-300
+              hover:opacity-50
+            "
+          >
+            {copy.ctaLink}
+            <span className="text-base">↗</span>
+          </Link>
+
         </div>
       </section>
 
