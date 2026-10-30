@@ -43,7 +43,7 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
           </p>
           <h2
             id="home-projects-title"
-            className={`font-light leading-[1.03] ${locale === "ar" ? "text-[clamp(2.65rem,6.1vw,6.5rem)] tracking-[-.018em]" : "text-[clamp(3.3rem,7vw,7.25rem)] tracking-[-.065em]"}`}
+            className={`font-light leading-[1.03] ${locale === "ar" ? "text-[clamp(2.3rem,6.1vw,6.5rem)] tracking-[-.018em]" : "text-[clamp(2.4rem,7vw,7.25rem)] tracking-[-.065em]"}`}
           >
             {section.heading}
           </h2>
