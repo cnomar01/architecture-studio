@@ -81,14 +81,13 @@ export default function ServicesHero() {
             id={`discipline-${index + 1}`}
             key={service.title}
             href={`/services/${serviceSlugs[index]}`}
-            className="group grid scroll-mt-20 gap-7 border-b border-neutral-300 py-12 transition-colors hover:text-[#4F6B7A] md:py-16 lg:grid-cols-[100px_minmax(0,1.25fr)_minmax(260px,.75fr)_40px] lg:items-center lg:gap-10"
+            className="group grid scroll-mt-20 grid-cols-[40px_minmax(0,1fr)_24px] items-center gap-4 border-b border-neutral-300 py-12 transition-colors hover:text-[#4F6B7A] md:grid-cols-[100px_minmax(0,1fr)_40px] md:gap-10 md:py-16"
           >
             <p className="text-[10px] tracking-[.25em] text-[#4F6B7A]">0{index + 1}</p>
             <Reveal>
               <h3 className={`${locale === "ar" ? "text-[clamp(2.5rem,5vw,4.5rem)]" : "text-[clamp(2.8rem,5vw,4.8rem)]"} max-w-4xl font-extralight leading-[.94] tracking-[-.05em]`}>{service.title}</h3>
             </Reveal>
-            <p className="max-w-xl text-sm font-light leading-7 text-neutral-500 md:text-base md:leading-8">{service.intro}</p>
-            <span aria-hidden="true" className="text-2xl transition-transform group-hover:translate-x-1">↗</span>
+            <span aria-hidden="true" className="text-right text-2xl transition-transform group-hover:translate-x-1">↗</span>
           </Link>
         ))}
       </div>

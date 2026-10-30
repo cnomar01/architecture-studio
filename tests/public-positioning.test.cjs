@@ -115,12 +115,14 @@ test("services page stays focused and avoids repeating the About timeline", () =
   assert.match(servicesHero, /Think\./);
   assert.match(servicesHero, /Connect\./);
   assert.match(servicesHero, /Make\./);
+  assert.doesNotMatch(servicesHero, /service\.intro/);
 });
 
 test("contact hero keeps an editorial scale without overwhelming the details", () => {
   const contactHero = read("components/contact/ContactHero.tsx");
   assert.match(contactHero, /text-\[clamp\(3\.5rem,7vw,6\.5rem\)\]/);
   assert.doesNotMatch(contactHero, /lg:text-\[150px\]/);
+  assert.doesNotMatch(contactHero, /Start a conversation|Space · Identity · Image · Digital|copy\.start|copy\.disciplines/);
 });
 
 test("public menu restores the Mason & Arc OS portal", () => {
@@ -179,6 +181,7 @@ test("portfolio copy is honest about the current published archive and avoids du
   const homeProjects = read("components/home/Projects.tsx");
   assert.doesNotMatch(locale, /completed and approved/i);
   assert.doesNotMatch(homeProjects, /experienceMore|workWays|themes\.map/);
+  assert.match(homeProjects, /translated\.category/);
 });
 
 test("homepage point of view uses original multidisciplinary language", () => {

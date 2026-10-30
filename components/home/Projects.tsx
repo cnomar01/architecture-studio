@@ -315,22 +315,27 @@ export default function Projects({ projects }: { projects: WebsiteProject[] }) {
                     gap-8
                   "
                 >
-                  <h3
-                    className="
-                      text-[44px]
-                      font-light
-                      leading-[0.88]
-                      tracking-[-0.05em]
-                      transition-transform
-                      duration-700
-                      group-hover:translate-x-2
-                      sm:text-[58px]
-                      md:text-[76px]
-                      lg:text-[92px]
-                    "
-                  >
-                    {translated.title}
-                  </h3>
+                  <div>
+                    <p className="mb-4 text-[9px] uppercase tracking-[0.3em] text-[#4F6B7A]">
+                      {translated.category}
+                    </p>
+                    <h3
+                      className="
+                        text-[44px]
+                        font-light
+                        leading-[0.88]
+                        tracking-[-0.05em]
+                        transition-transform
+                        duration-700
+                        group-hover:translate-x-2
+                        sm:text-[58px]
+                        md:text-[76px]
+                        lg:text-[92px]
+                      "
+                    >
+                      {translated.title}
+                    </h3>
+                  </div>
 
                   <span
                     className="

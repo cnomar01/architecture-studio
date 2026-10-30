@@ -13,8 +13,6 @@ const contactCopy = {
     whatsapp: "WhatsApp",
     italy: "Italy",
     instagram: "Instagram",
-    start: "Start a conversation",
-    disciplines: "Space · Identity · Image · Digital",
   },
   ar: {
     heading: ["حدّثنا عمّا", "تعمل عليه."],
@@ -24,8 +22,6 @@ const contactCopy = {
     whatsapp: "واتساب",
     italy: "إيطاليا",
     instagram: "إنستغرام",
-    start: "ابدأ محادثة",
-    disciplines: "المكان · الهوية · الصورة · التجربة الرقمية",
   },
   it: {
     heading: ["Raccontaci a cosa", "stai lavorando."],
@@ -35,8 +31,6 @@ const contactCopy = {
     whatsapp: "WhatsApp",
     italy: "Italia",
     instagram: "Instagram",
-    start: "Inizia una conversazione",
-    disciplines: "Spazio · Identità · Immagine · Digitale",
   },
 } as const;
 
@@ -45,19 +39,8 @@ export default function ContactHero() {
   const copy = contactCopy[locale];
   return (
     <section className="min-h-screen bg-[#f8f7f4] text-neutral-900">
-      <Container className="flex min-h-screen flex-col justify-between px-8 pb-12 pt-28 md:px-12 md:pb-16 md:pt-36 lg:px-16 lg:pb-20 lg:pt-40">
-
-        {/* Top */}
-        <div>
-          <Reveal>
-            <p >
-              
-            </p>
-          </Reveal>
-        </div>
-
-        {/* Main */}
-        <div className="grid grid-cols-1 gap-20 pb-20 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
+      <Container className="flex min-h-screen items-center px-8 pb-20 pt-32 md:px-12 md:pb-24 md:pt-36 lg:px-16 lg:pt-40">
+        <div className="grid w-full grid-cols-1 gap-20 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
 
           {/* Heading */}
           <div>
@@ -166,14 +149,6 @@ export default function ContactHero() {
           </Reveal>
 
         </div>
-
-        {/* Bottom */}
-        <Reveal>
-          <div className="flex flex-col gap-4 border-t border-neutral-300 pt-6 text-[10px] uppercase tracking-[0.3em] text-neutral-400 md:flex-row md:items-center md:justify-between">
-            <span>{copy.start}</span>
-            <span>{copy.disciplines}</span>
-          </div>
-        </Reveal>
 
       </Container>
     </section>
