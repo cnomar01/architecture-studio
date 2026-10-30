@@ -1,38 +1,53 @@
 "use client";
 
 import Link from "next/link";
-import Reveal from "@/components/animations/Reveal";
 import { useLocale } from "@/components/i18n/LocaleProvider";
 
 const content = {
   en: {
-    approachLabel: "Integrated Design Approach", approachTitle: ["One idea,", "carried through."], approachText: "We look for the central idea that can guide the space, identity, image and digital experience. That shared direction makes the work more coherent and keeps decisions useful as a project grows.",
-    steps: [["Understand", "The place, people, ambition and practical limits."], ["Connect", "The disciplines and decisions that need to belong together."], ["Make", "Clear concepts, systems and details that can move forward."], ["Refine", "The work through testing, coordination and close review."]],
-    developerLabel: "Design Systems for Developers", developerTitle: "A clear language across every scale.", developerText: "For developers and multi-project brands, we build design principles, spatial standards, identity rules and presentation tools that help different teams create a consistent experience without making every project feel the same.", developerLink: "Discuss a design system",
-    brandLabel: "Brand Experience & Visualization", brandTitle: "Make the idea visible before people meet it.", brandText: "Identity, visualization, motion and digital design can shape how a project is understood long before launch. We use them together to give places and brands a recognisable presence.", brandLink: "Explore the services",
-    ctaLabel: "Start a conversation", ctaTitle: "Tell us what you’re working on.", ctaText: "A place, a brand, an experience—or something that needs all three. Share where you are, and we’ll take it from there.", ctaLink: "Start a project",
+    label: "04 — Begin",
+    first: "Have something",
+    second: "in mind?",
+    link: "Start a conversation",
   },
   ar: {
-    approachLabel: "منهج تصميم متكامل", approachTitle: ["فكرة واحدة،", "تمتد إلى كل تفصيلة."], approachText: "نبحث عن الفكرة المركزية القادرة على توجيه المكان والهوية والصورة والتجربة الرقمية. هذا الاتجاه المشترك يمنح العمل تماسكًا ويحافظ على قيمة القرارات مع تطور المشروع.",
-    steps: [["نفهم", "المكان والناس والطموح والحدود العملية."], ["نربط", "التخصصات والقرارات التي يجب أن تنتمي إلى قصة واحدة."], ["نصنع", "مفاهيم وأنظمة وتفاصيل واضحة وقابلة للتنفيذ."], ["نُحسّن", "العمل بالاختبار والتنسيق والمراجعة الدقيقة."]],
-    developerLabel: "أنظمة تصميم للمطورين", developerTitle: "لغة واضحة على كل مستوى.", developerText: "للمطورين والعلامات التي تعمل عبر مشروعات متعددة، نبني مبادئ تصميم ومعايير مكانية وقواعد للهوية وأدوات عرض تساعد الفرق المختلفة على خلق تجربة متسقة من دون أن تصبح المشروعات نسخًا من بعضها.", developerLink: "ناقش نظامًا تصميميًا",
-    brandLabel: "تجربة العلامة والتصور", brandTitle: "اجعل الفكرة مرئية قبل أن يلتقي بها الناس.", brandText: "يمكن للهوية والتصور والحركة والتصميم الرقمي أن تشكل فهم المشروع قبل إطلاقه بوقت طويل. نستخدمها معًا لنمنح المكان والعلامة حضورًا يسهل تمييزه.", brandLink: "استكشف الخدمات",
-    ctaLabel: "ابدأ محادثة", ctaTitle: "حدّثنا عمّا تعمل عليه.", ctaText: "مكان أو علامة أو تجربة—أو مشروع يحتاج الثلاثة معًا. أخبرنا أين وصلت وسنكمل من هناك.", ctaLink: "ابدأ مشروعًا",
+    label: "04 — البداية",
+    first: "عندك فكرة",
+    second: "نبدأ منها؟",
+    link: "ابدأ محادثة",
   },
   it: {
-    approachLabel: "Approccio integrato", approachTitle: ["Un’idea,", "portata fino in fondo."], approachText: "Cerchiamo l’idea centrale capace di guidare spazio, identità, immagine ed esperienza digitale. Una direzione condivisa rende il lavoro più coerente e mantiene utili le decisioni mentre il progetto cresce.",
-    steps: [["Comprendere", "Il luogo, le persone, l’ambizione e i limiti pratici."], ["Connettere", "Le discipline e le decisioni che devono appartenere allo stesso insieme."], ["Creare", "Concept, sistemi e dettagli chiari, pronti per avanzare."], ["Affinare", "Il lavoro attraverso test, coordinamento e revisione attenta."]],
-    developerLabel: "Design system per developer", developerTitle: "Un linguaggio chiaro a ogni scala.", developerText: "Per developer e brand con più progetti, costruiamo principi di design, standard spaziali, regole d’identità e strumenti di presentazione che aiutano team diversi a creare un’esperienza coerente senza rendere ogni progetto uguale.", developerLink: "Parliamo di un design system",
-    brandLabel: "Brand Experience & Visualizzazione", brandTitle: "Rendere visibile l’idea prima dell’incontro.", brandText: "Identità, visualizzazione, motion e design digitale possono orientare la comprensione di un progetto molto prima del lancio. Li usiamo insieme per dare a luoghi e brand una presenza riconoscibile.", brandLink: "Esplora i servizi",
-    ctaLabel: "Inizia una conversazione", ctaTitle: "Raccontaci a cosa stai lavorando.", ctaText: "Un luogo, un brand, un’esperienza—o qualcosa che richiede tutti e tre. Dicci da dove parti e continueremo insieme.", ctaLink: "Inizia un progetto",
+    label: "04 — Iniziamo",
+    first: "Hai qualcosa",
+    second: "in mente?",
+    link: "Parliamone",
   },
 } as const;
 
 export default function StudioPerspective() {
-  const { locale } = useLocale(); const copy = content[locale];
-  return <>
-    <section className="bg-black px-6 py-24 text-white sm:px-8 md:px-10 md:py-36 lg:px-16"><div className="grid gap-12 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[9px] uppercase tracking-[.35em] text-white/40">{copy.approachLabel}</p><div><Reveal><h2 className="text-[clamp(3.6rem,9vw,8rem)] font-extralight leading-[.86] tracking-[-.055em]">{copy.approachTitle[0]}<br />{copy.approachTitle[1]}</h2></Reveal><p className="mt-10 max-w-2xl text-base font-light leading-8 text-white/60">{copy.approachText}</p><div className="mt-16 grid gap-px border border-white/10 bg-white/10 md:grid-cols-2">{copy.steps.map((step, index) => <div key={step[0]} className="bg-black p-7"><p className="text-[9px] tracking-[.25em] text-[#7691A0]">0{index + 1}</p><h3 className="mt-8 text-2xl font-light">{step[0]}</h3><p className="mt-3 text-sm leading-7 text-white/45">{step[1]}</p></div>)}</div></div></div></section>
-    <section className="bg-[#f8f7f4] px-6 py-24 text-neutral-900 sm:px-8 md:px-10 md:py-36 lg:px-16"><div className="grid gap-20 lg:grid-cols-2 lg:gap-8"><Reveal><article className="border-t border-neutral-300 pt-7 lg:pr-14"><p className="text-[9px] uppercase tracking-[.3em] text-[#4F6B7A]">{copy.developerLabel}</p><h2 className="mt-10 max-w-xl text-5xl font-extralight leading-[.95] tracking-[-.05em] md:text-7xl">{copy.developerTitle}</h2><p className="mt-8 max-w-xl text-sm font-light leading-7 text-neutral-600">{copy.developerText}</p><Link href="/contact?service=developer-systems" className="mt-10 inline-block text-[9px] uppercase tracking-[.25em]">{copy.developerLink} ↗</Link></article></Reveal><Reveal><article className="border-t border-neutral-300 pt-7 lg:pl-14"><p className="text-[9px] uppercase tracking-[.3em] text-[#4F6B7A]">{copy.brandLabel}</p><h2 className="mt-10 max-w-xl text-5xl font-extralight leading-[.95] tracking-[-.05em] md:text-7xl">{copy.brandTitle}</h2><p className="mt-8 max-w-xl text-sm font-light leading-7 text-neutral-600">{copy.brandText}</p><Link href="/services#discipline-3" className="mt-10 inline-block text-[9px] uppercase tracking-[.25em]">{copy.brandLink} ↗</Link></article></Reveal></div></section>
-    <section className="bg-[#4F6B7A] px-6 py-24 text-white sm:px-8 md:px-10 md:py-36 lg:px-16"><div className="grid gap-10 lg:grid-cols-[.35fr_1.65fr]"><p className="text-[9px] uppercase tracking-[.35em] text-white/55">{copy.ctaLabel}</p><div><h2 className="max-w-5xl text-[clamp(3.4rem,9vw,8rem)] font-extralight leading-[.88] tracking-[-.055em]">{copy.ctaTitle}</h2><p className="mt-10 max-w-2xl text-base font-light leading-8 text-white/75">{copy.ctaText}</p><Link href="/contact" className="mt-10 inline-flex rounded-full border border-white/50 px-6 py-3 text-[9px] uppercase tracking-[.25em] transition hover:bg-white hover:text-[#4F6B7A]">{copy.ctaLink} ↗</Link></div></div></section>
-  </>;
+  const { locale } = useLocale();
+  const copy = content[locale];
+
+  return (
+    <section aria-labelledby="home-contact-title" className="bg-[#17191a] px-6 py-24 text-white sm:px-8 sm:py-32 md:px-10 lg:px-16 lg:py-40">
+      <div className="mx-auto grid max-w-[1600px] gap-12 border-t border-white/20 pt-7 lg:grid-cols-[.35fr_1.65fr] lg:gap-12">
+        <p className="pt-1 text-[10px] font-medium uppercase tracking-[.28em] text-white/50">{copy.label}</p>
+        <div>
+          <h2
+            id="home-contact-title"
+            className={`max-w-[1100px] font-light leading-[1.03] ${locale === "ar" ? "text-[clamp(3rem,6vw,6.5rem)] tracking-[-.02em]" : "text-[clamp(3rem,6.1vw,7rem)] tracking-[-.055em]"}`}
+          >
+            <span className="block">{copy.first}</span>
+            <span className="block">{copy.second}</span>
+          </h2>
+          <Link
+            href="/contact"
+            className="mt-12 inline-flex items-center justify-between gap-12 border-b border-white/65 pb-3 text-sm font-light tracking-[.01em] transition-colors hover:border-[#9fb2bb] hover:text-[#c4d4dc] sm:mt-16 sm:min-w-72"
+          >
+            {copy.link} <span aria-hidden="true" className="text-xl">↗</span>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
 }
