@@ -2,430 +2,82 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-import Reveal from "@/components/animations/Reveal";
-import Container from "@/components/shared/Container";
-import { localizedYear, projectCopy, useLocale } from "@/components/i18n/LocaleProvider";
+import { useLocale, projectCopy } from "@/components/i18n/LocaleProvider";
 import type { WebsiteProject } from "@/lib/server/websiteProjects";
 
-gsap.registerPlugin(ScrollTrigger);
+const sectionCopy = {
+  en: { label: "03 — Selected Work", heading: "Selected work.", all: "View all projects", open: "View project" },
+  ar: { label: "03 — أعمال مختارة", heading: "أعمال مختارة.", all: "كل المشروعات", open: "عرض المشروع" },
+  it: { label: "03 — Progetti selezionati", heading: "Progetti scelti.", all: "Tutti i progetti", open: "Apri progetto" },
+} as const;
 
 export default function Projects({ projects }: { projects: WebsiteProject[] }) {
-  const sectionRef = useRef<HTMLElement>(null);
   const { locale, copy } = useLocale();
-
-  useEffect(() => {
-    if (!sectionRef.current) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.matchMedia("(max-width: 767px)").matches;
-    if (reduceMotion || mobile) return;
-
-    const ctx = gsap.context(() => {
-      const cards = sectionRef.current!.querySelectorAll(".project-card");
-
-      cards.forEach((card) => {
-        const image = card.querySelector(".project-image");
-        if (!image) return;
-
-        gsap.fromTo(image, { scale: 1.08 }, {
-          scale: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: card,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.6,
-          },
-        });
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const section = sectionCopy[locale];
+  const featured = projects.slice(0, 3);
 
   return (
-    <section
-      ref={sectionRef}
-      className="
-        bg-[#f8f7f4]
-        text-neutral-900
-      "
-    >
-      <Container
-        className="
-          !max-w-none
-          px-5
-          pb-20
-          pt-20
-          sm:px-8
-          md:px-10
-          md:pb-28
-          lg:px-14
-          lg:pb-32
-          xl:px-16
-        "
-      >
-        {/* =====================================================
-            SECTION HEADER
-        ====================================================== */}
-
-        <div
-          className="
-            grid
-            grid-cols-1
-            gap-10
-            border-t
-            border-neutral-300
-            pt-6
-            lg:grid-cols-[0.35fr_1.65fr]
-            lg:gap-x-12
-          "
-        >
-          <Reveal>
-            <span
-              className="
-                text-[9px]
-                uppercase
-                tracking-[0.35em]
-                text-neutral-400
-              "
-            >
-              {copy.featuredLabel}
-            </span>
-          </Reveal>
-
-          <Reveal>
-            <div>
-              <h2
-                className="
-                  max-w-[1200px]
-                  text-[58px]
-                  font-light
-                  leading-[0.82]
-                  tracking-[-0.055em]
-                  sm:text-[80px]
-                  md:text-[105px]
-                  lg:text-[135px]
-                  xl:text-[160px]
-                "
-              >
-                {copy.featuredTitle1}
-                <br />
-                {copy.featuredTitle2}
-              </h2>
-
-              <p
-                className="
-                  mt-10
-                  max-w-[580px]
-                  text-[13px]
-                  font-light
-                  leading-[1.8]
-                  text-neutral-500
-                  md:text-[15px]
-                "
-              >
-                {copy.featuredIntro}
-              </p>
-            </div>
-          </Reveal>
-        </div>
-
-        {/* =====================================================
-            PROJECT ARCHIVE
-        ====================================================== */}
-
-        <div
-          className="
-            mt-28
-            border-t
-            border-neutral-300
-            md:mt-40
-          "
-        >
-          {projects.map((project, index) => {
-            const translated = projectCopy(project, locale);
-            return (
-            <article
-              key={project.id}
-              className="
-                project-card
-                border-b
-                border-neutral-300
-                py-8
-                md:py-12
-              "
-            >
-              <Link
-                href={`/projects/${project.slug}`}
-                className="group block"
-              >
-                {/* =================================================
-                    PROJECT TOP META
-                ================================================== */}
-
-                <div
-                  className="
-                    mb-6
-                    flex
-                    items-center
-                    justify-between
-                  "
-                >
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-4
-                    "
-                  >
-                    <span
-                      className="
-                        text-[8px]
-                        uppercase
-                        tracking-[0.3em]
-                        text-neutral-400
-                      "
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-
-                    <span className="h-px w-8 bg-neutral-300" />
-
-                    <span
-                      className="
-                        text-[8px]
-                        uppercase
-                        tracking-[0.3em]
-                        text-neutral-400
-                      "
-                    >
-                      {translated.location}
-                    </span>
-                  </div>
-
-                  <span
-                    className="
-                      text-[8px]
-                      uppercase
-                      tracking-[0.3em]
-                      text-neutral-400
-                    "
-                  >
-                      {localizedYear(project.year, locale)}
-                  </span>
-                </div>
-
-                {/* =================================================
-                    IMAGE
-                ================================================== */}
-
-                <div
-                  className="
-                    relative
-                    h-[58vh]
-                    min-h-[430px]
-                    w-full
-                    overflow-hidden
-                    bg-neutral-200
-                    md:h-[72vh]
-                    lg:h-[80vh]
-                  "
-                >
-                  <div
-                    className="
-                      project-image
-                      absolute
-                      inset-[-6%]
-                      will-change-transform
-                    "
-                  >
-                    <Image
-                      src={project.image_url}
-                      alt={translated.title}
-                      fill
-                      unoptimized
-                      priority={index === 0}
-                      sizes="100vw"
-                      className="
-                        object-cover
-                        transition-transform
-                        duration-[1200ms]
-                        ease-out
-                        group-hover:scale-[1.025]
-                      "
-                    />
-                  </div>
-
-                  {/* IMAGE OVERLAY */}
-
-                  <div
-                    className="
-                      absolute
-                      inset-0
-                      bg-black/0
-                      transition-colors
-                      duration-700
-                      group-hover:bg-black/10
-                    "
-                  />
-
-                  {/* OPEN */}
-
-                  <div
-                    className="
-                      absolute
-                      bottom-6
-                      right-6
-                      flex
-                      h-12
-                      w-12
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-white/60
-                      text-white
-                      opacity-0
-                      transition-all
-                      duration-500
-                      group-hover:opacity-100
-                      md:bottom-10
-                      md:right-10
-                    "
-                  >
-                    ↗
-                  </div>
-                </div>
-
-                {/* =================================================
-                    TITLE
-                ================================================== */}
-
-                <div
-                  className="
-                    mt-7
-                    flex
-                    items-end
-                    justify-between
-                    gap-8
-                  "
-                >
-                  <div>
-                    <p className="mb-4 text-[9px] uppercase tracking-[0.3em] text-[#4F6B7A]">
-                      {translated.category}
-                    </p>
-                    <h3
-                      className="
-                        text-[44px]
-                        font-light
-                        leading-[0.88]
-                        tracking-[-0.05em]
-                        transition-transform
-                        duration-700
-                        group-hover:translate-x-2
-                        sm:text-[58px]
-                        md:text-[76px]
-                        lg:text-[92px]
-                      "
-                    >
-                      {translated.title}
-                    </h3>
-                  </div>
-
-                  <span
-                    className="
-                      hidden
-                      pb-2
-                      text-[9px]
-                      uppercase
-                      tracking-[0.3em]
-                      text-neutral-400
-                      md:block
-                    "
-                  >
-                    {copy.view}
-                  </span>
-                </div>
-              </Link>
-            </article>
-          )})}
-        </div>
-
-        {/* =====================================================
-            PAGINATION / MORE
-        ====================================================== */}
-
-        <Reveal>
-          <div
-            className="
-              border-b
-              border-neutral-300
-              py-10
-              md:py-14
-            "
+    <section aria-labelledby="home-projects-title" className="bg-[#f8f7f4] px-6 pb-28 text-neutral-900 sm:px-8 sm:pb-36 md:px-10 lg:px-16 lg:pb-44">
+      <div className="mx-auto max-w-[1600px]">
+        <div className="grid gap-9 border-t border-neutral-300 pt-6 lg:grid-cols-[.35fr_1.65fr] lg:gap-12">
+          <p className="pt-1 text-[10px] font-medium uppercase tracking-[.28em] text-[#4F6B7A]">
+            {section.label}
+          </p>
+          <h2
+            id="home-projects-title"
+            className="text-[clamp(2.9rem,5.7vw,6.25rem)] font-light leading-[1.02] tracking-[-.055em]"
           >
-            <Link
-              href="/projects"
-              className="
-                group
-                flex
-                items-center
-                justify-between
-              "
-            >
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-6
-                "
-              >
-                <span
-                  className="
-                    text-[9px]
-                    uppercase
-                    tracking-[0.3em]
-                    text-neutral-400
-                  "
-                >
-                  {copy.archive}
-                </span>
+            {section.heading}
+          </h2>
+        </div>
 
-                <span
-                  className="
-                    text-[28px]
-                    font-light
-                    tracking-[-0.04em]
-                    transition-transform
-                    duration-500
-                    group-hover:translate-x-2
-                    sm:text-[38px]
-                  "
-                >
-                  {copy.exploreAll}
-                </span>
-              </div>
-
-              <span
-                className="
-                  text-xl
-                  transition-transform
-                  duration-500
-                  group-hover:translate-x-2
-                "
-              >
-                ↗
-              </span>
-            </Link>
+        {featured.length > 0 ? (
+          <div className="mt-11 grid gap-x-6 gap-y-14 sm:mt-16 md:grid-cols-2 md:gap-y-20">
+            {featured.map((project, index) => {
+              const translated = projectCopy(project, locale);
+              return (
+                <article key={project.id} className={index === 0 ? "md:col-span-2" : ""}>
+                  <Link href={`/projects/${project.slug}`} className="group block" aria-label={`${section.open}: ${translated.title}`}>
+                    <div className={`relative w-full overflow-hidden bg-neutral-200 ${index === 0 ? "aspect-[4/3] sm:aspect-[16/9] lg:aspect-[1.95]" : "aspect-[4/3]"}`}>
+                      <Image
+                        src={project.image_url}
+                        alt={translated.title}
+                        fill
+                        unoptimized
+                        priority={index === 0}
+                        sizes={index === 0 ? "100vw" : "(min-width: 768px) 50vw, 100vw"}
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none"
+                      />
+                      <span className="absolute bottom-5 end-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 bg-black/15 text-lg text-white opacity-100 backdrop-blur-sm transition-colors group-hover:bg-black/40 sm:bottom-7 sm:end-7 md:opacity-0 md:group-hover:opacity-100" aria-hidden="true">↗</span>
+                    </div>
+                    <div className="mt-5 flex items-end justify-between gap-5 sm:mt-6">
+                      <div className="min-w-0">
+                        <p className="mb-3 text-[10px] font-medium uppercase tracking-[.16em] text-[#4F6B7A]">
+                          {translated.category}{translated.location ? ` · ${translated.location}` : ""}
+                        </p>
+                        <h3 className={`font-light leading-[1.05] ${locale === "ar" ? "text-[clamp(1.65rem,3.1vw,3rem)] tracking-[-.015em]" : "text-[clamp(1.75rem,3.2vw,3.4rem)] tracking-[-.045em]"}`}>
+                          {translated.title}
+                        </h3>
+                      </div>
+                      <span className="hidden shrink-0 text-[10px] uppercase tracking-[.14em] text-neutral-500 sm:inline">{section.open} ↗</span>
+                    </div>
+                  </Link>
+                </article>
+              );
+            })}
           </div>
-        </Reveal>
+        ) : (
+          <div className="mt-11 border-t border-neutral-300 py-14">
+            <p className="text-sm font-light text-neutral-500">{copy.emptyProjects}</p>
+          </div>
+        )}
 
-      </Container>
+        <div className="mt-14 border-t border-neutral-300 pt-7 sm:mt-20">
+          <Link href="/projects" className="inline-flex items-center gap-4 border-b border-neutral-400 pb-2 text-[11px] font-medium uppercase tracking-[.16em] transition-opacity hover:opacity-60">
+            {section.all} <span aria-hidden="true" className="text-base">↗</span>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }
